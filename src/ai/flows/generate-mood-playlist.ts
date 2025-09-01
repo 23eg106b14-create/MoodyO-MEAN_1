@@ -21,7 +21,7 @@ const GenerateMoodPlaylistInputSchema = z.object({
 export type GenerateMoodPlaylistInput = z.infer<typeof GenerateMoodPlaylistInputSchema>;
 
 const GenerateMoodPlaylistOutputSchema = z.object({
-  playlist: z.array(z.string()).describe('A list of song recommendations for the specified mood.'),
+  playlist: z.array(z.string()).describe('A list of song recommendations for the specified mood. Each element is a song title.'),
 });
 export type GenerateMoodPlaylistOutput = z.infer<typeof GenerateMoodPlaylistOutputSchema>;
 
@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
   output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs.  Return just the song titles, one song per line. Do not include the artist name unless necessary to distinguish the song, and do not include numbering.`,
+  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs.  Return just the song titles. Do not include the artist name unless necessary to distinguish the song, and do not include numbering.`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(
