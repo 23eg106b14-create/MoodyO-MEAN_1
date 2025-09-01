@@ -35,7 +35,27 @@ const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
   output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs. Return your response as a JSON object with a "playlist" field containing an array of song titles. Do not include artist names or numbering.`,
+  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs. 
+
+You must return your response as a valid JSON object that strictly follows this format: { "playlist": ["Song Title 1", "Song Title 2", ...] }.
+Do not include artist names, numbering, or any text outside of the JSON object.
+
+For example, for a 'Happy' mood, your response should look like this:
+{
+  "playlist": [
+    "Walking on Sunshine",
+    "Good as Hell",
+    "Happy",
+    "Don't Stop Me Now",
+    "Lovely Day",
+    "Uptown Funk",
+    "I Gotta Feeling",
+    "Three Little Birds",
+    "Can't Stop the Feeling!",
+    "Best Day Of My Life"
+  ]
+}
+`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(
