@@ -34,27 +34,12 @@ export async function generateMoodPlaylist(
 const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
-  output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs. 
+  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs.
 
-You must return your response as a valid JSON object that strictly follows this format: { "playlist": ["Song Title 1", "Song Title 2", ...] }.
-Do not include artist names, numbering, or any text outside of the JSON object.
+Return the playlist as a comma-separated list of song titles. Do not include artist names, numbering, or any other text.
 
 For example, for a 'Happy' mood, your response should look like this:
-{
-  "playlist": [
-    "Walking on Sunshine",
-    "Good as Hell",
-    "Happy",
-    "Don't Stop Me Now",
-    "Lovely Day",
-    "Uptown Funk",
-    "I Gotta Feeling",
-    "Three Little Birds",
-    "Can't Stop the Feeling!",
-    "Best Day Of My Life"
-  ]
-}
+Walking on Sunshine,Good as Hell,Happy,Don't Stop Me Now,Lovely Day,Uptown Funk,I Gotta Feeling,Three Little Birds,Can't Stop the Feeling!,Best Day Of My Life
 `,
 });
 
@@ -68,9 +53,14 @@ const generateMoodPlaylistFlow = ai.defineFlow(
     let retries = 3;
     while (retries > 0) {
       try {
-        const {output} = await prompt(input);
-        if (output && output.playlist && output.playlist.length > 0) {
-          return output;
+        const response = await prompt(input);
+        const playlistText = response.text;
+        
+        if (playlistText) {
+          const playlist = playlistText.split(',').map(song => song.trim()).filter(Boolean);
+          if (playlist.length > 0) {
+            return { playlist };
+          }
         }
       } catch (error) {
         console.warn('Playlist generation attempt failed, retrying...', error);
