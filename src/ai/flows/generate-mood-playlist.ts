@@ -11,6 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const SongSchema = z.object({
+  title: z.string().describe('The title of the song.'),
+  artist: z.string().describe('The artist of the song.'),
+  icon: z.string().describe('A single emoji that represents the song or mood.'),
+});
+
 const GenerateMoodPlaylistInputSchema = z.object({
   mood: z.string().describe('The mood for which to generate the playlist.'),
   playlistLength: z
@@ -21,7 +27,7 @@ const GenerateMoodPlaylistInputSchema = z.object({
 export type GenerateMoodPlaylistInput = z.infer<typeof GenerateMoodPlaylistInputSchema>;
 
 const GenerateMoodPlaylistOutputSchema = z.object({
-  playlist: z.array(z.string()).describe('A list of song recommendations for the specified mood. Each element is a song title.'),
+  playlist: z.array(SongSchema).describe('A list of song recommendations for the specified mood.'),
 });
 export type GenerateMoodPlaylistOutput = z.infer<typeof GenerateMoodPlaylistOutputSchema>;
 
@@ -34,13 +40,14 @@ export async function generateMoodPlaylist(
 const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs.
-
-Return the playlist as a comma-separated list of song titles. Do not include artist names, numbering, or any other text.
-
-For example, for a 'Happy' mood, your response should look like this:
-Walking on Sunshine,Good as Hell,Happy,Don't Stop Me Now,Lovely Day,Uptown Funk,I Gotta Feeling,Three Little Birds,Can't Stop the Feeling!,Best Day Of My Life
-`,
+  output: {schema: GenerateMoodPlaylistOutputSchema},
+  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood.
+  
+  For each song, provide a title, the artist, and a single emoji icon that represents the song or the mood.
+  
+  Include a mix of popular and lesser-known songs.
+  
+  Return the data as a valid JSON object matching the provided output schema.`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(
@@ -53,14 +60,9 @@ const generateMoodPlaylistFlow = ai.defineFlow(
     let retries = 3;
     while (retries > 0) {
       try {
-        const response = await prompt(input);
-        const playlistText = response.text;
-        
-        if (playlistText) {
-          const playlist = playlistText.split(',').map(song => song.trim()).filter(Boolean);
-          if (playlist.length > 0) {
-            return { playlist };
-          }
+        const {output} = await prompt(input);
+        if (output && output.playlist && output.playlist.length > 0) {
+          return output;
         }
       } catch (error) {
         console.warn('Playlist generation attempt failed, retrying...', error);

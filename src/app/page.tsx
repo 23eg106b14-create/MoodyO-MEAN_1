@@ -5,9 +5,7 @@ import { emotions } from '@/lib/constants';
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/30 to-background"></div>
-      
+    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500">
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
         <header className="text-center mb-12">
           <div className="inline-block p-4 sm:p-6 rounded-2xl bg-black/20 backdrop-blur-lg border border-white/10 shadow-lg">
@@ -20,6 +18,7 @@ export default function Home() {
         </header>
 
         <div className="w-full max-w-4xl">
+          <h2 className="text-2xl font-bold text-center text-white mb-6">How are you feeling?</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
             {emotions.map((emotion) => (
               <EmotionCard key={emotion.name} emotion={emotion} />
@@ -27,9 +26,9 @@ export default function Home() {
           </div>
         </div>
 
-        <footer className="absolute bottom-4 text-center text-muted-foreground text-sm">
+        <footer className="absolute bottom-4 text-center text-white/80 text-sm">
           <p>Created with Firebase and Genkit AI.</p>
-           <Link href="/about" className="mt-2 text-sm text-accent-foreground/60 hover:text-accent-foreground transition-colors">
+           <Link href="/about" className="mt-2 text-sm text-white/60 hover:text-white transition-colors">
             About MoodyO
           </Link>
         </footer>
