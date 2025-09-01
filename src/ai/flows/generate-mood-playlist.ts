@@ -41,13 +41,7 @@ const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
   output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood.
-  
-  For each song, provide a title, the artist, and a single emoji icon that represents the song or the mood.
-  
-  Include a mix of popular and lesser-known songs.
-  
-  Return the data as a valid JSON object matching the provided output schema.`,
+  prompt: `Generate a playlist of {{{playlistLength}}} songs for the mood "{{{mood}}}". For each song, provide a title, artist, and a single emoji icon. Return the data as a valid JSON object matching the provided output schema.`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(
