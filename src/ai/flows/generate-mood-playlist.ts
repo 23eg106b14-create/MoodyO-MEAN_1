@@ -58,7 +58,7 @@ const generateMoodPlaylistFlow = ai.defineFlow(
       retries--;
     }
     
-    // If all retries fail, return an empty playlist.
-    return { playlist: [] };
+    // If all retries fail, throw an error.
+    throw new Error('Failed to generate playlist after multiple retries.');
   }
 );
