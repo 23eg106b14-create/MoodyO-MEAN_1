@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
   output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs.  Return just the song titles. Do not include the artist name unless necessary to distinguish the song, and do not include numbering.`,
+  prompt: `You are a world-class music curator. A user is feeling "{{{mood}}}" and wants you to generate a playlist of {{{playlistLength}}} songs to match that mood. Include a mix of popular and lesser-known songs. Return your response as a JSON object with a "playlist" field containing an array of song titles. Do not include artist names or numbering.`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(
@@ -45,10 +45,20 @@ const generateMoodPlaylistFlow = ai.defineFlow(
     outputSchema: GenerateMoodPlaylistOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    const playlist = output!.playlist;
-    return {
-      playlist,
-    };
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        const {output} = await prompt(input);
+        if (output && output.playlist && output.playlist.length > 0) {
+          return output;
+        }
+      } catch (error) {
+        console.warn('Playlist generation attempt failed, retrying...', error);
+      }
+      retries--;
+    }
+    
+    // If all retries fail, return an empty playlist.
+    return { playlist: [] };
   }
 );
