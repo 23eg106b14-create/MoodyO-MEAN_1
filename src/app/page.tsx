@@ -6,7 +6,7 @@ import { emotions } from '@/lib/constants';
 export default function Home() {
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/30 to-background"></div>
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
         <header className="text-center mb-12">
