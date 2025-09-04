@@ -1,12 +1,15 @@
 
 'use client';
 
-import { Music, Headphones, Guitar, ListMusic } from 'lucide-react';
-import { useState } from 'react';
+import { Music, Headphones, Guitar, ListMusic, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 
 export function MoodPlayer() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [nowPlaying, setNowPlaying] = useState<any>(null);
 
   const MOOD_DEFS: Record<string, any> = {
     happy: {
@@ -38,7 +41,7 @@ export function MoodPlayer() {
       title: ['Sunny Days', 'Golden Hour', 'Sparkle', 'Warm Breeze', 'Lemonade', 'Candy Skies', 'Bloom', 'Brightside', 'Hummingbird', 'Radiant'][i],
       artist: ['MoodyO Mix', 'Acoustic', 'Indie Pop', 'Lo-Fi', 'Electro Pop', 'Indie', 'Bedroom Pop', 'Folk', 'Chillhop', 'Dance'][i],
       src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(baseIdx + i) % 16 + 1}.mp3`,
-      cover: `https://picsum.photos/seed/m${baseIdx + i}/200/200`,
+      cover: `https://picsum.photos/seed/m${baseIdx + i}/400/400`,
       icon: ICONS[(baseIdx + i) % ICONS.length],
     }));
 
@@ -53,12 +56,14 @@ export function MoodPlayer() {
     setCurrentPage(id);
   };
 
-  const renderTile = (mood: string, t: any, idx: number) => {
-    const id = `${mood}-aud-${idx}`;
-    const Icon = t.icon;
+  const handlePlay = (track: any) => {
+    document.querySelectorAll('audio').forEach(a => a.pause());
+    setNowPlaying(track);
+  }
 
+  const renderTile = (mood: string, t: any, idx: number) => {
     return (
-      <div className="song-card" key={id}>
+      <div className="song-card cursor-pointer" key={`${mood}-${idx}`} onClick={() => handlePlay(t)}>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 relative flex-shrink-0">
              <Image src={t.cover} alt={`${t.title} cover`} layout="fill" className="rounded-md object-cover" />
@@ -66,9 +71,6 @@ export function MoodPlayer() {
           <div className="flex-grow">
             <h3 className="font-semibold text-lg">{t.title}</h3>
             <p className="text-sm text-muted-foreground">{t.artist}</p>
-             <audio id={id} controls className="w-full mt-2" preload="none">
-               <source src={t.src} type="audio/mpeg" />
-             </audio>
           </div>
         </div>
       </div>
@@ -88,6 +90,12 @@ export function MoodPlayer() {
     );
   };
 
+  useEffect(() => {
+    if (!nowPlaying) {
+      document.querySelectorAll('audio').forEach(a => a.pause());
+    }
+  }, [nowPlaying]);
+
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
       <header className="flex items-center justify-between mb-12">
@@ -96,9 +104,9 @@ export function MoodPlayer() {
           <span className="text-2xl font-bold tracking-tight">MoodyO</span>
         </div>
         <nav className="flex items-center gap-4">
-            <button onClick={() => openPage('home')} className={`text-sm font-medium ${currentPage === 'home' ? 'text-primary' : 'text-muted-foreground'} hover:text-primary transition-colors`}>Home</button>
+            <Button variant={currentPage === 'home' ? 'default' : 'ghost'} onClick={() => openPage('home')}>Home</Button>
             {Object.keys(MOOD_DEFS).map(mood => (
-                <button key={mood} onClick={() => openPage(mood)} className={`text-sm font-medium ${currentPage === mood ? 'text-primary' : 'text-muted-foreground'} hover:text-primary transition-colors`}>{MOOD_DEFS[mood].title}</button>
+                <Button key={mood} variant={currentPage === mood ? 'default' : 'ghost'} onClick={() => openPage(mood)}>{MOOD_DEFS[mood].title}</Button>
             ))}
         </nav>
       </header>
@@ -137,6 +145,26 @@ export function MoodPlayer() {
        <footer className="text-center mt-20 py-8 border-t border-border">
           <p className="text-sm text-muted-foreground">Made with ❤️ by MoodyO</p>
       </footer>
+
+      {nowPlaying && (
+        <Dialog open={!!nowPlaying} onOpenChange={(isOpen) => !isOpen && setNowPlaying(null)}>
+          <DialogContent className="max-w-md w-full">
+            <DialogHeader>
+              <DialogTitle>{nowPlaying.title}</DialogTitle>
+              <p className="text-sm text-muted-foreground">{nowPlaying.artist}</p>
+            </DialogHeader>
+            <div className="mt-4">
+              <Image src={nowPlaying.cover} alt={`${nowPlaying.title} cover`} width={400} height={400} className="rounded-lg object-cover w-full aspect-square" />
+            </div>
+            <div className="mt-4">
+              <audio controls autoPlay src={nowPlaying.src} className="w-full">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 }
