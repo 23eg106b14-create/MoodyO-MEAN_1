@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, ChevronRight } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, ChevronRight, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import {
@@ -53,7 +53,15 @@ const MOOD_DEFS = {
   }
 };
 
-const SAMPLE_TRACKS = (baseIdx = 1) => Array.from({ length: 10 }, (_, i) => ({
+type Track = {
+  title: string;
+  artist: string;
+  src: string;
+  cover: string;
+};
+
+
+const SAMPLE_TRACKS = (baseIdx = 1): Track[] => Array.from({ length: 10 }, (_, i) => ({
   title: ['Sunny Days', 'Golden Hour', 'Sparkle', 'Warm Breeze', 'Lemonade', 'Candy Skies', 'Bloom', 'Brightside', 'Hummingbird', 'Radiant'][i],
   artist: ['MoodyO Mix', 'Acoustic', 'Indie Pop', 'Lo-Fi', 'Electro Pop', 'Indie', 'Bedroom Pop', 'Folk', 'Chillhop', 'Dance'][i],
   src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(baseIdx + i) % 16 + 1}.mp3`,
@@ -84,6 +92,8 @@ export default function Home() {
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [likedSongs, setLikedSongs] = useState<Track[]>([]);
+
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -198,7 +208,22 @@ export default function Home() {
     setIsPlaying(false);
     setNowPlaying(null);
   };
-  
+
+  const isLiked = (track: Track) => {
+    return likedSongs.some(likedTrack => likedTrack.src === track.src);
+  }
+
+  const handleLike = (e: React.MouseEvent, track: Track) => {
+    e.stopPropagation();
+    setLikedSongs(prev => {
+      if (isLiked(track)) {
+        return prev.filter(likedTrack => likedTrack.src !== track.src);
+      } else {
+        return [...prev, track];
+      }
+    });
+  }
+
   const enterApp = () => {
       gsap.to(headerRef.current, {
         duration: 0.8,
@@ -230,43 +255,19 @@ export default function Home() {
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
 
   const NavMenu = () => (
-    <Accordion type="multiple" className="w-full mobile-menu">
+    <Accordion type="single" collapsible className="w-full mobile-menu" defaultValue="item-1">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="accordion-trigger">Home</AccordionTrigger>
+        <AccordionTrigger className="accordion-trigger">Playlist</AccordionTrigger>
         <AccordionContent className="accordion-content">
-          <ul className="mobile-menu-items">
-            <li><a href="#">Demos One</a></li>
-            <li><a href="#">Demos Two</a></li>
-            <li><a href="#">Demos Three</a></li>
-          </ul>
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Artist</AccordionTrigger>
-        <AccordionContent>
-          <ul className="mobile-menu-items">
-            <li><a href="#">Artist</a></li>
-            <li><a href="#">Artist Details</a></li>
-          </ul>
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Music</AccordionTrigger>
-        <AccordionContent>
-           <ul className="mobile-menu-items">
-              <li><a href="#">Podcast</a></li>
-              <li><a href="#">Playlist</a></li>
-              <li><a href="#">Album</a></li>
+          {likedSongs.length > 0 ? (
+            <ul className="mobile-menu-items">
+              {likedSongs.map((track, index) => (
+                <li key={index}><a href="#">{track.title}</a></li>
+              ))}
             </ul>
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-4">
-        <AccordionTrigger>Blog</AccordionTrigger>
-        <AccordionContent>
-           <ul className="mobile-menu-items">
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Blog Details</a></li>
-            </ul>
+          ) : (
+            <p className="px-4 text-sm text-gray-500">No liked songs yet.</p>
+          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -397,6 +398,9 @@ export default function Home() {
                         <div className="song-card-content">
                           <div className="song-title">{track.title}</div>
                           <div className="song-artist">{track.artist}</div>
+                          <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                            <Heart size={18} />
+                          </button>
                            <button className="play-small">▶</button>
                         </div>
                       </div>
@@ -428,6 +432,11 @@ export default function Home() {
                         {isPlaying ? <Pause size={32} /> : <Play size={32} />}
                     </button>
                     <button onClick={handleNext}><SkipForward /></button>
+                </div>
+                <div className="player-actions">
+                  <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <Heart size={24} />
+                  </button>
                 </div>
                 <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
             </div>
