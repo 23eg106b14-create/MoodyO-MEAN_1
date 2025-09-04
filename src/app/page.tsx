@@ -6,7 +6,7 @@ import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
 import {
   Accordion,
   AccordionContent,
@@ -129,12 +129,11 @@ export default function Home() {
             alignOrigin: [0.5, 0.5],
             autoRotate: true,
             start: i / MOON_ICONS.length,
-            end: i / MOON_ICONS.length + 0.5,
+            end: i / MOON_ICONS.length + 1,
           },
           duration: 40,
           ease: 'none',
           repeat: -1,
-          yoyo: true,
         });
          gsap.to(moon, {
           x: '+=random(-20, 20)',

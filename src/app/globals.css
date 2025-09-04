@@ -13,6 +13,7 @@
   --text: #000000;
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
   --color-accent: #8082f8;
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
