@@ -136,13 +136,13 @@ export default function Home() {
         start: (i) => i / MOON_ICONS.length,
         end: (i) => i / MOON_ICONS.length + 1,
       },
-      duration: 40,
+      duration: 80,
       ease: 'none',
     }, 0).to(moonRefs.current, {
       x: 'random(-30, 30)',
       y: 'random(-30, 30)',
       rotation: 'random(-25, 25)',
-      duration: 7,
+      duration: 20,
       ease: 'power1.inOut',
     }, 0);
 
@@ -482,5 +482,3 @@ export default function Home() {
     </>
   );
 }
-
-    
