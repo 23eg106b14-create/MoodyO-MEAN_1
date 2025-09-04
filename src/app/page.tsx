@@ -107,8 +107,8 @@ export default function Home() {
   useEffect(() => {
     if (appVisible) return;
 
-    const header = headerRef.current;
-    if (!header) return;
+    const heroSection = headerRef.current;
+    if (!heroSection) return;
 
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -116,10 +116,10 @@ export default function Home() {
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
       gsap.to([titleTopRef.current, titleBottomRef.current], {
-        '--perspective-x': x * 15,
-        '--perspective-y': y * -15,
-        duration: 0.5,
-        ease: 'power2.out',
+        '--perspective-x': x * 25,
+        '--perspective-y': y * -25,
+        duration: 0.8,
+        ease: 'power3.out',
       });
     };
 
@@ -139,19 +139,19 @@ export default function Home() {
           repeat: -1,
         });
          gsap.to(moon, {
-          x: '+=random(-20, 20)',
-          y: '+=random(-20, 20)',
-          rotation: '+=random(-15, 15)',
+          x: '+=random(-30, 30)',
+          y: '+=random(-30, 30)',
+          rotation: '+=random(-25, 25)',
           repeat: -1,
           yoyo: true,
-          duration: 5,
+          duration: 7,
           ease: 'power1.inOut',
         });
       }
     });
 
-    header.addEventListener('mousemove', onMouseMove);
-    return () => header.removeEventListener('mousemove', onMouseMove);
+    heroSection.addEventListener('mousemove', onMouseMove);
+    return () => heroSection.removeEventListener('mousemove', onMouseMove);
   }, [appVisible]);
 
   // Audio Player Logic
@@ -227,16 +227,32 @@ export default function Home() {
   }
 
   const enterApp = () => {
-      gsap.to(headerRef.current, {
-        duration: 0.8,
-        opacity: 0,
-        y: -50,
-        ease: 'power3.in',
+      const tl = gsap.timeline({
         onComplete: () => {
             setAppVisible(true);
             openPage('home');
         }
       });
+
+      tl.to([titleTopRef.current, titleBottomRef.current], {
+        duration: 0.8,
+        opacity: 0,
+        y: -100,
+        scale: 0.9,
+        ease: 'power3.in',
+      })
+      .to(moonRefs.current, {
+        duration: 0.6,
+        opacity: 0,
+        scale: 0.5,
+        stagger: 0.05,
+        ease: 'power3.in'
+      }, "-=0.7")
+      .to(headerRef.current, {
+        duration: 0.8,
+        opacity: 0,
+        ease: 'power3.in'
+      }, "-=0.8");
   };
 
   const openPage = (id: string) => {
@@ -288,7 +304,7 @@ export default function Home() {
             <div className="homepage-header__titles">
               <h1 className="sr-only">MoodyO</h1>
               <h1
-                className="homepage-header__title homepage-header__title--top huge-hero"
+                className="homepage-header__title huge-hero"
                 aria-hidden="true"
                 ref={titleTopRef}
               >
@@ -321,7 +337,7 @@ export default function Home() {
               </svg>
     
               <h1
-                className="homepage-header__title homepage-header__title--bottom huge-hero"
+                className="homepage-header__title huge-hero"
                 aria-hidden="true"
                 ref={titleBottomRef}
               >

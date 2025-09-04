@@ -415,9 +415,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   margin: 0;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-  font-size: max(1.125rem, 1.6666666667vw);
   line-height: 1;
-  text-transform: uppercase;
   font-weight: 600;
   position: relative;
   width: 100%;
@@ -432,8 +430,9 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 .homepage-header__title {
-  transform: perspective(1000px) rotateY(calc(var(--perspective-x) * 1deg)) rotateX(calc(var(--perspective-y) * 1deg));
-  transition: transform 0.5s var(--ease-out-quad);
+  transform: perspective(1200px) rotateY(calc(var(--perspective-x) * 1deg)) rotateX(calc(var(--perspective-y) * 1deg));
+  transition: transform 0.8s var(--ease-out-quad);
+  will-change: transform;
 }
 
 .moons {
