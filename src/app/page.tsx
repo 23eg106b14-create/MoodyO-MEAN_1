@@ -427,16 +427,14 @@ export default function Home() {
                     <p>{currentTrack.artist}</p>
                 </div>
                  <div className="player-controls">
+                    <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                        <Heart size={24} />
+                    </button>
                     <button onClick={handlePrev}><SkipBack /></button>
                     <button onClick={handlePlayPause} className="play-main-btn">
                         {isPlaying ? <Pause size={32} /> : <Play size={32} />}
                     </button>
                     <button onClick={handleNext}><SkipForward /></button>
-                </div>
-                <div className="player-actions">
-                  <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
-                    <Heart size={24} />
-                  </button>
                 </div>
                 <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
             </div>
