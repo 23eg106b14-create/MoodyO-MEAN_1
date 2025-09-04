@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, ChevronRight, Heart } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import {
@@ -349,8 +349,7 @@ export default function Home() {
                   </SheetHeader>
                   <div className="offcanvas-header">
                       <a href="#" className="logo">
-                          <div className="logo glass" style={{padding: '12px 18px'}}>
-                            <div className="dot"></div>
+                          <div className="logo glass" style={{padding: '12px 18px', gap: '8px'}}>
                             MoodyO
                           </div>
                       </a>
