@@ -16,10 +16,10 @@ if (typeof window !== 'undefined') {
 // --- Data Definitions ---
 const MOOD_DEFS = {
   happy: {
-    title: 'Happy — Sunny Vibes',
-    subtitle: 'Bright, feel-good tracks to lift you up',
-    accent: '#22d3ee',
-    bg: 'linear-gradient(135deg, #a5f3fc 0%, #67e8f9 40%, #22d3ee 100%)',
+    title: 'Happy — Vibrant Beats',
+    subtitle: 'Feel-good tracks with a deep groove',
+    accent: '#34d399',
+    bg: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
     emoji: '😊',
   },
   joyful: {
