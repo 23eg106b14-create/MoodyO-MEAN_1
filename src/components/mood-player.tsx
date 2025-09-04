@@ -1,15 +1,18 @@
 
 'use client';
 
-import { Music, Headphones, Guitar, ListMusic, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Music, Headphones, Guitar, ListMusic, X, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 
 export function MoodPlayer() {
   const [currentPage, setCurrentPage] = useState('home');
-  const [nowPlaying, setNowPlaying] = useState<any>(null);
+  const [nowPlaying, setNowPlaying] = useState<{ track: any; mood: string; index: number } | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
 
   const MOOD_DEFS: Record<string, any> = {
     happy: {
@@ -56,17 +59,56 @@ export function MoodPlayer() {
     setCurrentPage(id);
   };
 
-  const handlePlay = (track: any) => {
-    document.querySelectorAll('audio').forEach(a => a.pause());
-    setNowPlaying(track);
-  }
+  const handlePlay = (track: any, mood: string, index: number) => {
+    setNowPlaying({ track, mood, index });
+    setIsPlaying(true);
+  };
+  
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current?.pause();
+    } else {
+      audioRef.current?.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleNextPrev = (direction: 'next' | 'prev') => {
+    if (!nowPlaying) return;
+
+    const { mood, index } = nowPlaying;
+    const playlist = TRACKS[mood];
+    let newIndex;
+
+    if (direction === 'next') {
+      newIndex = (index + 1) % playlist.length;
+    } else {
+      newIndex = (index - 1 + playlist.length) % playlist.length;
+    }
+
+    setNowPlaying({ track: playlist[newIndex], mood, index: newIndex });
+    setIsPlaying(true);
+  };
+
+
+  useEffect(() => {
+    if (nowPlaying && audioRef.current) {
+        audioRef.current.src = nowPlaying.track.src;
+        if (isPlaying) {
+            audioRef.current.play().catch(e => console.error("Playback failed", e));
+        } else {
+            audioRef.current.pause();
+        }
+    }
+  }, [nowPlaying, isPlaying]);
+
 
   const renderTile = (mood: string, t: any, idx: number) => {
     return (
-      <div className="song-card cursor-pointer" key={`${mood}-${idx}`} onClick={() => handlePlay(t)}>
+      <div className="song-card cursor-pointer" key={`${mood}-${idx}`} onClick={() => handlePlay(t, mood, idx)}>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 relative flex-shrink-0">
-             <Image src={t.cover} alt={`${t.title} cover`} layout="fill" className="rounded-md object-cover" />
+             <Image src={t.cover} alt={`${t.title} cover`} layout="fill" className="rounded-md object-cover" data-ai-hint="song cover" />
           </div>
           <div className="flex-grow">
             <h3 className="font-semibold text-lg">{t.title}</h3>
@@ -89,12 +131,6 @@ export function MoodPlayer() {
       </div>
     );
   };
-
-  useEffect(() => {
-    if (!nowPlaying) {
-      document.querySelectorAll('audio').forEach(a => a.pause());
-    }
-  }, [nowPlaying]);
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
@@ -146,20 +182,28 @@ export function MoodPlayer() {
           <p className="text-sm text-muted-foreground">Made with ❤️ by MoodyO</p>
       </footer>
 
+      <audio ref={audioRef} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
+
       {nowPlaying && (
         <Dialog open={!!nowPlaying} onOpenChange={(isOpen) => !isOpen && setNowPlaying(null)}>
           <DialogContent className="max-w-md w-full">
             <DialogHeader>
-              <DialogTitle>{nowPlaying.title}</DialogTitle>
-              <p className="text-sm text-muted-foreground">{nowPlaying.artist}</p>
+              <DialogTitle>{nowPlaying.track.title}</DialogTitle>
+              <p className="text-sm text-muted-foreground">{nowPlaying.track.artist}</p>
             </DialogHeader>
             <div className="mt-4">
-              <Image src={nowPlaying.cover} alt={`${nowPlaying.title} cover`} width={400} height={400} className="rounded-lg object-cover w-full aspect-square" />
+              <Image src={nowPlaying.track.cover} alt={`${nowPlaying.track.title} cover`} width={400} height={400} className="rounded-lg object-cover w-full aspect-square" data-ai-hint="song cover" />
             </div>
-            <div className="mt-4">
-              <audio controls autoPlay src={nowPlaying.src} className="w-full">
-                Your browser does not support the audio element.
-              </audio>
+            <div className="mt-6 flex items-center justify-center gap-6">
+                <Button variant="ghost" size="icon" className="rounded-full h-14 w-14" onClick={() => handleNextPrev('prev')}>
+                    <SkipBack className="h-8 w-8" />
+                </Button>
+                <Button variant="default" size="icon" className="rounded-full h-20 w-20" onClick={handlePlayPause}>
+                    {isPlaying ? <Pause className="h-10 w-10" /> : <Play className="h-10 w-10" />}
+                </Button>
+                <Button variant="ghost" size="icon" className="rounded-full h-14 w-14" onClick={() => handleNextPrev('next')}>
+                    <SkipForward className="h-8 w-8" />
+                </Button>
             </div>
           </DialogContent>
         </Dialog>
