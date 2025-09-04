@@ -5,9 +5,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 
 // GSAP Plugin registration
@@ -220,6 +226,49 @@ export default function Home() {
 
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
 
+  const NavMenu = () => (
+    <Accordion type="multiple" className="w-full mobile-menu">
+      <AccordionItem value="item-1">
+        <AccordionTrigger className="accordion-trigger">Home</AccordionTrigger>
+        <AccordionContent className="accordion-content">
+          <ul className="mobile-menu-items">
+            <li><a href="#">Demos One</a></li>
+            <li><a href="#">Demos Two</a></li>
+            <li><a href="#">Demos Three</a></li>
+          </ul>
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Artist</AccordionTrigger>
+        <AccordionContent>
+          <ul className="mobile-menu-items">
+            <li><a href="#">Artist</a></li>
+            <li><a href="#">Artist Details</a></li>
+          </ul>
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Music</AccordionTrigger>
+        <AccordionContent>
+           <ul className="mobile-menu-items">
+              <li><a href="#">Podcast</a></li>
+              <li><a href="#">Playlist</a></li>
+              <li><a href="#">Album</a></li>
+            </ul>
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-4">
+        <AccordionTrigger>Blog</AccordionTrigger>
+        <AccordionContent>
+           <ul className="mobile-menu-items">
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Blog Details</a></li>
+            </ul>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+
   return (
     <>
       {!appVisible && (
@@ -289,8 +338,8 @@ export default function Home() {
                    </SheetTrigger>
                 </nav>
               </header>
-              <SheetContent>
-                  <SheetHeader className="offcanvas-header">
+              <SheetContent className="sheet-content">
+                  <div className="offcanvas-header">
                       <a href="#" className="logo">
                           <div className="logo glass" style={{padding: '12px 18px'}}>
                             <div className="dot"></div>
@@ -301,9 +350,9 @@ export default function Home() {
                         <X size={24} />
                         <span className="sr-only">Close</span>
                       </SheetClose>
-                  </SheetHeader>
+                  </div>
                   <div className="p-4">
-                      This is the new feature page content.
+                    <NavMenu />
                   </div>
               </SheetContent>
             </Sheet>
