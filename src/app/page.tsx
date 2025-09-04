@@ -136,13 +136,13 @@ export default function Home() {
         start: (i) => i / MOON_ICONS.length,
         end: (i) => i / MOON_ICONS.length + 1,
       },
-      duration: 80,
+      duration: 120,
       ease: 'none',
     }, 0).to(moonRefs.current, {
       x: 'random(-30, 30)',
       y: 'random(-30, 30)',
       rotation: 'random(-25, 25)',
-      duration: 20,
+      duration: 40,
       ease: 'power1.inOut',
     }, 0);
 
@@ -278,9 +278,23 @@ export default function Home() {
   
   const goHome = () => {
     setIsMenuSheetOpen(false);
+    setActivePage('');
     setAppVisible(false);
-    gsap.to(heroRef.current, { duration: 0, opacity: 1 });
-    // Let's reset the body styles and classes
+
+    gsap.to(heroRef.current, { 
+      duration: 0.6, 
+      opacity: 1, 
+      delay: 0.2,
+      ease: 'power3.out' 
+    });
+     gsap.to([titleTopRef.current, titleBottomRef.current], {
+        duration: 0.8,
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        ease: 'power3.out',
+        delay: 0.3
+      })
     document.body.className = '';
     document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
   };
