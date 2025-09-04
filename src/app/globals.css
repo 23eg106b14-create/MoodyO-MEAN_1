@@ -109,7 +109,7 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .happy{background:#FFE066;color:#2b2b2b}
 .joyful{background:#FF6EC7;color:#2b2b2b}
 .sad{background:#6EC6FF;color:#2b2b2b}
-.depression{background:#8E44AD;color:#F3E5F5}
+.depression{background:#000000;color:#F3E5F5}
 
 
 .emotion-card-new::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06; background: var(--bg-image)}
@@ -134,10 +134,13 @@ section#depression.page.active .logo,
 section#depression.page.active .nav-btn {
     color: #F3E5F5;
 }
-section#happy.page.active .glass {
-    background:rgba(255, 248, 225, 0.6);
+section#happy.page.active {
+    color: #000000;
 }
-
+section#happy.page.active .logo,
+section#happy.page.active .nav-btn {
+    color: #000000;
+}
 
 
 .page-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
@@ -424,9 +427,3 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .sheet-content .accordion-content {
     padding-bottom: 1rem;
 }
-
-    
-
-    
-
-      

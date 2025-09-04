@@ -48,7 +48,7 @@ const MOOD_DEFS = {
     title: 'Depression — Ambient & Soothing',
     subtitle: 'Ambient textures and slow soundscapes',
     accent: '#5E3370',
-    bg: 'linear-gradient(135deg, #F3E5F5 0%, #8E44AD 100%)',
+    bg: 'linear-gradient(135deg, #1a1a1a 0%, #000000 100%)',
     emoji: '😔',
   }
 };
@@ -215,6 +215,7 @@ export default function Home() {
   const openPage = (id: string) => {
     setActivePage(id);
     document.body.classList.remove('theme-active');
+    document.body.style.color = '';
     
     const moodDef = MOOD_DEFS[id as keyof typeof MOOD_DEFS];
     if (moodDef) {
@@ -436,5 +437,3 @@ export default function Home() {
     </>
   );
 }
-
-      
