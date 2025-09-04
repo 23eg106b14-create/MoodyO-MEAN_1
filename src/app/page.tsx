@@ -396,10 +396,12 @@ export default function Home() {
                       <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
                         <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
                         <div className="song-card-content">
-                          <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
-                            <Heart size={18} />
-                          </button>
-                          <div className="song-title">{track.title}</div>
+                           <div className="song-title-wrapper">
+                              <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                                <Heart size={18} />
+                              </button>
+                              <div className="song-title">{track.title}</div>
+                           </div>
                           <div className="song-artist">{track.artist}</div>
                           <button className="play-small">▶</button>
                         </div>
@@ -427,14 +429,16 @@ export default function Home() {
                     <p>{currentTrack.artist}</p>
                 </div>
                  <div className="player-controls">
-                    <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
-                        <Heart size={24} />
-                    </button>
                     <button onClick={handlePrev}><SkipBack /></button>
                     <button onClick={handlePlayPause} className="play-main-btn">
                         {isPlaying ? <Pause size={32} /> : <Play size={32} />}
                     </button>
                     <button onClick={handleNext}><SkipForward /></button>
+                </div>
+                 <div className="player-actions">
+                    <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                        <Heart size={24} />
+                    </button>
                 </div>
                 <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
             </div>
