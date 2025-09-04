@@ -359,5 +359,3 @@ export function MoodPlayer() {
     </div>
   );
 }
-
-    
