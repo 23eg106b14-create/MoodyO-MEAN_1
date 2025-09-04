@@ -105,7 +105,7 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .happy{background:#FFE066;color:#2b2b2b}
 .joyful{background:#FF6EC7;color:#2b2b2b}
 .sad{background:#6EC6FF;color:#2b2b2b}
-.depression{background:#8E44AD;color:#ffffff}
+.depression{background:#8E44AD;color:#F3E5F5}
 
 
 .emotion-card-new::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06; background: var(--bg-image)}
