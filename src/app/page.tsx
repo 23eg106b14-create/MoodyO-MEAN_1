@@ -18,29 +18,29 @@ const MOOD_DEFS = {
   happy: {
     title: 'Happy — Vibrant Beats',
     subtitle: 'Feel-good tracks with a deep groove',
-    accent: '#34d399',
-    bg: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+    accent: '#2dd4bf',
+    bg: 'linear-gradient(135deg, #10b981 0%, #2dd4bf 100%)',
     emoji: '😊',
   },
   joyful: {
     title: 'Joyful — Energetic Beats',
     subtitle: 'High-energy songs — perfect for smiles and movement',
-    accent: '#ec4899',
-    bg: 'linear-gradient(135deg,#ffe0f2 0%, #ffb2e3 40%, #ff86c8 100%)',
+    accent: '#facc15',
+    bg: 'linear-gradient(135deg, #f97316 0%, #facc15 100%)',
     emoji: '🤩',
   },
   sad: {
     title: 'Sad — Melancholy',
     subtitle: 'Slow, emotional tracks to reflect',
-    accent: '#60a5fa',
-    bg: 'linear-gradient(135deg,#b6ccff 0%, #7aa2ff 40%, #4b6cff 100%)',
+    accent: '#6366f1',
+    bg: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
     emoji: '😢',
   },
   depression: {
     title: 'Depression — Ambient & Soothing',
     subtitle: 'Ambient textures and slow soundscapes',
-    accent: '#94a3b8',
-    bg: 'linear-gradient(135deg,#6b7a83 0%, #3a4348 50%, #2a3136 100%)',
+    accent: '#6b7280',
+    bg: 'linear-gradient(135deg, #4b5563 0%, #1f2937 100%)',
     emoji: '😔',
   }
 };

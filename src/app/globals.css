@@ -102,10 +102,11 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 }
 
 /* specific emotion color tiles */
-.happy{background:linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);color:#e6eef8}
-.joyful{background:linear-gradient(135deg,#ffd6f0,#ff8acb);color:#2b2b2b}
-.sad{background:linear-gradient(135deg,#9fb8ff,#4b6cff);color:#ffffff}
-.depression{background:linear-gradient(135deg,#6b7a83,#2a3136);color:#ffffff}
+.happy{background:linear-gradient(135deg, #10b981 0%, #2dd4bf 100%);color:#e6eef8}
+.joyful{background:linear-gradient(135deg, #f97316 0%, #facc15 100%);color:#2b2b2b}
+.sad{background:linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);color:#ffffff}
+.depression{background:linear-gradient(135deg, #4b5563 0%, #1f2937 100%);color:#ffffff}
+
 
 .emotion-card-new::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06; background: var(--bg-image)}
 .emotion-card-new:hover::after {
