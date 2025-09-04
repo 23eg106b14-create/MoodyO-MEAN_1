@@ -551,25 +551,24 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   border-bottom: 1px solid var(--glass-border);
 }
 
-.main-menu-sheet .sheet-header .logo {
-  padding: 0;
+.main-menu-sheet .logo {
   color: inherit;
 }
 
 
 .theme-active .main-menu-sheet.sheet-content {
   background: rgba(255, 255, 255, 0.1);
-  color: #2b2b2b;
+  color: #e6eef8; /* Changed from #2b2b2b */
 }
 
 .theme-active .main-menu-sheet .py-4 a:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(255,255,255,0.1);
 }
 .theme-active .main-menu-sheet .sheet-header {
-  border-bottom-color: rgba(0,0,0,0.1);
+  border-bottom-color: rgba(255,255,255,0.15);
 }
 .theme-active .sheet-content .accordion-item {
-    border-bottom-color: rgba(0,0,0,0.1);
+    border-bottom-color: rgba(255,255,255,0.15);
 }
 
 .depression-active .main-menu-sheet.sheet-content {
