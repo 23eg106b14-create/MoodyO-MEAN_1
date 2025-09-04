@@ -82,13 +82,13 @@ const TRACKS = {
 };
 
 const MOON_ICONS = [
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award' },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant' },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '15%', left: '10%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '25%', left: '80%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '70%', left: '15%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '80%', left: '75%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '5%', left: '45%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '60%', left: '50%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '30%', left: '20%' } },
 ];
 
 
@@ -132,7 +132,7 @@ export default function Home() {
         x: Math.random() * 200 - 100,
         y: Math.random() * 200 - 100,
         rotation: Math.random() * 360,
-        duration: 20 + Math.random() * 15,
+        duration: 35 + Math.random() * 15,
         ease: 'power2.inOut',
         repeat: -1,
         yoyo: true,
@@ -337,6 +337,7 @@ export default function Home() {
                     aria-hidden="true"
                     key={moon.alt}
                     ref={(el) => (moonRefs.current[i] = el)}
+                    style={moon.style}
                   >
                     <Image loading="lazy" src={moon.src} alt={moon.alt} width={80} height={80} data-ai-hint="icon decoration" />
                   </div>
@@ -477,7 +478,7 @@ export default function Home() {
                     <button onClick={handleNext}><SkipForward /></button>
                 </div>
                  <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <button onClick={(e) => handleLike(e, { ...track, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
                         <Heart size={24} />
                     </button>
                 </div>
