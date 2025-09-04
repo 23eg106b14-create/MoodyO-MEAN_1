@@ -1,8 +1,6 @@
-import type {Metadata} from 'next';
-import { Inter } from 'next/font/google'
-import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] })
+import type {Metadata} from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'MoodyO — Mood Based Audio',
@@ -16,9 +14,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" async></script>
+      </head>
+      <body>
         {children}
       </body>
     </html>
   );
 }
+
+    
