@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, Heart, Pin } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart, Pin, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import {
@@ -90,7 +90,8 @@ export default function Home() {
   const [activePage, setActivePage] = useState('home');
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isNewFeatureSheetOpen, setIsNewFeatureSheetOpen] = useState(false);
+  const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Track[]>([]);
   const [headerStuck, setHeaderStuck] = useState(false);
 
@@ -251,6 +252,7 @@ export default function Home() {
         document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
         document.body.style.color = '';
     }
+    setIsMenuSheetOpen(false);
   };
 
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
@@ -326,7 +328,6 @@ export default function Home() {
 
       {appVisible && (
         <div className="app">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <header className={cn({ 'stuck': headerStuck })}>
                 <div className="header-inner">
                     <div className="logo">
@@ -334,20 +335,34 @@ export default function Home() {
                       MoodyO
                     </div>
                     <nav>
-                      {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
-                        <button key={mood} className="nav-btn" onClick={() => openPage(mood)}>
-                          {mood.charAt(0).toUpperCase() + mood.slice(1)}
-                        </button>
-                      ))}
-                       <SheetTrigger asChild>
-                         <button className="nav-btn">New Feature</button>
-                       </SheetTrigger>
+                      <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
+                        <SheetTrigger asChild>
+                           <button className="nav-btn">
+                            <Menu size={20} />
+                          </button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="main-menu-sheet sheet-content">
+                          <SheetHeader>
+                            <a href="#" className="logo">MoodyO</a>
+                          </SheetHeader>
+                          <div className="flex flex-col">
+                            {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
+                              <a key={mood} href="#" onClick={() => openPage(mood)}>
+                                {mood.charAt(0).toUpperCase() + mood.slice(1)}
+                              </a>
+                            ))}
+                             <a href="#" onClick={() => setIsNewFeatureSheetOpen(true)}>New Feature</a>
+                          </div>
+                        </SheetContent>
+                      </Sheet>
                        <button className={cn('nav-btn', 'pin-btn', { 'active': headerStuck })} onClick={() => setHeaderStuck(!headerStuck)}>
                         <Pin size={18} />
                       </button>
                     </nav>
                 </div>
               </header>
+
+            <Sheet open={isNewFeatureSheetOpen} onOpenChange={setIsNewFeatureSheetOpen}>
               <SheetContent className="sheet-content">
                   <SheetHeader>
                     <SheetTitle className="sr-only">Menu</SheetTitle>
@@ -454,4 +469,3 @@ export default function Home() {
     </>
   );
 }
-
