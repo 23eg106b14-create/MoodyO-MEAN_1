@@ -128,16 +128,57 @@ section.page.active{display:block; animation: page-fade-in .6s ease-in-out;}
 /* theme badges */
 .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);font-size:12px}
 
-/* SONG GRID */
-.song-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.tile{position:relative;border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);transition:transform .25s ease, box-shadow .25s ease; cursor: pointer;}
-.tile:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(2,8,20,.5)}
-.cover{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.tile-content{padding:10px}
-.song-title{font-weight:700;font-size:14px;line-height:1.3}
-.song-artist{font-size:12px;opacity:.85}
-.play-small{position:absolute;bottom:12px;right:12px;border:none;border-radius:12px;padding:8px 10px;cursor:pointer;background:rgba(0,0,0,.4);color:#fff; opacity: 0; transition: opacity .3s ease;}
-.tile:hover .play-small { opacity: 1;}
+/* SONG GRID / CARD */
+.song-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px}
+.song-card {
+  background: var(--glass-bg);
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.song-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(2,8,20,.6);
+}
+.song-card .cover {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
+}
+.song-card-content {
+  padding: 12px;
+  position: relative;
+}
+.song-card .song-title {
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.song-card .song-artist {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+.song-card .play-small {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  background:rgba(255,255,255,0.2);
+  color: var(--text);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.song-card:hover .play-small {
+  opacity: 1;
+}
+
 
 /* Player Dialog */
 .player-dialog-overlay {
@@ -236,7 +277,7 @@ audio { display: none; }
 /* footer */
 footer{margin-top:28px;text-align:center;opacity:.8}
 
-@media (max-width:800px){.song-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:800px){.song-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
 @media (max-width:520px){.song-grid{grid-template-columns:repeat(2,1fr)}.app{padding:24px}}
 
 

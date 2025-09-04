@@ -312,13 +312,13 @@ export default function Home() {
                   </div>
                   <div className="song-grid">
                     {TRACKS[mood as keyof typeof TRACKS].map((track, index) => (
-                      <div key={index} className="tile" onClick={() => openPlayer(mood, index)}>
+                      <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
                         <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
-                        <div className="tile-content">
+                        <div className="song-card-content">
                           <div className="song-title">{track.title}</div>
                           <div className="song-artist">{track.artist}</div>
+                           <button className="play-small">▶</button>
                         </div>
-                         <button className="play-small">▶</button>
                       </div>
                     ))}
                   </div>
