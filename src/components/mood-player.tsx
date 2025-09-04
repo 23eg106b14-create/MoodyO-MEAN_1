@@ -54,7 +54,7 @@ export function MoodPlayer() {
       const playlist = await generateMoodPlaylist(mood);
       const newTracks = playlist.songs.map((song, i) => ({
         ...song,
-        src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(i + 1)}.mp3`,
+        src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(i % 16) + 1}.mp3`,
         cover: `https://picsum.photos/seed/${mood}${i}/400/400`,
         icon: ICONS[i % ICONS.length],
       }));

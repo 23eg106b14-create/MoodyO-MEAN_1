@@ -32,7 +32,7 @@ const generateMoodPlaylistFlow = ai.defineFlow(
         outputSchema: MoodPlaylistSchema,
     },
     async (input) => {
-        const {output} = await prompt(input);
+        const {output} = await prompt({input});
         return output!;
     }
 );
