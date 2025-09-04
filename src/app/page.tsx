@@ -102,7 +102,7 @@ export default function Home() {
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const titleTopRef = useRef<HTMLHeadingElement>(null);
   const titleBottomRef = useRef<HTMLHeadingElement>(null);
   const moonRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -111,7 +111,7 @@ export default function Home() {
   useEffect(() => {
     if (appVisible) return;
 
-    const heroSection = headerRef.current;
+    const heroSection = heroRef.current;
     if (!heroSection) return;
 
     const onMouseMove = (e: MouseEvent) => {
@@ -119,40 +119,33 @@ export default function Home() {
       const x = (clientX / window.innerWidth - 0.5) * 2;
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
-      gsap.to([titleTopRef.current, titleBottomRef.current], {
-        '--perspective-x': x * 60,
-        '--perspective-y': y * -60,
-        duration: 0.1,
-        ease: 'power4.out',
+      gsap.set([titleTopRef.current, titleBottomRef.current], {
+        '--perspective-x': x * 35,
+        '--perspective-y': y * -35,
       });
     };
+    
+    gsap.set(moonRefs.current, { x: 'random(-30, 30)', y: 'random(-30, 30)', rotation: 'random(-25, 25)' });
+    const tl = gsap.timeline({ repeat: -1, yoyo: true });
+    tl.to(moonRefs.current, {
+      motionPath: {
+        path: '#motionpath-path',
+        align: '#motionpath-path',
+        alignOrigin: [0.5, 0.5],
+        autoRotate: true,
+        start: (i) => i / MOON_ICONS.length,
+        end: (i) => i / MOON_ICONS.length + 1,
+      },
+      duration: 40,
+      ease: 'none',
+    }, 0).to(moonRefs.current, {
+      x: 'random(-30, 30)',
+      y: 'random(-30, 30)',
+      rotation: 'random(-25, 25)',
+      duration: 7,
+      ease: 'power1.inOut',
+    }, 0);
 
-    const tl = gsap.timeline({ repeat: -1 });
-    moonRefs.current.forEach((moon, i) => {
-      if (moon) {
-        tl.to(moon, {
-          motionPath: {
-            path: '#motionpath-path',
-            align: '#motionpath-path',
-            alignOrigin: [0.5, 0.5],
-            autoRotate: true,
-            start: i / MOON_ICONS.length,
-            end: i / MOON_ICONS.length + 1,
-          },
-          duration: 40,
-          ease: 'none',
-        }, 0);
-         gsap.to(moon, {
-          x: '+=random(-30, 30)',
-          y: '+=random(-30, 30)',
-          rotation: '+=random(-25, 25)',
-          repeat: -1,
-          yoyo: true,
-          duration: 7,
-          ease: 'power1.inOut',
-        });
-      }
-    });
 
     heroSection.addEventListener('mousemove', onMouseMove);
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
@@ -255,7 +248,7 @@ export default function Home() {
         stagger: 0.05,
         ease: 'power3.in'
       }, "-=0.7")
-      .to(headerRef.current, {
+      .to(heroRef.current, {
         duration: 0.8,
         opacity: 0,
         ease: 'power3.in'
@@ -286,6 +279,7 @@ export default function Home() {
   const goHome = () => {
     setIsMenuSheetOpen(false);
     setAppVisible(false);
+    gsap.to(heroRef.current, { duration: 0, opacity: 1 });
     // Let's reset the body styles and classes
     document.body.className = '';
     document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
@@ -320,7 +314,7 @@ export default function Home() {
   return (
     <>
       {!appVisible && (
-        <section className="homepage-header" ref={headerRef} onClick={enterApp}>
+        <section className="homepage-header" ref={heroRef} onClick={enterApp}>
             <div className="homepage-header__titles">
               <h1 className="sr-only">MoodyO</h1>
               <h1
@@ -383,7 +377,7 @@ export default function Home() {
                         </SheetTrigger>
                         <SheetContent side="left" className="main-menu-sheet sheet-content">
                           <SheetHeader>
-                            <SheetTitle className="sr-only">Main Menu</SheetTitle>
+                             <SheetTitle className="sr-only">Main Menu</SheetTitle>
                             <a href="#" onClick={(e) => { e.preventDefault(); goHome(); }} className="logo">MoodyO</a>
                           </SheetHeader>
                           <div className="flex flex-col py-4">

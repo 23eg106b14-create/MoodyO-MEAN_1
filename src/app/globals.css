@@ -411,12 +411,10 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   font-weight: 800;
   font-size: clamp(4rem, 20vw, 16rem);
   line-height: 0.85;
-  will-change: transform;
 }
 
 .homepage-header__title {
   transform: perspective(1200px) rotateY(calc(var(--perspective-x) * 1deg)) rotateX(calc(var(--perspective-y) * 1deg));
-  transition: transform 0.1s var(--ease-out-quad);
   will-change: transform;
   pointer-events: none;
 }
@@ -557,31 +555,11 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 
 .theme-active .main-menu-sheet.sheet-content {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e6eef8; /* Changed from #2b2b2b */
-}
-
-.theme-active .main-menu-sheet .py-4 a:hover {
-  background: rgba(255,255,255,0.1);
-}
-.theme-active .main-menu-sheet .sheet-header {
-  border-bottom-color: rgba(255,255,255,0.15);
-}
-.theme-active .sheet-content .accordion-item {
-    border-bottom-color: rgba(255,255,255,0.15);
+  color: #e6eef8;
 }
 
 .depression-active .main-menu-sheet.sheet-content {
-  background: rgba(26, 26, 26, 0.1);
   color: #F3E5F5;
 }
 
-.depression-active .main-menu-sheet .py-4 a:hover {
-  background: rgba(255,255,255,0.05);
-}
-.depression-active .main-menu-sheet .sheet-header {
-  border-bottom-color: rgba(255,255,255,0.1);
-}
-.depression-active .sheet-content .accordion-item {
-  border-bottom-color: rgba(255,255,255,0.1);
-}
+    
