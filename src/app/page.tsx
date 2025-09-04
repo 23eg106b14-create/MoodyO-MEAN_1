@@ -116,10 +116,10 @@ export default function Home() {
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
       gsap.to([titleTopRef.current, titleBottomRef.current], {
-        '--perspective-x': x * 35,
-        '--perspective-y': y * -35,
-        duration: 0.3,
-        ease: 'power3.out',
+        '--perspective-x': x * 60,
+        '--perspective-y': y * -60,
+        duration: 0.05,
+        ease: 'power4.out',
       });
     };
 
