@@ -90,7 +90,6 @@ export default function Home() {
   const [activePage, setActivePage] = useState('home');
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isNewFeatureSheetOpen, setIsNewFeatureSheetOpen] = useState(false);
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Track[]>([]);
 
@@ -341,43 +340,23 @@ export default function Home() {
                         </SheetTrigger>
                         <SheetContent side="left" className="main-menu-sheet sheet-content">
                           <SheetHeader>
-                            <a href="#" className="logo">MoodyO</a>
+                            <a href="#" onClick={() => openPage('home')} className="logo">MoodyO</a>
                           </SheetHeader>
-                          <div className="flex flex-col">
-                            {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
+                          <div className="flex flex-col py-4">
+                            {Object.keys(MOOD_DEFS).map(mood => (
                               <a key={mood} href="#" onClick={() => openPage(mood)}>
                                 {mood.charAt(0).toUpperCase() + mood.slice(1)}
                               </a>
                             ))}
-                             <a href="#" onClick={() => setIsNewFeatureSheetOpen(true)}>New Feature</a>
                           </div>
+                           <div className="p-4 border-t border-glass-border">
+                             <NavMenu />
+                           </div>
                         </SheetContent>
                       </Sheet>
                     </nav>
                 </div>
               </header>
-
-            <Sheet open={isNewFeatureSheetOpen} onOpenChange={setIsNewFeatureSheetOpen}>
-              <SheetContent className="sheet-content">
-                  <SheetHeader>
-                    <SheetTitle className="sr-only">Menu</SheetTitle>
-                  </SheetHeader>
-                  <div className="offcanvas-header">
-                      <a href="#" className="logo">
-                          <div className="logo glass" style={{padding: '12px 18px', gap: '8px'}}>
-                            MoodyO
-                          </div>
-                      </a>
-                      <SheetClose>
-                        <X size={24} />
-                        <span className="sr-only">Close</span>
-                      </SheetClose>
-                  </div>
-                  <div className="p-4">
-                    <NavMenu />
-                  </div>
-              </SheetContent>
-            </Sheet>
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })}>
