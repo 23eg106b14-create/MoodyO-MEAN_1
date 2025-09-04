@@ -20,6 +20,4 @@ export const ai = genkit({
       route: '/api/genkit',
     }),
   ],
-  logLevel: 'debug',
-  enableTracingAndMetrics: true,
 });
