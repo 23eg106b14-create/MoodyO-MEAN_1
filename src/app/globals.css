@@ -219,10 +219,6 @@ body.sad-active .nav-btn {
     background: transparent;
     border: none;
     cursor: pointer;
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: rgba(255, 255, 255, 0.7);
     padding: 4px;
     transition: color 0.3s ease;
 }
@@ -232,16 +228,18 @@ body.sad-active .nav-btn {
 .like-btn.liked svg {
     fill: #ff4081;
 }
-
 .song-card .like-btn {
-  color: var(--text);
-  opacity: 0.7;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: var(--text);
+    opacity: 0.7;
+    z-index: 2;
 }
 
 .song-card .like-btn:hover {
   opacity: 1;
 }
-
 .song-card:hover .like-btn {
   opacity: 1;
 }
@@ -339,6 +337,14 @@ body.sad-active .nav-btn {
 
 .player-actions {
   margin-top: 12px;
+}
+
+.player-actions .like-btn {
+  color: var(--text);
+  opacity: 0.8;
+}
+.player-actions .like-btn:hover {
+  opacity: 1;
 }
 
 audio { display: none; }

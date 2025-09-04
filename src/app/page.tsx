@@ -396,12 +396,12 @@ export default function Home() {
                       <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
                         <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
                         <div className="song-card-content">
-                          <div className="song-title">{track.title}</div>
-                          <div className="song-artist">{track.artist}</div>
                           <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
                             <Heart size={18} />
                           </button>
-                           <button className="play-small">▶</button>
+                          <div className="song-title">{track.title}</div>
+                          <div className="song-artist">{track.artist}</div>
+                          <button className="play-small">▶</button>
                         </div>
                       </div>
                     ))}
