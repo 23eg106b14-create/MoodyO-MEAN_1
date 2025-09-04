@@ -32,6 +32,12 @@ body.theme-active {
   color: var(--text);
 }
 
+body.happy-active,
+body.joyful-active,
+body.sad-active {
+  color: var(--text);
+}
+
 /* app shell */
 .app{max-width:1200px;margin:48px auto;padding:48px}
 
