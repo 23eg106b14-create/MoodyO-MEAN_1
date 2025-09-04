@@ -214,17 +214,16 @@ export default function Home() {
 
   const openPage = (id: string) => {
     setActivePage(id);
-    document.body.classList.remove('theme-active');
-    document.body.style.color = '';
+    document.body.className = id ? `${id}-active` : '';
     
     const moodDef = MOOD_DEFS[id as keyof typeof MOOD_DEFS];
     if (moodDef) {
-        document.body.classList.add('theme-active');
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
         gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
     } else {
         document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+        document.body.style.color = '';
     }
   };
 

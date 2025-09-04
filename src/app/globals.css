@@ -127,19 +127,23 @@ section.page.active{display:block; animation: page-fade-in .6s ease-in-out;}
   to { opacity: 1; transform: translateY(0); }
 }
 
-section#depression.page.active {
-    color: #F3E5F5;
-}
 section#depression.page.active .logo,
 section#depression.page.active .nav-btn {
     color: #F3E5F5;
 }
-section#happy.page.active {
-    color: #000000;
+
+body.depression-active .logo,
+body.depression-active .nav-btn {
+  color: #F3E5F5;
 }
-section#happy.page.active .logo,
-section#happy.page.active .nav-btn {
-    color: #000000;
+
+body.happy-active .logo,
+body.happy-active .nav-btn,
+body.joyful-active .logo,
+body.joyful-active .nav-btn,
+body.sad-active .logo,
+body.sad-active .nav-btn {
+  color: #000000;
 }
 
 
