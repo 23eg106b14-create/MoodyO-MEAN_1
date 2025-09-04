@@ -237,7 +237,6 @@ export function MoodPlayer() {
           </div>
           <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
             <button className="nav-btn glass" onClick={openTracker}>Open Emotion Tracker</button>
-            <button className="nav-btn glass" onClick={() => openPage('home')}>Back to Home</button>
           </div>
         </div>
         <div className="song-grid">{TRACKS[mood].map((t: any, i: number) => renderTile(mood, t, i))}</div>
@@ -261,6 +260,10 @@ export function MoodPlayer() {
     
     document.getElementById('saveMoodBtn')?.addEventListener('click', () => recordMood());
     document.getElementById('closeTrackerBtn')?.addEventListener('click', closeTracker);
+    document.querySelectorAll('.emotion-card').forEach((c: Element)=>{ 
+      (c as HTMLElement).tabIndex=0; 
+      c.addEventListener('keydown', e=>{ if(e.key==='Enter') (c as HTMLElement).click() }); 
+    });
 
     gsap.from('.logo',{duration:1,y:-10,autoAlpha:0,stagger:.05,ease:'power2.out'});
     gsap.from('.emotion-card',{duration:0.9,stagger:0.12,scale:0.96,autoAlpha:0,y:18,ease:'back.out(1.2)'});
@@ -274,6 +277,13 @@ export function MoodPlayer() {
           <div className="dot"></div>
           MoodyO
         </div>
+        <nav>
+            <button className="nav-btn glass" onClick={() => openPage('home')}>Home</button>
+            <button className="nav-btn glass" onClick={() => openPage('happy')}>Happy</button>
+            <button className="nav-btn glass" onClick={() => openPage('joyful')}>Joyful</button>
+            <button className="nav-btn glass" onClick={() => openPage('sad')}>Sad</button>
+            <button className="nav-btn glass" onClick={() => openPage('depression')}>Depression</button>
+        </nav>
       </header>
       
       <section id="home" className={`page ${currentPage === 'home' ? 'active' : ''}`}>
