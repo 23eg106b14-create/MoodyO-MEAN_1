@@ -42,12 +42,64 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 /* glass card */
 .glass{background:var(--glass-bg);border-radius:var(--radius);padding:24px;border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);backdrop-filter: blur(10px) saturate(150%)}
 
-/* Home page - emotion grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:24px}
-.emotion-card{height:220px;border-radius:16px;position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;transition:transform .3s ease,box-shadow .3s ease}
-.emotion-card .emoji{font-size:46px;margin-bottom:8px}
-.emotion-card .title{font-weight:700}
-.emotion-card .subtitle{opacity:.9;font-size:13px;margin-top:6px}
+/* Home page - New layout */
+.home-intro { text-align: center; margin-bottom: 40px; }
+.home-title { font-size: 2.5rem; font-weight: 700; }
+.home-subtitle { font-size: 1.1rem; max-width: 500px; margin: 8px auto 0; opacity: 0.8; }
+
+.home-mood-selector {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 20px;
+  margin: 0 -20px; /* Counteract padding for full bleed feel */
+  scrollbar-width: none; /* Firefox */
+}
+.home-mood-selector::-webkit-scrollbar { display: none; /* Safari and Chrome */ }
+
+.emotion-card-new {
+  flex: 0 0 240px;
+  height: 360px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  padding: 24px;
+  transition: transform 0.4s var(--ease-in-out-quart), box-shadow 0.4s var(--ease-in-out-quart);
+  border: 1px solid var(--glass-border);
+}
+.emotion-card-new:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 24px 50px rgba(2,8,20,0.7);
+}
+
+.emotion-card-new .card-content {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.4s var(--ease-in-out-quart);
+}
+
+.emotion-card-new:hover .card-content {
+  transform: translateY(-10px);
+}
+
+.emotion-card-new .emoji {
+  font-size: 5rem;
+  line-height: 1;
+  transition: transform 0.4s var(--ease-in-out-quart);
+}
+.emotion-card-new:hover .emoji {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.emotion-card-new .title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-top: 12px;
+  line-height: 1.1;
+}
 
 /* specific emotion color tiles */
 .happy{background:linear-gradient(135deg,#ffe29f,#ffb347);color:#2b2b2b}
@@ -55,8 +107,11 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .sad{background:linear-gradient(135deg,#9fb8ff,#4b6cff);color:#ffffff}
 .depression{background:linear-gradient(135deg,#6b7a83,#2a3136);color:#ffffff}
 
-.emotion-card::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06}
-.emotion-card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(2,8,20,0.6)}
+.emotion-card-new::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06; background: var(--bg-image)}
+.emotion-card-new:hover::after {
+  opacity: .12;
+}
+
 
 /* page sections */
 section.page{display:none}

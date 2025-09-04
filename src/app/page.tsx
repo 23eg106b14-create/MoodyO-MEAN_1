@@ -141,6 +141,21 @@ export default function Home() {
     }
   }, [isPlaying, nowPlaying]);
 
+  // Home page entrance animation
+  useEffect(() => {
+    if (appVisible && activePage === 'home') {
+      const homeTitle = document.querySelector('#home .home-title');
+      const homeSubtitle = document.querySelector('#home .home-subtitle');
+      const cards = document.querySelectorAll('.emotion-card-new');
+      
+      const tl = gsap.timeline();
+      tl.fromTo(homeTitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
+        .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.4")
+        .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
+    }
+  }, [appVisible, activePage]);
+
+
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
   const handleSongEnd = () => {
@@ -181,7 +196,10 @@ export default function Home() {
         opacity: 0,
         y: -50,
         ease: 'power3.in',
-        onComplete: () => setAppVisible(true)
+        onComplete: () => {
+            setAppVisible(true);
+            openPage('home');
+        }
       });
   };
 
@@ -267,19 +285,20 @@ export default function Home() {
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })}>
-              <div className="glass">
-                <h2>How are you feeling today?</h2>
-                <p style={{ opacity: .85 }}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
-                <div className="grid">
+                <div className="home-intro">
+                    <h2 className="home-title">How are you feeling today?</h2>
+                    <p className="home-subtitle" style={{ opacity: .85 }}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
+                </div>
+                <div className="home-mood-selector">
                   {Object.entries(MOOD_DEFS).map(([key, { emoji, title }]) => (
-                    <div key={key} className={cn('emotion-card', key)} onClick={() => openPage(key)}>
-                      <div className="emoji">{emoji}</div>
-                      <div className="title">{title.split('—')[0]}</div>
-                      <div className="subtitle">{title.split('—')[1]}</div>
+                    <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
+                      <div className="card-content">
+                        <div className="emoji">{emoji}</div>
+                        <div className="title">{title.split('—')[0]}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
             </section>
 
             {Object.entries(MOOD_DEFS).map(([mood, def]) => (
