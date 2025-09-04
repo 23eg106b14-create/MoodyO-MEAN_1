@@ -165,8 +165,29 @@ body.sad-active .nav-btn {
 .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);font-size:12px}
 
 /* SONG GRID / CARD */
-.song-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px}
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.song-grid-container {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+  mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+}
+.song-grid {
+  display: flex;
+  width: max-content;
+  gap: 24px;
+  animation: scroll 60s linear infinite;
+}
+.song-grid:hover {
+  animation-play-state: paused;
+}
+
 .song-card {
+  flex-shrink: 0;
+  width: 200px;
   background: var(--glass-bg);
   border-radius: 16px;
   border: 1px solid var(--glass-border);
@@ -351,8 +372,8 @@ audio { display: none; }
 /* footer */
 footer{margin-top:28px;text-align:center;opacity:.8}
 
-@media (max-width:800px){.song-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
-@media (max-width:520px){.song-grid{grid-template-columns:repeat(2,1fr)}.app{padding:24px}}
+@media (max-width:800px){.song-grid{animation-duration: 40s;}}
+@media (max-width:520px){.song-grid{animation-duration: 30s;}.app{padding:24px}}
 
 
 /* CREATIVE HERO STYLES */
@@ -464,7 +485,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .mobile-menu-items li a {
   display: block;
   padding: 0.5rem 0;
-  color: var(--text);
+  color: #fff;
   opacity: 0.8;
   text-decoration: none;
   transition: opacity 0.2s ease;

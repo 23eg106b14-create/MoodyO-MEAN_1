@@ -200,7 +200,8 @@ export default function Home() {
   };
   
   const openPlayer = (mood: string, index: number) => {
-    setNowPlaying({ mood, index });
+    const playlist = TRACKS[mood as keyof typeof TRACKS];
+    setNowPlaying({ mood, index: index % playlist.length });
     setIsPlaying(true);
   };
 
@@ -391,22 +392,24 @@ export default function Home() {
                       <small>{def.subtitle}</small>
                     </div>
                   </div>
-                  <div className="song-grid">
-                    {TRACKS[mood as keyof typeof TRACKS].map((track, index) => (
-                      <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
-                        <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
-                        <div className="song-card-content">
-                           <div className="song-title-wrapper">
-                              <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
-                                <Heart size={18} />
-                              </button>
-                              <div className="song-title">{track.title}</div>
-                           </div>
-                          <div className="song-artist">{track.artist}</div>
-                          <button className="play-small">▶</button>
+                  <div className="song-grid-container">
+                    <div className="song-grid">
+                      {[...TRACKS[mood as keyof typeof TRACKS], ...TRACKS[mood as keyof typeof TRACKS]].map((track, index) => (
+                        <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
+                          <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
+                          <div className="song-card-content">
+                            <div className="song-title-wrapper">
+                                <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                                  <Heart size={18} />
+                                </button>
+                                <div className="song-title">{track.title}</div>
+                            </div>
+                            <div className="song-artist">{track.artist}</div>
+                            <button className="play-small">▶</button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </section>
