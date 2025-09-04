@@ -123,9 +123,10 @@ export default function Home() {
       });
     };
 
+    const tl = gsap.timeline({ repeat: -1 });
     moonRefs.current.forEach((moon, i) => {
       if (moon) {
-        gsap.to(moon, {
+        tl.to(moon, {
           motionPath: {
             path: '#motionpath-path',
             align: '#motionpath-path',
@@ -136,8 +137,7 @@ export default function Home() {
           },
           duration: 40,
           ease: 'none',
-          repeat: -1,
-        });
+        }, 0);
          gsap.to(moon, {
           x: '+=random(-30, 30)',
           y: '+=random(-30, 30)',
