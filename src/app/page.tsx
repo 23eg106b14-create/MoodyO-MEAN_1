@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, Heart } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart, Pin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import {
@@ -93,6 +92,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Track[]>([]);
+  const [headerStuck, setHeaderStuck] = useState(false);
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -267,7 +267,7 @@ export default function Home() {
               ))}
             </ul>
           ) : (
-            <p className="px-4 text-sm text-gray-500">No liked songs yet.</p>
+            <p className="px-4 text-sm opacity-80">No liked songs yet.</p>
           )}
         </AccordionContent>
       </AccordionItem>
@@ -327,21 +327,26 @@ export default function Home() {
       {appVisible && (
         <div className="app">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <header>
-                <div className="logo">
-                  <div className="dot"></div>
-                  MoodyO
+              <header className={cn({ 'stuck': headerStuck })}>
+                <div className="header-inner">
+                    <div className="logo">
+                      <div className="dot"></div>
+                      MoodyO
+                    </div>
+                    <nav>
+                      {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
+                        <button key={mood} className="nav-btn" onClick={() => openPage(mood)}>
+                          {mood.charAt(0).toUpperCase() + mood.slice(1)}
+                        </button>
+                      ))}
+                       <SheetTrigger asChild>
+                         <button className="nav-btn">New Feature</button>
+                       </SheetTrigger>
+                       <button className={cn('nav-btn', 'pin-btn', { 'active': headerStuck })} onClick={() => setHeaderStuck(!headerStuck)}>
+                        <Pin size={18} />
+                      </button>
+                    </nav>
                 </div>
-                <nav>
-                  {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
-                    <button key={mood} className="nav-btn" onClick={() => openPage(mood)}>
-                      {mood.charAt(0).toUpperCase() + mood.slice(1)}
-                    </button>
-                  ))}
-                   <SheetTrigger asChild>
-                     <button className="nav-btn">New Feature</button>
-                   </SheetTrigger>
-                </nav>
               </header>
               <SheetContent className="sheet-content">
                   <SheetHeader>
@@ -449,5 +454,3 @@ export default function Home() {
     </>
   );
 }
-
-    
