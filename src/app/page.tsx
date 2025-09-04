@@ -255,18 +255,18 @@ export default function Home() {
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
 
   const NavMenu = () => (
-    <Accordion type="single" collapsible className="w-full mobile-menu" defaultValue="item-1">
+    <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="accordion-trigger">Playlist</AccordionTrigger>
-        <AccordionContent className="accordion-content">
+        <AccordionTrigger className="accordion-trigger">My Playlist</AccordionTrigger>
+        <AccordionContent>
           {likedSongs.length > 0 ? (
             <ul className="mobile-menu-items">
               {likedSongs.map((track, index) => (
-                <li key={index}><a href="#">{track.title}</a></li>
+                <li key={index}><a href="#" onClick={(e) => { e.preventDefault(); openPlayer(track.mood, track.index) }}>{track.title}</a></li>
               ))}
             </ul>
           ) : (
-            <p className="px-4 text-sm opacity-80">No liked songs yet.</p>
+            <p className="px-1 text-sm opacity-80">Your liked songs will appear here.</p>
           )}
         </AccordionContent>
       </AccordionItem>
@@ -342,6 +342,7 @@ export default function Home() {
                             <a href="#" onClick={() => openPage('home')} className="logo">MoodyO</a>
                           </SheetHeader>
                           <div className="flex flex-col py-4">
+                             <a href="#" onClick={() => openPage('home')}>Home</a>
                             {Object.keys(MOOD_DEFS).map(mood => (
                               <a key={mood} href="#" onClick={() => openPage(mood)}>
                                 {mood.charAt(0).toUpperCase() + mood.slice(1)}
@@ -391,7 +392,7 @@ export default function Home() {
                           <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
                           <div className="song-card-content">
                             <div className="song-title-wrapper">
-                                <button onClick={(e) => handleLike(e, track)} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                                <button onClick={(e) => handleLike(e, { ...track, mood: mood, index: index % TRACKS[mood as keyof typeof TRACKS].length })} className={cn('like-btn', { 'liked': isLiked(track) })}>
                                   <Heart size={18} />
                                 </button>
                                 <div className="song-title">{track.title}</div>
@@ -431,7 +432,7 @@ export default function Home() {
                     <button onClick={handleNext}><SkipForward /></button>
                 </div>
                  <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, currentTrack)} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
                         <Heart size={24} />
                     </button>
                 </div>
