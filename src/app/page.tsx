@@ -123,30 +123,21 @@ export default function Home() {
         '--perspective-x': x * 35,
         '--perspective-y': y * -35,
       });
+
+      // Parallax for moon icons
+      moonRefs.current.forEach((moon, i) => {
+        if (!moon) return;
+        const speed = (i + 1) * 0.2; // Different speed for each icon
+        gsap.to(moon, {
+          x: x * 20 * speed,
+          y: y * 20 * speed,
+          rotation: x * 10 * speed,
+          ease: 'power2.out',
+          duration: 0.5
+        });
+      });
     };
     
-    gsap.set(moonRefs.current, { x: 'random(-30, 30)', y: 'random(-30, 30)', rotation: 'random(-25, 25)' });
-    const tl = gsap.timeline({ repeat: -1, yoyo: true });
-    tl.to(moonRefs.current, {
-      motionPath: {
-        path: '#motionpath-path',
-        align: '#motionpath-path',
-        alignOrigin: [0.5, 0.5],
-        autoRotate: true,
-        start: (i) => i / MOON_ICONS.length,
-        end: (i) => i / MOON_ICONS.length + 1,
-      },
-      duration: 240,
-      ease: 'none',
-    }, 0).to(moonRefs.current, {
-      x: 'random(-30, 30)',
-      y: 'random(-30, 30)',
-      rotation: 'random(-25, 25)',
-      duration: 120,
-      ease: 'power1.inOut',
-    }, 0);
-
-
     heroSection.addEventListener('mousemove', onMouseMove);
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
   }, [appVisible]);
