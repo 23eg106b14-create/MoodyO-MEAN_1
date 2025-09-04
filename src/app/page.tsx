@@ -29,6 +29,7 @@ const MOOD_DEFS = {
     accent: '#FFB347',
     bg: 'linear-gradient(135deg, #FFF8E1 0%, #FFE066 100%)',
     emoji: '😄',
+    themeClass: 'happy-active',
   },
   joyful: {
     title: 'Joyful — Energetic Beats',
@@ -36,6 +37,7 @@ const MOOD_DEFS = {
     accent: '#FF4081',
     bg: 'linear-gradient(135deg, #FFF0F6 0%, #FF6EC7 100%)',
     emoji: '🥳',
+    themeClass: 'joyful-active',
   },
   sad: {
     title: 'Sad — Melancholy',
@@ -43,6 +45,7 @@ const MOOD_DEFS = {
     accent: '#2196F3',
     bg: 'linear-gradient(135deg, #E3F2FD 0%, #6EC6FF 100%)',
     emoji: '😢',
+    themeClass: 'sad-active',
   },
   depression: {
     title: 'Depression — Ambient & Soothing',
@@ -50,6 +53,7 @@ const MOOD_DEFS = {
     accent: '#5E3370',
     bg: 'linear-gradient(135deg, #1a1a1a 0%, #000000 100%)',
     emoji: '😔',
+    themeClass: 'depression-active',
   }
 };
 
@@ -221,10 +225,13 @@ export default function Home() {
       if (isLiked(track)) {
         return prev.filter(likedTrack => likedTrack.src !== track.src);
       } else {
-        return [...prev, track];
+        // Add mood and index to the track when liking it
+        const trackWithContext = { ...track, mood: track.mood || nowPlaying?.mood, index: track.index ?? nowPlaying?.index };
+        return [...prev, trackWithContext];
       }
     });
   }
+
 
   const enterApp = () => {
       const tl = gsap.timeline({
@@ -263,10 +270,15 @@ export default function Home() {
     if (moodDef) {
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+        document.body.classList.add(moodDef.themeClass);
+        if (['happy', 'joyful', 'sad'].includes(id)) {
+          document.body.classList.add('theme-active');
+        }
         gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
-    } else {
+    } else { // Home page
         document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-        document.body.style.color = '';
+        document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+        document.body.className = 'home-active';
     }
     setIsMenuSheetOpen(false);
   };
@@ -468,3 +480,5 @@ export default function Home() {
     </>
   );
 }
+
+    

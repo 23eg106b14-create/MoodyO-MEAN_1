@@ -10,7 +10,7 @@
   --radius: 18px;
   --font-sans: 'Poppins', sans-serif;
   --page-accent: #60a5fa; /* default */
-  --text: #000000;
+  --text: #e6eef8;
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
   --color-accent: #8082f8;
   --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -22,21 +22,21 @@ body{
   font-family:var(--font-sans);
   min-height:100vh;
   background: linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%);
-  color: #e6eef8;
+  color: var(--text);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
-  transition: background .6s ease;
+  transition: background .6s ease, color .6s ease;
 }
 
 body.theme-active {
   color: var(--text);
 }
 
-body.happy-active,
-body.joyful-active,
-body.sad-active {
-  color: var(--text);
+.happy-active,
+.joyful-active,
+.sad-active {
+  --text: #2b2b2b;
 }
 
 /* app shell */
@@ -159,31 +159,14 @@ body.home-active .nav-btn {
   color: #e6eef8;
 }
 
-section#depression.page.active .logo,
-section#depression.page.active .nav-btn {
-    color: #F3E5F5;
-}
-
-body.depression-active .logo,
-body.depression-active .nav-btn,
-body.depression-active {
-  color: #F3E5F5;
-}
-
-body.happy-active .logo,
-body.happy-active .nav-btn,
-body.joyful-active .logo,
-body.joyful-active .nav-btn,
-body.sad-active .logo,
-body.sad-active .nav-btn {
-  color: #000000;
-}
-
-
 .page-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
 
 /* theme badges */
 .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);font-size:12px}
+.theme-active .badge {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+}
 
 /* SONG GRID / CARD */
 @keyframes scroll {
@@ -280,12 +263,12 @@ body.sad-active .nav-btn {
   transform: scale(1.1);
 }
 .like-btn.liked {
-    color: #ff4081;
+    color: var(--page-accent);
     opacity: 1;
     transform: scale(1.1);
 }
 .like-btn.liked svg {
-    fill: #ff4081;
+    fill: var(--page-accent);
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .song-card .like-btn {
@@ -472,20 +455,25 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   color: #e6eef8;
 }
 
+.theme-active .sheet-content {
+  color: var(--text);
+}
+
 .sheet-content .accordion-trigger {
     padding: 1rem 0;
     font-weight: 600;
     font-size: 1.1rem;
     text-decoration: none;
-    color: #e6eef8;
+    color: inherit;
     border-bottom: none;
 }
 .sheet-content .accordion-trigger:hover {
     text-decoration: none;
-    color: #fff;
+    color: inherit;
+    opacity: 0.8;
 }
 .sheet-content .accordion-trigger svg {
-  color: #e6eef8;
+  color: inherit;
   transition: transform .3s ease;
 }
 .sheet-content [data-state=open] > .accordion-trigger > svg {
@@ -504,7 +492,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .mobile-menu-items li a {
   display: block;
   padding: 0;
-  color: #e6eef8;
+  color: inherit;
   opacity: 0.8;
   text-decoration: none;
   transition: opacity 0.2s ease;
@@ -535,7 +523,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 .sheet-content .accordion-content {
     padding-bottom: 1rem;
-    color: #e6eef8;
+    color: inherit;
     overflow: hidden;
 }
 
@@ -544,13 +532,14 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   background: #0f1724;
   border-right: 1px solid var(--glass-border);
   padding: 0;
+  color: #e6eef8;
 }
 .main-menu-sheet .py-4 a {
   display: block;
   padding: 12px 24px;
   font-weight: 600;
   text-decoration: none;
-  color: #e6eef8;
+  color: inherit;
   transition: background .2s ease;
 }
 .main-menu-sheet .py-4 a:hover {
@@ -563,5 +552,39 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 .main-menu-sheet .sheet-header .logo {
   padding: 0;
-  color: #e6eef8;
+  color: inherit;
 }
+
+
+.theme-active .main-menu-sheet.sheet-content {
+  background: #fff;
+  color: #2b2b2b;
+}
+
+.theme-active .main-menu-sheet .py-4 a:hover {
+  background: rgba(0,0,0,0.05);
+}
+.theme-active .main-menu-sheet .sheet-header {
+  border-bottom-color: rgba(0,0,0,0.1);
+}
+.theme-active .sheet-content .accordion-item {
+    border-bottom-color: rgba(0,0,0,0.1);
+}
+
+.depression-active .main-menu-sheet.sheet-content {
+  background: #1a1a1a;
+  color: #F3E5F5;
+}
+
+.depression-active .main-menu-sheet .py-4 a:hover {
+  background: rgba(255,255,255,0.05);
+}
+.depression-active .main-menu-sheet .sheet-header {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+.depression-active .sheet-content .accordion-item {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+
+    
