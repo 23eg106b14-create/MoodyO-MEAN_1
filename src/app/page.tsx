@@ -18,8 +18,8 @@ const MOOD_DEFS = {
   happy: {
     title: 'Happy — Sunny Vibes',
     subtitle: 'Bright, feel-good tracks to lift you up',
-    accent: '#f59e0b',
-    bg: 'linear-gradient(135deg,#fff1c1 0%, #ffd194 40%, #ffb347 100%)',
+    accent: '#22d3ee',
+    bg: 'linear-gradient(135deg, #a5f3fc 0%, #67e8f9 40%, #22d3ee 100%)',
     emoji: '😊',
   },
   joyful: {

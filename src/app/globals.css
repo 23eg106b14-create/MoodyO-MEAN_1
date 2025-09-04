@@ -102,7 +102,7 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 }
 
 /* specific emotion color tiles */
-.happy{background:linear-gradient(135deg,#ffe29f,#ffb347);color:#2b2b2b}
+.happy{background:linear-gradient(135deg, #a5f3fc 0%, #67e8f9 40%, #22d3ee 100%);color:#1f2937}
 .joyful{background:linear-gradient(135deg,#ffd6f0,#ff8acb);color:#2b2b2b}
 .sad{background:linear-gradient(135deg,#9fb8ff,#4b6cff);color:#ffffff}
 .depression{background:linear-gradient(135deg,#6b7a83,#2a3136);color:#ffffff}
