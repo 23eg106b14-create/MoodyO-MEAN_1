@@ -82,13 +82,13 @@ const TRACKS = {
 };
 
 const MOON_ICONS = [
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '5%', left: '5%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '5%', left: '95%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '95%', left: '5%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '95%', left: '95%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '50%', left: '95%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '50%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '5%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '0%', left: '0%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '0%', left: '100%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '100%', left: '0%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '100%', left: '100%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '50%', left: '100%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '100%', left: '50%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '0%' } },
 ];
 
 
@@ -128,11 +128,11 @@ export default function Home() {
     // Icon drift animation
     moonRefs.current.forEach((moon) => {
       if (!moon) return;
-      gsap.to(moon, {
-        x: Math.random() * 200 - 100,
-        y: Math.random() * 200 - 100,
+        gsap.to(moon, {
+        x: (index) => (index % 2 === 0 ? Math.random() * 200 - 100 : Math.random() * -200 + 100),
+        y: (index) => (index < 2 ? Math.random() * 200 - 100 : Math.random() * -200 + 100),
         rotation: Math.random() * 360,
-        duration: 5 + Math.random() * 5,
+        duration: 25 + Math.random() * 15,
         ease: 'power2.inOut',
         repeat: -1,
         yoyo: true,
@@ -510,5 +510,7 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     
