@@ -42,7 +42,7 @@ body.sad-active {
 .app{max-width:1200px;margin:48px auto;padding:48px}
 
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:36px}
-.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:20px; color: var(--text)}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:20px; color: var(--text); background:transparent;border:1px solid transparent;padding:10px 16px;border-radius:14px;}
 .logo .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,#ffb347,#ffcc33);box-shadow:0 6px 18px rgba(255,180,71,0.18)}
 
 nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -188,7 +188,7 @@ body.sad-active .nav-btn {
 .song-card {
   flex-shrink: 0;
   width: 200px;
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 16px;
   border: 1px solid var(--glass-border);
   overflow: hidden;
@@ -505,3 +505,5 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .sheet-content .accordion-content {
     padding-bottom: 1rem;
 }
+
+    

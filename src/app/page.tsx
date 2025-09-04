@@ -328,18 +328,18 @@ export default function Home() {
         <div className="app">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <header>
-                <div className="logo glass">
+                <div className="logo">
                   <div className="dot"></div>
                   MoodyO
                 </div>
                 <nav>
                   {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
-                    <button key={mood} className="nav-btn glass" onClick={() => openPage(mood)}>
+                    <button key={mood} className="nav-btn" onClick={() => openPage(mood)}>
                       {mood.charAt(0).toUpperCase() + mood.slice(1)}
                     </button>
                   ))}
                    <SheetTrigger asChild>
-                     <button className="nav-btn glass">New Feature</button>
+                     <button className="nav-btn">New Feature</button>
                    </SheetTrigger>
                 </nav>
               </header>
@@ -450,3 +450,5 @@ export default function Home() {
     </>
   );
 }
+
+    
