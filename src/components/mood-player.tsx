@@ -41,8 +41,6 @@ export function MoodPlayer() {
     },
   };
 
-  const ICONS = [Music, Headphones, Guitar, ListMusic];
-
   const fetchPlaylist = async (mood: string) => {
     if (tracks[mood]) {
       openPage(mood);
@@ -56,7 +54,6 @@ export function MoodPlayer() {
         ...song,
         src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(i % 16) + 1}.mp3`,
         cover: `https://picsum.photos/seed/${mood}${i}/400/400`,
-        icon: ICONS[i % ICONS.length],
       }));
       setTracks(prev => ({...prev, [mood]: newTracks}));
     } catch (error) {
