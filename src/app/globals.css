@@ -246,9 +246,6 @@ body.sad-active .nav-btn {
 .song-card .like-btn {
     padding: 4px;
 }
-.song-card:hover .like-btn {
-  opacity: 1;
-}
 
 /* Player Dialog */
 .player-dialog-overlay {
@@ -443,6 +440,9 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 .mobile-menu-list {
   border-bottom: 1px solid var(--glass-border);
+}
+.sheet-content {
+  color: #fff;
 }
 .sheet-content [data-state=open] > svg {
     transform: rotate(90deg);
