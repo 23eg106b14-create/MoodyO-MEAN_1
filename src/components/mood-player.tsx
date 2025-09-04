@@ -6,7 +6,8 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
-import { generateMoodPlaylist, MoodPlaylist } from '@/ai/flows/generate-mood-playlist';
+import { generateMoodPlaylist } from '@/ai/flows/generate-mood-playlist';
+import type { MoodPlaylist } from '@/ai/types';
 
 export function MoodPlayer() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -115,10 +116,10 @@ export function MoodPlayer() {
   }, [nowPlaying]);
 
   useEffect(() => {
-     if (nowPlaying) {
+     if (nowPlaying && isPlaying) {
         audioRef.current?.play();
      }
-  }, [nowPlaying]);
+  }, [nowPlaying, isPlaying]);
 
   useEffect(() => {
     const handleEnded = () => handleNextPrev('next');
