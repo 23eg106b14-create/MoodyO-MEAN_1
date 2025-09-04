@@ -28,12 +28,15 @@ body{
   transition: background .6s ease;
 }
 
-#happy.page.active {
-  color: #000;
+#happy.page.active .glass {
+  background: rgba(0,0,0,0.1); /* Darken the main card */
 }
+
 #happy.page.active .song-card {
-  color: #000; /* Ensure card text is also black */
+  background: rgba(255,255,255,0.2); /* Keep song cards lighter */
+  color: #000; /* Black text for song cards */
 }
+
 
 /* app shell */
 .app{max-width:1200px;margin:48px auto;padding:48px}
@@ -415,5 +418,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .sheet-content .accordion-content {
     padding-bottom: 1rem;
 }
+
+    
 
     
