@@ -147,7 +147,7 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 
 /* page sections */
 section.page{display:none}
-section.page.active{display:block; animation: page-fade-in .6s ease-in-out;}
+section.page.active{display:block; animation: page-fade-in .6s var(--ease-out-quad);}
 
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(20px); }
@@ -213,7 +213,7 @@ body.sad-active .nav-btn {
   border-radius: 16px;
   border: 1px solid var(--glass-border);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s var(--ease-out-quad), box-shadow 0.3s var(--ease-out-quad);
   cursor: pointer;
 }
 .song-card:hover {
@@ -271,19 +271,22 @@ body.sad-active .nav-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.2s ease;
     color: var(--text);
     opacity: 0.7;
 }
 .like-btn:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 .like-btn.liked {
     color: #ff4081;
     opacity: 1;
+    transform: scale(1.1);
 }
 .like-btn.liked svg {
     fill: #ff4081;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .song-card .like-btn {
     padding: 4px;
@@ -430,8 +433,9 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 .homepage-header__title {
   transform: perspective(1200px) rotateY(calc(var(--perspective-x) * 1deg)) rotateX(calc(var(--perspective-y) * 1deg));
-  transition: transform 0.8s var(--ease-out-quad);
+  transition: transform 0.1s var(--ease-out-quad);
   will-change: transform;
+  pointer-events: none;
 }
 
 .moons {

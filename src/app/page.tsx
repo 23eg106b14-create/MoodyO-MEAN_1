@@ -118,7 +118,7 @@ export default function Home() {
       gsap.to([titleTopRef.current, titleBottomRef.current], {
         '--perspective-x': x * 60,
         '--perspective-y': y * -60,
-        duration: 0.05,
+        duration: 0.1,
         ease: 'power4.out',
       });
     };
@@ -468,5 +468,3 @@ export default function Home() {
     </>
   );
 }
-
-    
