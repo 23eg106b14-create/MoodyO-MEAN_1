@@ -133,9 +133,9 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 }
 
 /* specific emotion color tiles */
-.happy{background:#FFE066;color:#2b2b2b}
-.joyful{background:#FF6EC7;color:#2b2b2b}
-.sad{background:#6EC6FF;color:#2b2b2b}
+.happy{background: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%);color:#2b2b2b}
+.joyful{background: linear-gradient(135deg, #FFF0F6 0%, #FF80AB 100%);color:#2b2b2b}
+.sad{background: linear-gradient(135deg, #E3F2FD 0%, #90CAF9 100%);color:#2b2b2b}
 .depression{background:#000000;color:#F3E5F5}
 
 
@@ -531,8 +531,9 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   backdrop-filter: blur(10px) saturate(150%);
   border-right: 1px solid var(--glass-border);
   padding: 0;
-  color: #e6eef8;
+  color: #e6eef8 !important;
 }
+
 .main-menu-sheet .py-4 a {
   display: block;
   padding: 12px 24px;
@@ -561,5 +562,3 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .depression-active .main-menu-sheet.sheet-content {
   color: #F3E5F5;
 }
-
-    

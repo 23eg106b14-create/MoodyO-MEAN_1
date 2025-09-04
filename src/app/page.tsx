@@ -27,7 +27,7 @@ const MOOD_DEFS = {
     title: 'Happy — Vibrant Beats',
     subtitle: 'Feel-good tracks with a deep groove',
     accent: '#FFB347',
-    bg: 'linear-gradient(135deg, #FFF8E1 0%, #FFE066 100%)',
+    bg: 'linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%)',
     emoji: '😄',
     themeClass: 'happy-active',
   },
@@ -35,7 +35,7 @@ const MOOD_DEFS = {
     title: 'Joyful — Energetic Beats',
     subtitle: 'High-energy songs — perfect for smiles and movement',
     accent: '#FF4081',
-    bg: 'linear-gradient(135deg, #FFF0F6 0%, #FF6EC7 100%)',
+    bg: 'linear-gradient(135deg, #FFF0F6 0%, #FF80AB 100%)',
     emoji: '🥳',
     themeClass: 'joyful-active',
   },
@@ -43,7 +43,7 @@ const MOOD_DEFS = {
     title: 'Sad — Melancholy',
     subtitle: 'Slow, emotional tracks to reflect',
     accent: '#2196F3',
-    bg: 'linear-gradient(135deg, #E3F2FD 0%, #6EC6FF 100%)',
+    bg: 'linear-gradient(135deg, #E3F2FD 0%, #90CAF9 100%)',
     emoji: '😢',
     themeClass: 'sad-active',
   },
@@ -86,8 +86,8 @@ const MOON_ICONS = [
   { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '15%', left: '95%' } },
   { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '90%', left: '5%' } },
   { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '85%', left: '92%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '2%', left: '50%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '50%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '2%', left: '20%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '80%' } },
   { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '25%', left: '8%' } },
 ];
 
@@ -271,24 +271,45 @@ export default function Home() {
   const goHome = () => {
     setIsMenuSheetOpen(false);
     setActivePage('');
-    setAppVisible(false);
+    
+    // Animate the app away
+    gsap.to('.app', {
+      opacity: 0,
+      duration: 0.4,
+      ease: 'power3.in',
+      onComplete: () => {
+        setAppVisible(false);
+        document.body.className = '';
+        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
 
-    gsap.to(heroRef.current, { 
-      duration: 0.6, 
-      opacity: 1, 
-      delay: 0.2,
-      ease: 'power3.out' 
+        // Animate the hero back in
+        gsap.set(heroRef.current, { opacity: 0 });
+        gsap.to(heroRef.current, { 
+          duration: 0.6, 
+          opacity: 1, 
+          delay: 0.2,
+          ease: 'power3.out' 
+        });
+        gsap.set([titleTopRef.current, titleBottomRef.current], { opacity: 0, y: -50, scale: 0.95 });
+        gsap.to([titleTopRef.current, titleBottomRef.current], {
+            duration: 0.8,
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            ease: 'power3.out',
+            delay: 0.3
+        });
+        gsap.set(moonRefs.current, { opacity: 0, scale: 0.8 });
+        gsap.to(moonRefs.current, {
+            duration: 0.8,
+            opacity: 1,
+            scale: 1,
+            stagger: 0.08,
+            ease: 'power3.out',
+            delay: 0.4
+        });
+      }
     });
-     gsap.to([titleTopRef.current, titleBottomRef.current], {
-        duration: 0.8,
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        ease: 'power3.out',
-        delay: 0.3
-      })
-    document.body.className = '';
-    document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
   };
 
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
@@ -489,5 +510,3 @@ export default function Home() {
     </>
   );
 }
-
-    
