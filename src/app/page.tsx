@@ -282,6 +282,14 @@ export default function Home() {
     }
     setIsMenuSheetOpen(false);
   };
+  
+  const goHome = () => {
+    setIsMenuSheetOpen(false);
+    setAppVisible(false);
+    // Let's reset the body styles and classes
+    document.body.className = '';
+    document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+  };
 
   const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
 
@@ -376,12 +384,12 @@ export default function Home() {
                         <SheetContent side="left" className="main-menu-sheet sheet-content">
                           <SheetHeader>
                             <SheetTitle className="sr-only">Main Menu</SheetTitle>
-                            <a href="#" onClick={() => openPage('home')} className="logo">MoodyO</a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); goHome(); }} className="logo">MoodyO</a>
                           </SheetHeader>
                           <div className="flex flex-col py-4">
-                             <a href="#" onClick={() => openPage('home')}>Home</a>
+                             <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }}>Home</a>
                             {Object.keys(MOOD_DEFS).map(mood => (
-                              <a key={mood} href="#" onClick={() => openPage(mood)}>
+                              <a key={mood} href="#" onClick={(e) => { e.preventDefault(); openPage(mood); }}>
                                 {mood.charAt(0).toUpperCase() + mood.slice(1)}
                               </a>
                             ))}
