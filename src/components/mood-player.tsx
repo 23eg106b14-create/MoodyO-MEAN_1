@@ -1,17 +1,20 @@
 
 'use client';
 
-import { Music, Headphones, Guitar, ListMusic, X, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
+import { Music, Headphones, Guitar, ListMusic, X, SkipBack, SkipForward, Play, Pause, Loader } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { generateMoodPlaylist, MoodPlaylist } from '@/ai/flows/generate-mood-playlist';
 
 export function MoodPlayer() {
   const [currentPage, setCurrentPage] = useState('home');
   const [nowPlaying, setNowPlaying] = useState<{ track: any; mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [tracks, setTracks] = useState<Record<string, any[]>>({});
+  const [loadingMood, setLoadingMood] = useState<string | null>(null);
 
 
   const MOOD_DEFS: Record<string, any> = {
@@ -39,21 +42,29 @@ export function MoodPlayer() {
 
   const ICONS = [Music, Headphones, Guitar, ListMusic];
 
-  const SAMPLE_TRACKS = (baseIdx = 1) =>
-    Array.from({ length: 10 }, (_, i) => ({
-      title: ['Sunny Days', 'Golden Hour', 'Sparkle', 'Warm Breeze', 'Lemonade', 'Candy Skies', 'Bloom', 'Brightside', 'Hummingbird', 'Radiant'][i],
-      artist: ['MoodyO Mix', 'Acoustic', 'Indie Pop', 'Lo-Fi', 'Electro Pop', 'Indie', 'Bedroom Pop', 'Folk', 'Chillhop', 'Dance'][i],
-      src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(baseIdx + i) % 16 + 1}.mp3`,
-      cover: `https://picsum.photos/seed/m${baseIdx + i}/400/400`,
-      icon: ICONS[(baseIdx + i) % ICONS.length],
-    }));
+  const fetchPlaylist = async (mood: string) => {
+    if (tracks[mood]) {
+      openPage(mood);
+      return;
+    }
+    setLoadingMood(mood);
+    openPage(mood);
+    try {
+      const playlist = await generateMoodPlaylist(mood);
+      const newTracks = playlist.songs.map((song, i) => ({
+        ...song,
+        src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(i + 1)}.mp3`,
+        cover: `https://picsum.photos/seed/${mood}${i}/400/400`,
+        icon: ICONS[i % ICONS.length],
+      }));
+      setTracks(prev => ({...prev, [mood]: newTracks}));
+    } catch (error) {
+      console.error("Failed to generate playlist:", error);
+    } finally {
+      setLoadingMood(null);
+    }
+  }
 
-  const TRACKS: Record<string, any> = {
-    happy: SAMPLE_TRACKS(0),
-    joyful: SAMPLE_TRACKS(4),
-    sad: SAMPLE_TRACKS(8),
-    depression: SAMPLE_TRACKS(12),
-  };
 
   const openPage = (id: string) => {
     setCurrentPage(id);
@@ -77,7 +88,8 @@ export function MoodPlayer() {
     if (!nowPlaying) return;
 
     const { mood, index } = nowPlaying;
-    const playlist = TRACKS[mood];
+    const playlist = tracks[mood];
+    if (!playlist) return;
     let newIndex;
 
     if (direction === 'next') {
@@ -100,7 +112,23 @@ export function MoodPlayer() {
             audioRef.current.pause();
         }
     }
-  }, [nowPlaying, isPlaying]);
+  }, [nowPlaying]);
+
+  useEffect(() => {
+     if (nowPlaying) {
+        audioRef.current?.play();
+     }
+  }, [nowPlaying]);
+
+  useEffect(() => {
+    const handleEnded = () => handleNextPrev('next');
+    const audio = audioRef.current;
+    audio?.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio?.removeEventListener('ended', handleEnded);
+    }
+  }, [nowPlaying]);
 
 
   const renderTile = (mood: string, t: any, idx: number) => {
@@ -108,7 +136,7 @@ export function MoodPlayer() {
       <div className="song-card cursor-pointer" key={`${mood}-${idx}`} onClick={() => handlePlay(t, mood, idx)}>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 relative flex-shrink-0">
-             <Image src={t.cover} alt={`${t.title} cover`} layout="fill" className="rounded-md object-cover" data-ai-hint="song cover" />
+             <Image src={t.cover} alt={`${t.title} cover`} fill className="rounded-md object-cover" data-ai-hint="song cover" />
           </div>
           <div className="flex-grow">
             <h3 className="font-semibold text-lg">{t.title}</h3>
@@ -121,13 +149,22 @@ export function MoodPlayer() {
   
   const renderMoodPage = (mood: string) => {
     const def = MOOD_DEFS[mood];
+    const playlist = tracks[mood];
+
     return (
       <div>
         <div className="mb-8">
           <h2 className="text-3xl font-bold tracking-tighter">{def.title} {def.emoji}</h2>
           <p className="text-muted-foreground mt-1">{def.subtitle}</p>
         </div>
-        <div className="song-grid">{TRACKS[mood].map((t: any, i: number) => renderTile(mood, t, i))}</div>
+        {loadingMood === mood && (
+          <div className="flex justify-center items-center h-64">
+            <Loader className="w-12 h-12 animate-spin" />
+          </div>
+        )}
+        {!loadingMood && playlist && (
+          <div className="song-grid">{playlist.map((t: any, i: number) => renderTile(mood, t, i))}</div>
+        )}
       </div>
     );
   };
@@ -139,10 +176,10 @@ export function MoodPlayer() {
           <Headphones className="w-8 h-8 text-primary" />
           <span className="text-2xl font-bold tracking-tight">MoodyO</span>
         </div>
-        <nav className="flex items-center gap-4">
+        <nav className="hidden md:flex items-center gap-4">
             <Button variant={currentPage === 'home' ? 'default' : 'ghost'} onClick={() => openPage('home')}>Home</Button>
             {Object.keys(MOOD_DEFS).map(mood => (
-                <Button key={mood} variant={currentPage === mood ? 'default' : 'ghost'} onClick={() => openPage(mood)}>{MOOD_DEFS[mood].title}</Button>
+                <Button key={mood} variant={currentPage === mood ? 'default' : 'ghost'} onClick={() => fetchPlaylist(mood)}>{MOOD_DEFS[mood].title}</Button>
             ))}
         </nav>
       </header>
@@ -157,7 +194,7 @@ export function MoodPlayer() {
             {Object.keys(MOOD_DEFS).map(mood => {
                 const def = MOOD_DEFS[mood];
                 return (
-                    <div key={mood} className="emotion-card" onClick={() => openPage(mood)}>
+                    <div key={mood} className="emotion-card" onClick={() => fetchPlaylist(mood)}>
                         <div className="flex items-start gap-4">
                            <span className="text-3xl">{def.emoji}</span>
                            <div>
@@ -185,7 +222,7 @@ export function MoodPlayer() {
       <audio ref={audioRef} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
 
       {nowPlaying && (
-        <Dialog open={!!nowPlaying} onOpenChange={(isOpen) => !isOpen && setNowPlaying(null)}>
+        <Dialog open={!!nowPlaying} onOpenChange={(isOpen) => {if (!isOpen) { setNowPlaying(null); setIsPlaying(false); }}}>
           <DialogContent className="max-w-md w-full">
             <DialogHeader>
               <DialogTitle>{nowPlaying.track.title}</DialogTitle>
