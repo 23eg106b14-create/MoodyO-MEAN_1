@@ -529,7 +529,8 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 .main-menu-sheet.sheet-content {
   width: 280px;
-  background: #0f1724;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px) saturate(150%);
   border-right: 1px solid var(--glass-border);
   padding: 0;
   color: #e6eef8;
@@ -557,7 +558,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 
 
 .theme-active .main-menu-sheet.sheet-content {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.1);
   color: #2b2b2b;
 }
 
@@ -572,7 +573,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 .depression-active .main-menu-sheet.sheet-content {
-  background: #1a1a1a;
+  background: rgba(26, 26, 26, 0.1);
   color: #F3E5F5;
 }
 
@@ -585,6 +586,3 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .depression-active .sheet-content .accordion-item {
   border-bottom-color: rgba(255,255,255,0.1);
 }
-
-
-    
