@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -57,6 +58,8 @@ type Track = {
   artist: string;
   src: string;
   cover: string;
+  mood?: string;
+  index?: number;
 };
 
 
@@ -262,7 +265,12 @@ export default function Home() {
           {likedSongs.length > 0 ? (
             <ul className="mobile-menu-items">
               {likedSongs.map((track, index) => (
-                <li key={index}><a href="#" onClick={(e) => { e.preventDefault(); openPlayer(track.mood, track.index) }}>{track.title}</a></li>
+                <li key={index}>
+                  <a href="#" className="playlist-item" onClick={(e) => { e.preventDefault(); openPlayer(track.mood!, track.index!) }}>
+                    <Image src={track.cover} alt={track.title} width={40} height={40} className="playlist-item-cover" data-ai-hint="song cover" />
+                    <span>{track.title}</span>
+                  </a>
+                </li>
               ))}
             </ul>
           ) : (
