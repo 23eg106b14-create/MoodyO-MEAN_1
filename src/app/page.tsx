@@ -2,37 +2,29 @@ import Link from 'next/link';
 import { Music2 } from 'lucide-react';
 import { EmotionCard } from '@/components/emotion-card';
 import { emotions } from '@/lib/constants';
+import { Header } from '@/components/header';
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500">
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
-        <header className="text-center mb-12">
-          <div className="inline-block p-4 sm:p-6 rounded-2xl bg-black/20 backdrop-blur-lg border border-white/10 shadow-lg">
-            <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-400 flex items-center gap-4">
-              <Music2 className="w-10 h-10 md:w-14 md:h-14 text-white" />
-              MoodyO
-            </h1>
-            <p className="text-lg md:text-xl text-gray-300 mt-2">mood based audio</p>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        <div className="container mx-auto max-w-4xl py-12 md:py-20 px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-black text-primary">Find Your Vibe</h1>
+            <p className="mt-4 text-lg text-muted-foreground">Select a mood to generate a playlist.</p>
           </div>
-        </header>
-
-        <div className="w-full max-w-4xl">
-          <h2 className="text-2xl font-bold text-center text-white mb-6">How are you feeling?</h2>
+          
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
             {emotions.map((emotion) => (
               <EmotionCard key={emotion.name} emotion={emotion} />
             ))}
           </div>
         </div>
-
-        <footer className="absolute bottom-4 text-center text-white/80 text-sm">
+      </main>
+       <footer className="py-6 text-center text-sm text-muted-foreground">
           <p>Created with Firebase and Genkit AI.</p>
-           <Link href="/about" className="mt-2 text-sm text-white/60 hover:text-white transition-colors">
-            About MoodyO
-          </Link>
-        </footer>
-      </div>
-    </main>
+       </footer>
+    </div>
   );
 }

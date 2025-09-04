@@ -14,7 +14,6 @@ import {z} from 'genkit';
 const SongSchema = z.object({
   title: z.string().describe('The title of the song.'),
   artist: z.string().describe('The artist of the song.'),
-  icon: z.string().describe('A single emoji that represents the song or mood.'),
 });
 
 const GenerateMoodPlaylistInputSchema = z.object({
@@ -41,7 +40,7 @@ const prompt = ai.definePrompt({
   name: 'generateMoodPlaylistPrompt',
   input: {schema: GenerateMoodPlaylistInputSchema},
   output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `Generate a playlist of {{{playlistLength}}} songs for the mood "{{{mood}}}". For each song, provide a title, artist, and a single emoji icon. Return the data as a valid JSON object matching the provided output schema.`,
+  prompt: `Generate a playlist of {{{playlistLength}}} songs for the mood "{{{mood}}}". For each song, provide a title and artist. Return the data as a valid JSON object matching the provided output schema.`,
 });
 
 const generateMoodPlaylistFlow = ai.defineFlow(

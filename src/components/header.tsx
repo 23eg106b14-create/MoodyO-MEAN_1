@@ -8,10 +8,10 @@ export function Header() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <div className="p-2 rounded-lg bg-black/20 backdrop-blur-lg border border-white/10 shadow-lg">
-              <Music2 className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg bg-primary">
+              <Music2 className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-white">MoodyO</span>
+            <span className="font-bold text-xl">MoodyO</span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end">
