@@ -132,7 +132,7 @@ export default function Home() {
         x: Math.random() * 200 - 100,
         y: Math.random() * 200 - 100,
         rotation: Math.random() * 360,
-        duration: 35 + Math.random() * 15,
+        duration: 5 + Math.random() * 5,
         ease: 'power2.inOut',
         repeat: -1,
         yoyo: true,
@@ -478,7 +478,7 @@ export default function Home() {
                     <button onClick={handleNext}><SkipForward /></button>
                 </div>
                  <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, { ...track, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
                         <Heart size={24} />
                     </button>
                 </div>
