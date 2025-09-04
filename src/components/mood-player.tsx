@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 declare global {
@@ -14,6 +14,7 @@ export function MoodPlayer() {
   const isInitialized = useRef(false);
   const barChartRef = useRef<any>(null);
   const pieChartRef = useRef<any>(null);
+  const [currentPage, setCurrentPage] = useState('home');
 
   // ===================== DATA =====================
   const MOOD_DEFS: Record<string, any> = {
@@ -69,6 +70,7 @@ export function MoodPlayer() {
 
   // ===================== HELPERS =====================
   const getStore = (key: string, fallback: any) => {
+    if (typeof window === 'undefined') return fallback;
     try { 
       const raw = localStorage.getItem(key); 
       return raw ? JSON.parse(raw) : fallback 
@@ -77,6 +79,7 @@ export function MoodPlayer() {
     }
   }
   const setStore = (key: string, value: any) => { 
+    if (typeof window === 'undefined') return;
     localStorage.setItem(key, JSON.stringify(value)) 
   }
 
@@ -139,7 +142,7 @@ export function MoodPlayer() {
   }
 
   const recordMood = (mood?: string) => {
-    if(!mood) mood = (document.getElementById('moodSelect') as HTMLSelectElement).value;
+    if(!mood) mood = (document.getElementById('moodSelect') as HTMLSelectElement)?.value;
     if (!mood) return;
     const hist = getHistory();
     hist.push({date: new Date().toISOString(), mood, type:'mood'})
@@ -160,7 +163,7 @@ export function MoodPlayer() {
   }
   
   const applyTheme = (mood: string) => {
-    if(!MOOD_DEFS[mood]) return;
+    if(!MOOD_DEFS[mood] || typeof document === 'undefined') return;
     const def = MOOD_DEFS[mood];
     (document.body.style as any).background = def.bg;
     document.documentElement.style.setProperty('--page-accent', def.accent);
@@ -168,15 +171,14 @@ export function MoodPlayer() {
   }
 
   const openPage = (id: string) => {
-    document.querySelectorAll('section.page').forEach(p=> p.classList.remove('active'));
     const target = document.getElementById(id);
-    if(target){
-      target.classList.add('active');
-      gsap.fromTo(target,{autoAlpha:0,y:20},{duration:.6,autoAlpha:1,y:0,ease:'power3.out'});
+    if (target) {
+        gsap.fromTo(target, { autoAlpha: 0, y: 20 }, { duration: .6, autoAlpha: 1, y: 0, ease: 'power3.out' });
     }
-    if(MOOD_DEFS[id]){
-      applyTheme(id);
-      recordMood(id);
+    setCurrentPage(id);
+    if (MOOD_DEFS[id]) {
+        applyTheme(id);
+        recordMood(id);
     }
   }
 
@@ -201,70 +203,50 @@ export function MoodPlayer() {
     document.querySelectorAll('audio').forEach(a=>{ if(a!==me) a.pause() });
     me.play();
     recordPlay(mood,title);
-    const tile = document.getElementById(id)!.closest('.tile');
-    gsap.fromTo(tile,{scale:.98},{duration:.4,scale:1,ease:'back.out(1.7)'});
+    const tile = me.closest('.tile');
+    if (tile) {
+      gsap.fromTo(tile,{scale:.98},{duration:.4,scale:1,ease:'back.out(1.7)'});
+    }
+  }
+  
+  const renderTile = (mood: string, t: any, idx: number) => {
+    const id = `${mood}-aud-${idx}`;
+    return (
+      <div className="tile" data-mood={mood} data-title={t.title} key={id}>
+        <img className="cover" src={t.cover} alt={`${t.title} cover`} />
+        <button className="play-small" onClick={() => playTile(id, mood, t.title)}>▶</button>
+        <div className="tile-content">
+          <div className="song-title">{t.title}</div>
+          <div className="song-artist">{t.artist}</div>
+          <audio id={id} preload="none" controls>
+            <source src={t.src} type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+    );
+  }
+
+  const renderMoodPage = (mood: string) => {
+    const def = MOOD_DEFS[mood];
+    return (
+      <div className="glass">
+        <div className="page-header">
+          <div>
+            <h2>{def.title} <span className="badge">{def.emoji}</span></h2>
+            <small>{def.subtitle}</small>
+          </div>
+          <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+            <button className="nav-btn glass" onClick={openTracker}>Open Emotion Tracker</button>
+          </div>
+        </div>
+        <div className="song-grid">{TRACKS[mood].map((t: any, i: number) => renderTile(mood, t, i))}</div>
+      </div>
+    )
   }
 
   useEffect(() => {
     if (isInitialized.current) return;
     isInitialized.current = true;
-    
-    // Ensure Chart.js is loaded
-    if (typeof window.Chart === 'undefined') {
-        console.error('Chart.js is not loaded');
-        return;
-    }
-
-    const buildPage = (mood: string) => {
-      const node = document.getElementById(mood);
-      if (!node) return;
-      const def = MOOD_DEFS[mood];
-      const tileHTML = (t: any, idx: number) => {
-        const id = `${mood}-aud-${idx}`;
-        return `
-          <div class="tile" data-mood="${mood}" data-title="${t.title}" data-audio-id="${id}">
-            <img class="cover" src="${t.cover}" alt="${t.title} cover"/>
-            <button class="play-small" data-audio-id="${id}" data-mood="${mood}" data-title="${t.title}">▶</button>
-            <div class="tile-content">
-              <div class="song-title">${t.title}</div>
-              <div class="song-artist">${t.artist}</div>
-              <audio id="${id}" preload="none" controls>
-                <source src="${t.src}" type="audio/mpeg">
-              </audio>
-            </div>
-          </div>`;
-      }
-      node.innerHTML = `
-        <div class="glass">
-          <div class="page-header">
-            <div>
-              <h2>${def.title} <span class="badge">${def.emoji}</span></h2>
-              <small>${def.subtitle}</small>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <button class="nav-btn glass open-tracker-btn">Open Emotion Tracker</button>
-            </div>
-          </div>
-          <div class="song-grid">${TRACKS[mood].map(tileHTML).join('')}</div>
-        </div>`;
-    }
-
-    Object.keys(MOOD_DEFS).forEach(buildPage);
-    
-    document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.matches('.play-small')) {
-            const id = target.getAttribute('data-audio-id');
-            const mood = target.getAttribute('data-mood');
-            const title = target.getAttribute('data-title');
-            if (id && mood && title) {
-                 playTile(id, mood, title);
-            }
-        }
-        if(target.matches('.open-tracker-btn')){
-            openTracker();
-        }
-    });
 
     const moodSelect = document.getElementById('moodSelect') as HTMLSelectElement;
     if (moodSelect) {
@@ -278,11 +260,6 @@ export function MoodPlayer() {
     
     document.getElementById('saveMoodBtn')?.addEventListener('click', () => recordMood());
     document.getElementById('closeTrackerBtn')?.addEventListener('click', closeTracker);
-
-    document.querySelectorAll('.emotion-card').forEach((c)=>{ 
-        (c as HTMLElement).tabIndex=0; 
-        c.addEventListener('keydown', e=>{ if(e.key==='Enter') (c as HTMLElement).click() }); 
-    });
 
     gsap.from('.logo',{duration:1,y:-10,autoAlpha:0,stagger:.05,ease:'power2.out'});
     gsap.from('.emotion-card',{duration:0.9,stagger:0.12,scale:0.96,autoAlpha:0,y:18,ease:'back.out(1.2)'});
@@ -304,31 +281,31 @@ export function MoodPlayer() {
           <button className="nav-btn glass" onClick={() => openPage('depression')}>Depression</button>
         </nav>
       </header>
-
-      <section id="home" className="page active">
+      
+      <section id="home" className={`page ${currentPage === 'home' ? 'active' : ''}`}>
         <div className="glass">
           <h2>How are you feeling today?</h2>
           <p style={{opacity: 0.85}}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
           <div className="grid" id="moodGrid">
-            <div className="emotion-card happy" data-target="happy" onClick={() => openPage('happy')}>
+            <div className="emotion-card happy" onClick={() => openPage('happy')}>
               <div className="emoji">😊</div>
               <div className="title">Happy</div>
               <div className="subtitle">Bright, upbeat tracks</div>
             </div>
 
-            <div className="emotion-card joyful" data-target="joyful" onClick={() => openPage('joyful')}>
+            <div className="emotion-card joyful" onClick={() => openPage('joyful')}>
               <div className="emoji">🤩</div>
               <div className="title">Joyful</div>
               <div className="subtitle">Bubbly & energetic</div>
             </div>
 
-            <div className="emotion-card sad" data-target="sad" onClick={() => openPage('sad')}>
+            <div className="emotion-card sad" onClick={() => openPage('sad')}>
               <div className="emoji">😢</div>
               <div className="title">Sad</div>
               <div className="subtitle">Melancholic, mellow tunes</div>
             </div>
 
-            <div className="emotion-card depression" data-target="depression" onClick={() => openPage('depression')}>
+            <div className="emotion-card depression" onClick={() => openPage('depression')}>
               <div className="emoji">😔</div>
               <div className="title">Depression</div>
               <div className="subtitle">Soothing & ambient</div>
@@ -336,11 +313,12 @@ export function MoodPlayer() {
           </div>
         </div>
       </section>
-
-      <section id="happy" className="page"></section>
-      <section id="joyful" className="page"></section>
-      <section id="sad" className="page"></section>
-      <section id="depression" className="page"></section>
+      
+      {Object.keys(MOOD_DEFS).map(mood => (
+        <section key={mood} id={mood} className={`page ${currentPage === mood ? 'active' : ''}`}>
+          {currentPage === mood && renderMoodPage(mood)}
+        </section>
+      ))}
 
       <footer>
         <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
