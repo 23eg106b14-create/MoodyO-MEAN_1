@@ -214,8 +214,11 @@ export default function Home() {
 
   const openPage = (id: string) => {
     setActivePage(id);
+    document.body.classList.remove('theme-active');
+    
     const moodDef = MOOD_DEFS[id as keyof typeof MOOD_DEFS];
     if (moodDef) {
+        document.body.classList.add('theme-active');
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
         gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
@@ -433,3 +436,5 @@ export default function Home() {
     </>
   );
 }
+
+      

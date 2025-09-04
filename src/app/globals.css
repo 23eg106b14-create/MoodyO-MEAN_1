@@ -10,7 +10,7 @@
   --radius: 18px;
   --font-sans: 'Poppins', sans-serif;
   --page-accent: #60a5fa; /* default */
-  --text: #e6eef8;
+  --text: #000000;
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
   --color-accent: #8082f8;
 }
@@ -21,18 +21,22 @@ body{
   font-family:var(--font-sans);
   min-height:100vh;
   background: linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%);
-  color:var(--text);
+  color: #e6eef8;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
   transition: background .6s ease;
 }
 
+body.theme-active {
+  color: var(--text);
+}
+
 /* app shell */
 .app{max-width:1200px;margin:48px auto;padding:48px}
 
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:36px}
-.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:20px}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:20px; color: var(--text)}
 .logo .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,#ffb347,#ffcc33);box-shadow:0 6px 18px rgba(255,180,71,0.18)}
 
 nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -121,6 +125,14 @@ section.page.active{display:block; animation: page-fade-in .6s ease-in-out;}
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+section#depression.page.active {
+    color: #F3E5F5;
+}
+section#depression.page.active .logo,
+section#depression.page.active .nav-btn {
+    color: #F3E5F5;
 }
 
 
@@ -412,3 +424,5 @@ footer{margin-top:28px;text-align:center;opacity:.8}
     
 
     
+
+      
