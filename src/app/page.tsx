@@ -82,13 +82,13 @@ const TRACKS = {
 };
 
 const MOON_ICONS = [
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '10%', left: '15%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '20%', left: '80%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '85%', left: '10%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '80%', left: '90%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '5%', left: '60%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '90%', left: '45%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '40%', left: '5%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '5%', left: '5%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '15%', left: '90%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '90%', left: '10%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '85%', left: '85%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '5%', left: '35%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '90%', left: '65%' } },
+  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '5%' } },
 ];
 
 
@@ -129,10 +129,10 @@ export default function Home() {
     moonRefs.current.forEach((moon) => {
       if (!moon) return;
         gsap.to(moon, {
-        x: (Math.random() * 200 - 100),
-        y: (Math.random() * 200 - 100),
-        rotation: Math.random() * 360,
-        duration: 25 + Math.random() * 15,
+        x: (Math.random() * 80 - 40),
+        y: (Math.random() * 80 - 40),
+        rotation: Math.random() * 180 - 90,
+        duration: 15 + Math.random() * 10,
         ease: 'power2.inOut',
         repeat: -1,
         yoyo: true,
