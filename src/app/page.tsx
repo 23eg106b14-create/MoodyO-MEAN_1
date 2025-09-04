@@ -7,6 +7,8 @@ import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SkipBack, SkipForward, Play, Pause, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+
 
 // GSAP Plugin registration
 if (typeof window !== 'undefined') {
@@ -18,28 +20,28 @@ const MOOD_DEFS = {
   happy: {
     title: 'Happy — Vibrant Beats',
     subtitle: 'Feel-good tracks with a deep groove',
-    accent: '#2dd4bf',
+    accent: '#10b981',
     bg: 'linear-gradient(135deg, #10b981 0%, #2dd4bf 100%)',
     emoji: '😊',
   },
   joyful: {
     title: 'Joyful — Energetic Beats',
     subtitle: 'High-energy songs — perfect for smiles and movement',
-    accent: '#facc15',
+    accent: '#f97316',
     bg: 'linear-gradient(135deg, #f97316 0%, #facc15 100%)',
     emoji: '🤩',
   },
   sad: {
     title: 'Sad — Melancholy',
     subtitle: 'Slow, emotional tracks to reflect',
-    accent: '#6366f1',
+    accent: '#3b82f6',
     bg: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
     emoji: '😢',
   },
   depression: {
     title: 'Depression — Ambient & Soothing',
     subtitle: 'Ambient textures and slow soundscapes',
-    accent: '#6b7280',
+    accent: '#4b5563',
     bg: 'linear-gradient(135deg, #4b5563 0%, #1f2937 100%)',
     emoji: '😔',
   }
@@ -75,6 +77,7 @@ export default function Home() {
   const [activePage, setActivePage] = useState('home');
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -269,19 +272,41 @@ export default function Home() {
 
       {appVisible && (
         <div className="app">
-          <header>
-            <div className="logo glass">
-              <div className="dot"></div>
-              MoodyO
-            </div>
-            <nav>
-              {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
-                <button key={mood} className="nav-btn glass" onClick={() => openPage(mood)}>
-                  {mood.charAt(0).toUpperCase() + mood.slice(1)}
-                </button>
-              ))}
-            </nav>
-          </header>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <header>
+                <div className="logo glass">
+                  <div className="dot"></div>
+                  MoodyO
+                </div>
+                <nav>
+                  {['home', ...Object.keys(MOOD_DEFS)].map(mood => (
+                    <button key={mood} className="nav-btn glass" onClick={() => openPage(mood)}>
+                      {mood.charAt(0).toUpperCase() + mood.slice(1)}
+                    </button>
+                  ))}
+                   <SheetTrigger asChild>
+                     <button className="nav-btn glass">New Feature</button>
+                   </SheetTrigger>
+                </nav>
+              </header>
+              <SheetContent>
+                  <SheetHeader className="offcanvas-header">
+                      <a href="#" className="logo">
+                          <div className="logo glass" style={{padding: '12px 18px'}}>
+                            <div className="dot"></div>
+                            MoodyO
+                          </div>
+                      </a>
+                      <SheetClose>
+                        <X size={24} />
+                        <span className="sr-only">Close</span>
+                      </SheetClose>
+                  </SheetHeader>
+                  <div className="p-4">
+                      This is the new feature page content.
+                  </div>
+              </SheetContent>
+            </Sheet>
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })}>
@@ -356,3 +381,5 @@ export default function Home() {
     </>
   );
 }
+
+    
