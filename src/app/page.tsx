@@ -7,7 +7,7 @@ import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
   Accordion,
   AccordionContent,
@@ -363,6 +363,7 @@ export default function Home() {
                         </SheetTrigger>
                         <SheetContent side="left" className="main-menu-sheet sheet-content">
                           <SheetHeader>
+                            <SheetTitle className="sr-only">Main Menu</SheetTitle>
                             <a href="#" onClick={() => openPage('home')} className="logo">MoodyO</a>
                           </SheetHeader>
                           <div className="flex flex-col py-4">
@@ -467,3 +468,5 @@ export default function Home() {
     </>
   );
 }
+
+    
