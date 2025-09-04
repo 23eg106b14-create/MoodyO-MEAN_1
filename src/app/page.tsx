@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, Heart, Pin, Menu } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import {
@@ -93,7 +93,6 @@ export default function Home() {
   const [isNewFeatureSheetOpen, setIsNewFeatureSheetOpen] = useState(false);
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Track[]>([]);
-  const [headerStuck, setHeaderStuck] = useState(false);
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -328,10 +327,9 @@ export default function Home() {
 
       {appVisible && (
         <div className="app">
-              <header className={cn({ 'stuck': headerStuck })}>
+              <header>
                 <div className="header-inner">
                     <div className="logo">
-                      <div className="dot"></div>
                       MoodyO
                     </div>
                     <nav>
@@ -355,9 +353,6 @@ export default function Home() {
                           </div>
                         </SheetContent>
                       </Sheet>
-                       <button className={cn('nav-btn', 'pin-btn', { 'active': headerStuck })} onClick={() => setHeaderStuck(!headerStuck)}>
-                        <Pin size={18} />
-                      </button>
                     </nav>
                 </div>
               </header>
