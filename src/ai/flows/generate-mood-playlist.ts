@@ -36,26 +36,34 @@ export async function generateMoodPlaylist(
   return generateMoodPlaylistFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateMoodPlaylistPrompt',
-  input: {schema: GenerateMoodPlaylistInputSchema},
-  output: {schema: GenerateMoodPlaylistOutputSchema},
-  prompt: `Generate a playlist of {{{playlistLength}}} songs for the mood "{{{mood}}}". For each song, provide a title and artist. Return the data as a valid JSON object matching the provided output schema.`,
-});
-
 const generateMoodPlaylistFlow = ai.defineFlow(
   {
     name: 'generateMoodPlaylistFlow',
     inputSchema: GenerateMoodPlaylistInputSchema,
     outputSchema: GenerateMoodPlaylistOutputSchema,
   },
-  async input => {
+  async (input: GenerateMoodPlaylistInput) => {
     let retries = 3;
     while (retries > 0) {
       try {
-        const {output} = await prompt(input);
-        if (output && output.playlist && output.playlist.length > 0) {
-          return output;
+        const {text} = await ai.generate({
+          prompt: `Generate a playlist of ${input.playlistLength} songs for the mood "${input.mood}".
+          Return a comma-separated list of songs and artists in the format: "Song Title 1 by Artist 1, Song Title 2 by Artist 2, ..."
+          Do not include any other text, just the list.`,
+        });
+
+        if (text) {
+          const songs = text
+            .split(',')
+            .map(song => {
+              const [title, artist] = song.trim().split(' by ');
+              return {title: title?.trim(), artist: artist?.trim()};
+            })
+            .filter(song => song.title && song.artist);
+            
+          if (songs.length > 0) {
+            return {playlist: songs};
+          }
         }
       } catch (error) {
         console.warn('Playlist generation attempt failed, retrying...', error);
