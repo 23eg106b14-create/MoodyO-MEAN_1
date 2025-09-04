@@ -134,6 +134,10 @@ section#depression.page.active .logo,
 section#depression.page.active .nav-btn {
     color: #F3E5F5;
 }
+section#happy.page.active .glass {
+    background:rgba(255, 248, 225, 0.6);
+}
+
 
 
 .page-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
