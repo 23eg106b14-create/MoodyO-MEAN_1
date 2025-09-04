@@ -339,6 +339,9 @@ export default function Home() {
                 </nav>
               </header>
               <SheetContent className="sheet-content">
+                  <SheetHeader>
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
+                  </SheetHeader>
                   <div className="offcanvas-header">
                       <a href="#" className="logo">
                           <div className="logo glass" style={{padding: '12px 18px'}}>
@@ -430,5 +433,3 @@ export default function Home() {
     </>
   );
 }
-
-    
