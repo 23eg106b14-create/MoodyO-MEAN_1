@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -11,6 +12,198 @@ declare global {
 
 export function MoodPlayer() {
   const isInitialized = useRef(false);
+  const barChartRef = useRef<any>(null);
+  const pieChartRef = useRef<any>(null);
+
+  // ===================== DATA =====================
+  const MOOD_DEFS: Record<string, any> = {
+    happy: {
+      title: 'Happy — Sunny Vibes',
+      subtitle: 'Bright, feel-good tracks to lift you up',
+      accent: '#f59e0b',
+      bg: 'linear-gradient(135deg,#fff1c1 0%, #ffd194 40%, #ffb347 100%)',
+      emoji: '😊',
+      coverTint: '#ffd786'
+    },
+    joyful: {
+      title: 'Joyful — Energetic Beats',
+      subtitle: 'High-energy songs — perfect for smiles and movement',
+      accent: '#ec4899',
+      bg: 'linear-gradient(135deg,#ffe0f2 0%, #ffb2e3 40%, #ff86c8 100%)',
+      emoji: '🤩',
+      coverTint: '#ffc2e9'
+    },
+    sad: {
+      title: 'Sad — Melancholy',
+      subtitle: 'Slow, emotional tracks to reflect',
+      accent: '#60a5fa',
+      bg: 'linear-gradient(135deg,#b6ccff 0%, #7aa2ff 40%, #4b6cff 100%)',
+      emoji: '😢',
+      coverTint: '#9fb8ff'
+    },
+    depression: {
+      title: 'Depression — Ambient & Soothing',
+      subtitle: 'Ambient textures and slow soundscapes',
+      accent: '#94a3b8',
+      bg: 'linear-gradient(135deg,#6b7a83 0%, #3a4348 50%, #2a3136 100%)',
+      emoji: '😔',
+      coverTint: '#7b8a92'
+    }
+  };
+
+  const SAMPLE_TRACKS = (baseIdx=1) => Array.from({length:10}, (_,i)=>({
+    title: ['Sunny Days','Golden Hour','Sparkle','Warm Breeze','Lemonade','Candy Skies','Bloom','Brightside','Hummingbird','Radiant'][i],
+    artist: ['MoodyO Mix','Acoustic','Indie Pop','Lo-Fi','Electro Pop','Indie','Bedroom Pop','Folk','Chillhop','Dance'][i],
+    src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(baseIdx+i)%16 + 1}.mp3`,
+    cover: `https://picsum.photos/seed/h${baseIdx+i}/600/600`
+  }));
+
+  const TRACKS: Record<string, any> = {
+    happy: SAMPLE_TRACKS(0),
+    joyful: SAMPLE_TRACKS(4),
+    sad: SAMPLE_TRACKS(8),
+    depression: SAMPLE_TRACKS(12)
+  };
+
+  const moodEmoji: Record<string, string> = {happy:'😊',joyful:'🤩',sad:'😢',depression:'😔'};
+
+  // ===================== HELPERS =====================
+  const getStore = (key: string, fallback: any) => {
+    try { 
+      const raw = localStorage.getItem(key); 
+      return raw ? JSON.parse(raw) : fallback 
+    } catch(e) { 
+      return fallback 
+    }
+  }
+  const setStore = (key: string, value: any) => { 
+    localStorage.setItem(key, JSON.stringify(value)) 
+  }
+
+  const getHistory = () => getStore('moodyo_history', []);
+  const saveHistory = (arr: any[]) => setStore('moodyo_history', arr);
+
+  const renderRecent = () => {
+    const recentEl = document.getElementById('recentPlays');
+    if (!recentEl) return;
+    const hist = getHistory().slice(-12).reverse();
+    recentEl.innerHTML = hist.map((h: any)=>{
+      const when = new Date(h.date).toLocaleString();
+      return `<li>${h.type==='play'?'▶':'📝'} <b>${h.mood}</b> ${h.title?('· '+h.title):''} <span style="opacity:.7">— ${when}</span></li>`
+    }).join('');
+  }
+
+  const aggregateCounts = () => {
+    const hist = getHistory();
+    const counts: Record<string, number> = {happy:0,joyful:0,sad:0,depression:0};
+    const plays: Record<string, number> = {happy:0,joyful:0,sad:0,depression:0};
+    const lastN = hist.slice(-50);
+    lastN.forEach((item: any)=>{
+      if(counts[item.mood] !== undefined){
+        if(item.type === 'mood') counts[item.mood]++;
+        if(item.type === 'play') plays[item.mood]++;
+      }
+    })
+    return {counts, plays};
+  }
+  
+  const updateCharts = () => {
+    if (!document.getElementById('barChart') || !document.getElementById('pieChart') || !window.Chart) return;
+    
+    const {counts, plays} = aggregateCounts();
+    const labels = ['Happy','Joyful','Sad','Depression'];
+    const barData = [counts.happy,counts.joyful,counts.sad,counts.depression];
+    const pieData = [plays.happy,plays.joyful,plays.sad,plays.depression];
+
+    const barCtx = (document.getElementById('barChart') as HTMLCanvasElement).getContext('2d');
+    const pieCtx = (document.getElementById('pieChart') as HTMLCanvasElement).getContext('2d');
+    
+    if (!barCtx || !pieCtx) return;
+
+    if(!barChartRef.current){
+      barChartRef.current = new window.Chart(barCtx,{ type:'bar', data:{ labels, datasets:[{ label:'Mood logs (last 50)', data:barData }] }, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }});
+    } else { 
+      barChartRef.current.data.datasets[0].data = barData; 
+      barChartRef.current.update(); 
+    }
+
+    if(!pieChartRef.current){
+      pieChartRef.current = new window.Chart(pieCtx,{ type:'pie', data:{ labels, datasets:[{ label:'Song plays (last 50)', data:pieData }] }, options:{ responsive:true } });
+    } else { 
+      pieChartRef.current.data.datasets[0].data = pieData; 
+      pieChartRef.current.update(); 
+    }
+
+    gsap.fromTo('#barChart',{scale:0.98},{duration:.5,scale:1,ease:'elastic.out(1,0.6)'});
+    gsap.fromTo('#pieChart',{scale:0.98},{duration:.5,scale:1,ease:'elastic.out(1,0.6)'});
+  }
+
+  const recordMood = (mood?: string) => {
+    if(!mood) mood = (document.getElementById('moodSelect') as HTMLSelectElement).value;
+    if (!mood) return;
+    const hist = getHistory();
+    hist.push({date: new Date().toISOString(), mood, type:'mood'})
+    saveHistory(hist);
+    const trackerEmoji = document.getElementById('trackerEmoji');
+    if (trackerEmoji) {
+      trackerEmoji.textContent = moodEmoji[mood] || '🙂';
+    }
+    updateCharts();
+  }
+  
+  const recordPlay = (mood: string, title: string) => {
+    const hist = getHistory();
+    hist.push({date: new Date().toISOString(), mood, title, type:'play'})
+    saveHistory(hist);
+    updateCharts();
+    renderRecent();
+  }
+  
+  const applyTheme = (mood: string) => {
+    if(!MOOD_DEFS[mood]) return;
+    const def = MOOD_DEFS[mood];
+    (document.body.style as any).background = def.bg;
+    document.documentElement.style.setProperty('--page-accent', def.accent);
+    gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
+  }
+
+  const openPage = (id: string) => {
+    document.querySelectorAll('section.page').forEach(p=> p.classList.remove('active'));
+    const target = document.getElementById(id);
+    if(target){
+      target.classList.add('active');
+      gsap.fromTo(target,{autoAlpha:0,y:20},{duration:.6,autoAlpha:1,y:0,ease:'power3.out'});
+    }
+    if(MOOD_DEFS[id]){
+      applyTheme(id);
+      recordMood(id);
+    }
+  }
+
+  const openTracker = () => {
+    const trackerEl = document.getElementById('tracker');
+    if (!trackerEl) return;
+    trackerEl.style.display='block';
+    gsap.fromTo(trackerEl,{y:40,autoAlpha:0},{duration:.6,y:0,autoAlpha:1,ease:'power3.out'});
+    updateCharts();
+    renderRecent();
+  }
+
+  const closeTracker = () => {
+    const trackerEl = document.getElementById('tracker');
+    if (!trackerEl) return;
+    gsap.to(trackerEl,{duration:.4,y:40,autoAlpha:0,onComplete:()=>trackerEl.style.display='none'});
+  }
+
+  const playTile = (id: string, mood: string, title: string) => {
+    const me = document.getElementById(id) as HTMLAudioElement;
+    if (!me) return;
+    document.querySelectorAll('audio').forEach(a=>{ if(a!==me) a.pause() });
+    me.play();
+    recordPlay(mood,title);
+    const tile = document.getElementById(id)!.closest('.tile');
+    gsap.fromTo(tile,{scale:.98},{duration:.4,scale:1,ease:'back.out(1.7)'});
+  }
 
   useEffect(() => {
     if (isInitialized.current) return;
@@ -22,61 +215,25 @@ export function MoodPlayer() {
         return;
     }
 
-    /* ===================== DATA ===================== */
-    const MOOD_DEFS: Record<string, any> = {
-      happy: {
-        title: 'Happy — Sunny Vibes',
-        subtitle: 'Bright, feel-good tracks to lift you up',
-        accent: '#f59e0b',
-        bg: 'linear-gradient(135deg,#fff1c1 0%, #ffd194 40%, #ffb347 100%)',
-        emoji: '😊',
-        coverTint: '#ffd786'
-      },
-      joyful: {
-        title: 'Joyful — Energetic Beats',
-        subtitle: 'High-energy songs — perfect for smiles and movement',
-        accent: '#ec4899',
-        bg: 'linear-gradient(135deg,#ffe0f2 0%, #ffb2e3 40%, #ff86c8 100%)',
-        emoji: '🤩',
-        coverTint: '#ffc2e9'
-      },
-      sad: {
-        title: 'Sad — Melancholy',
-        subtitle: 'Slow, emotional tracks to reflect',
-        accent: '#60a5fa',
-        bg: 'linear-gradient(135deg,#b6ccff 0%, #7aa2ff 40%, #4b6cff 100%)',
-        emoji: '😢',
-        coverTint: '#9fb8ff'
-      },
-      depression: {
-        title: 'Depression — Ambient & Soothing',
-        subtitle: 'Ambient textures and slow soundscapes',
-        accent: '#94a3b8',
-        bg: 'linear-gradient(135deg,#6b7a83 0%, #3a4348 50%, #2a3136 100%)',
-        emoji: '😔',
-        coverTint: '#7b8a92'
-      }
-    };
-
-    const SAMPLE_TRACKS = (baseIdx=1) => Array.from({length:10}, (_,i)=>({
-      title: ['Sunny Days','Golden Hour','Sparkle','Warm Breeze','Lemonade','Candy Skies','Bloom','Brightside','Hummingbird','Radiant'][i],
-      artist: ['MoodyO Mix','Acoustic','Indie Pop','Lo-Fi','Electro Pop','Indie','Bedroom Pop','Folk','Chillhop','Dance'][i],
-      src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(baseIdx+i)%16 + 1}.mp3`,
-      cover: `https://picsum.photos/seed/h${baseIdx+i}/600/600`
-    }));
-
-    const TRACKS: Record<string, any> = {
-      happy: SAMPLE_TRACKS(0),
-      joyful: SAMPLE_TRACKS(4),
-      sad: SAMPLE_TRACKS(8),
-      depression: SAMPLE_TRACKS(12)
-    };
-
-    /* ===================== BUILD PAGES ===================== */
-    function buildPage(mood: string){
+    const buildPage = (mood: string) => {
       const node = document.getElementById(mood);
       if (!node) return;
       const def = MOOD_DEFS[mood];
+      const tileHTML = (t: any, idx: number) => {
+        const id = `${mood}-aud-${idx}`;
+        return `
+          <div class="tile" data-mood="${mood}" data-title="${t.title}" data-audio-id="${id}">
+            <img class="cover" src="${t.cover}" alt="${t.title} cover"/>
+            <button class="play-small" data-audio-id="${id}" data-mood="${mood}" data-title="${t.title}">▶</button>
+            <div class="tile-content">
+              <div class="song-title">${t.title}</div>
+              <div class="song-artist">${t.artist}</div>
+              <audio id="${id}" preload="none" controls>
+                <source src="${t.src}" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>`;
+      }
       node.innerHTML = `
         <div class="glass">
           <div class="page-header">
@@ -85,29 +242,14 @@ export function MoodPlayer() {
               <small>${def.subtitle}</small>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
-              <button class="nav-btn glass" id="openTrackerBtn-${mood}">Open Emotion Tracker</button>
+              <button class="nav-btn glass open-tracker-btn">Open Emotion Tracker</button>
             </div>
           </div>
-          <div class="song-grid">${TRACKS[mood].map((t: any,idx: number)=>tileHTML(mood,t,idx)).join('')}</div>
+          <div class="song-grid">${TRACKS[mood].map(tileHTML).join('')}</div>
         </div>`;
-        document.getElementById(`openTrackerBtn-${mood}`)?.addEventListener('click', openTracker);
     }
 
-    function tileHTML(mood: string,t: any,idx: number){
-      const id = `${mood}-aud-${idx}`;
-      return `
-        <div class="tile" data-mood="${mood}" data-title="${t.title}">
-          <img class="cover" src="${t.cover}" alt="${t.title} cover"/>
-          <button class="play-small" data-audio-id="${id}" data-mood="${mood}" data-title="${t.title}">▶</button>
-          <div class="tile-content">
-            <div class="song-title">${t.title}</div>
-            <div class="song-artist">${t.artist}</div>
-            <audio id="${id}" preload="none" controls>
-              <source src="${t.src}" type="audio/mpeg">
-            </audio>
-          </div>
-        </div>`
-    }
+    Object.keys(MOOD_DEFS).forEach(buildPage);
     
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
@@ -119,159 +261,10 @@ export function MoodPlayer() {
                  playTile(id, mood, title);
             }
         }
-    });
-
-    Object.keys(MOOD_DEFS).forEach(buildPage);
-
-    /* ===================== NAVIGATION & THEME ===================== */
-    const pages = document.querySelectorAll('section.page');
-    const links = document.querySelectorAll('.nav-btn[data-link]');
-
-    links.forEach(btn => btn.addEventListener('click', ()=> openPage((btn as HTMLElement).dataset.link!)));
-
-    const moodGrid = document.getElementById('moodGrid');
-    if (moodGrid) {
-        moodGrid.addEventListener('click', (e)=>{
-          const card = (e.target as HTMLElement).closest('.emotion-card');
-          if(!card) return;
-          openPage((card as HTMLElement).dataset.target!);
-        });
-    }
-
-
-    function applyTheme(mood: string){
-      if(!MOOD_DEFS[mood]) return;
-      const def = MOOD_DEFS[mood];
-      (document.body.style as any).background = def.bg;
-      document.documentElement.style.setProperty('--page-accent', def.accent);
-      gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
-    }
-
-    function openPage(id: string){
-      pages.forEach(p=> p.classList.remove('active'));
-      const target = document.getElementById(id);
-      if(target){
-        target.classList.add('active');
-        gsap.fromTo(target,{autoAlpha:0,y:20},{duration:.6,autoAlpha:1,y:0,ease:'power3.out'});
-      }
-      if(MOOD_DEFS[id]){
-        applyTheme(id);
-        recordMood(id);
-      }
-    }
-
-    /* ===================== TRACKER (localStorage) ===================== */
-    const trackerEl = document.getElementById('tracker');
-    const recentEl = document.getElementById('recentPlays');
-    let barChart: any, pieChart: any;
-
-    const moodEmoji: Record<string, string> = {happy:'😊',joyful:'🤩',sad:'😢',depression:'😔'};
-
-    function openTracker(){
-      if (!trackerEl) return;
-      trackerEl.style.display='block';
-      gsap.fromTo(trackerEl,{y:40,autoAlpha:0},{duration:.6,y:0,autoAlpha:1,ease:'power3.out'});
-      updateCharts();
-      renderRecent();
-    }
-    
-    function closeTracker(){
-      if (!trackerEl) return;
-      gsap.to(trackerEl,{duration:.4,y:40,autoAlpha:0,onComplete:()=>trackerEl.style.display='none'});
-    }
-
-    document.getElementById('closeTrackerBtn')?.addEventListener('click', closeTracker);
-
-    function getStore(key: string, fallback: any){
-      try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback }catch(e){ return fallback }
-    }
-    
-    function setStore(key: string, value: any){ localStorage.setItem(key, JSON.stringify(value)) }
-
-    function getHistory(){ return getStore('moodyo_history', []) }
-    function saveHistory(arr: any[]){ setStore('moodyo_history', arr) }
-
-    function recordMood(mood?: string){
-      if(!mood) mood = (document.getElementById('moodSelect') as HTMLSelectElement).value;
-      if (!mood) return;
-      const hist = getHistory();
-      hist.push({date: new Date().toISOString(), mood, type:'mood'})
-      saveHistory(hist);
-      const trackerEmoji = document.getElementById('trackerEmoji');
-      if (trackerEmoji) {
-        trackerEmoji.textContent = moodEmoji[mood] || '🙂';
-      }
-      updateCharts();
-    }
-    
-    document.getElementById('saveMoodBtn')?.addEventListener('click', () => recordMood());
-
-
-    function recordPlay(mood: string, title: string){
-      const hist = getHistory();
-      hist.push({date: new Date().toISOString(), mood, title, type:'play'})
-      saveHistory(hist);
-      updateCharts();
-      renderRecent();
-    }
-
-    function aggregateCounts(){
-      const hist = getHistory();
-      const counts: Record<string, number> = {happy:0,joyful:0,sad:0,depression:0};
-      const plays: Record<string, number> = {happy:0,joyful:0,sad:0,depression:0};
-      const lastN = hist.slice(-50);
-      lastN.forEach((item: any)=>{
-        if(counts[item.mood] !== undefined){
-          if(item.type === 'mood') counts[item.mood]++;
-          if(item.type === 'play') plays[item.mood]++;
+        if(target.matches('.open-tracker-btn')){
+            openTracker();
         }
-      })
-      return {counts, plays};
-    }
-
-    function updateCharts(){
-        if (!document.getElementById('barChart') || !document.getElementById('pieChart') || !window.Chart) return;
-        
-      const {counts, plays} = aggregateCounts();
-      const labels = ['Happy','Joyful','Sad','Depression'];
-      const barData = [counts.happy,counts.joyful,counts.sad,counts.depression];
-      const pieData = [plays.happy,plays.joyful,plays.sad,plays.depression];
-
-      const barCtx = (document.getElementById('barChart') as HTMLCanvasElement).getContext('2d');
-      const pieCtx = (document.getElementById('pieChart') as HTMLCanvasElement).getContext('2d');
-      
-      if (!barCtx || !pieCtx) return;
-
-      if(!barChart){
-        barChart = new window.Chart(barCtx,{ type:'bar', data:{ labels, datasets:[{ label:'Mood logs (last 50)', data:barData }] }, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }});
-      }else{ barChart.data.datasets[0].data = barData; barChart.update(); }
-
-      if(!pieChart){
-        pieChart = new window.Chart(pieCtx,{ type:'pie', data:{ labels, datasets:[{ label:'Song plays (last 50)', data:pieData }] }, options:{ responsive:true } });
-      }else{ pieChart.data.datasets[0].data = pieData; pieChart.update(); }
-
-      gsap.fromTo('#barChart',{scale:0.98},{duration:.5,scale:1,ease:'elastic.out(1,0.6)'});
-      gsap.fromTo('#pieChart',{scale:0.98},{duration:.5,scale:1,ease:'elastic.out(1,0.6)'});
-    }
-
-    function renderRecent(){
-        if (!recentEl) return;
-      const hist = getHistory().slice(-12).reverse();
-      recentEl.innerHTML = hist.map((h: any)=>{
-        const when = new Date(h.date).toLocaleString();
-        return `<li>${h.type==='play'?'▶':'📝'} <b>${h.mood}</b> ${h.title?('· '+h.title):''} <span style="opacity:.7">— ${when}</span></li>`
-      }).join('');
-    }
-
-    function playTile(id: string,mood: string,title: string){
-      const me = document.getElementById(id) as HTMLAudioElement;
-      if (!me) return;
-      document.querySelectorAll('audio').forEach(a=>{ if(a!==me) a.pause() });
-      me.play();
-      recordPlay(mood,title);
-      const tile = document.getElementById(id)!.closest('.tile');
-      gsap.fromTo(tile,{scale:.98},{duration:.4,scale:1,ease:'back.out(1.7)'});
-    }
+    });
 
     const moodSelect = document.getElementById('moodSelect') as HTMLSelectElement;
     if (moodSelect) {
@@ -282,6 +275,9 @@ export function MoodPlayer() {
           }
         });
     }
+    
+    document.getElementById('saveMoodBtn')?.addEventListener('click', () => recordMood());
+    document.getElementById('closeTrackerBtn')?.addEventListener('click', closeTracker);
 
     document.querySelectorAll('.emotion-card').forEach((c)=>{ 
         (c as HTMLElement).tabIndex=0; 
@@ -301,11 +297,11 @@ export function MoodPlayer() {
           MoodyO
         </div>
         <nav>
-          <button className="nav-btn glass" data-link="home">Home</button>
-          <button className="nav-btn glass" data-link="happy">Happy</button>
-          <button className="nav-btn glass" data-link="joyful">Joyful</button>
-          <button className="nav-btn glass" data-link="sad">Sad</button>
-          <button className="nav-btn glass" data-link="depression">Depression</button>
+          <button className="nav-btn glass" onClick={() => openPage('home')}>Home</button>
+          <button className="nav-btn glass" onClick={() => openPage('happy')}>Happy</button>
+          <button className="nav-btn glass" onClick={() => openPage('joyful')}>Joyful</button>
+          <button className="nav-btn glass" onClick={() => openPage('sad')}>Sad</button>
+          <button className="nav-btn glass" onClick={() => openPage('depression')}>Depression</button>
         </nav>
       </header>
 
@@ -314,25 +310,25 @@ export function MoodPlayer() {
           <h2>How are you feeling today?</h2>
           <p style={{opacity: 0.85}}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
           <div className="grid" id="moodGrid">
-            <div className="emotion-card happy" data-target="happy">
+            <div className="emotion-card happy" data-target="happy" onClick={() => openPage('happy')}>
               <div className="emoji">😊</div>
               <div className="title">Happy</div>
               <div className="subtitle">Bright, upbeat tracks</div>
             </div>
 
-            <div className="emotion-card joyful" data-target="joyful">
+            <div className="emotion-card joyful" data-target="joyful" onClick={() => openPage('joyful')}>
               <div className="emoji">🤩</div>
               <div className="title">Joyful</div>
               <div className="subtitle">Bubbly & energetic</div>
             </div>
 
-            <div className="emotion-card sad" data-target="sad">
+            <div className="emotion-card sad" data-target="sad" onClick={() => openPage('sad')}>
               <div className="emoji">😢</div>
               <div className="title">Sad</div>
               <div className="subtitle">Melancholic, mellow tunes</div>
             </div>
 
-            <div className="emotion-card depression" data-target="depression">
+            <div className="emotion-card depression" data-target="depression" onClick={() => openPage('depression')}>
               <div className="emoji">😔</div>
               <div className="title">Depression</div>
               <div className="subtitle">Soothing & ambient</div>
@@ -385,3 +381,5 @@ export function MoodPlayer() {
     </div>
   );
 }
+
+    
