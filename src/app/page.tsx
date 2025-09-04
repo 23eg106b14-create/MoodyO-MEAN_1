@@ -116,9 +116,9 @@ export default function Home() {
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
       gsap.to([titleTopRef.current, titleBottomRef.current], {
-        '--perspective-x': x * 25,
-        '--perspective-y': y * -25,
-        duration: 0.8,
+        '--perspective-x': x * 35,
+        '--perspective-y': y * -35,
+        duration: 0.3,
         ease: 'power3.out',
       });
     };

@@ -408,8 +408,6 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 .homepage-header__titles {
-  --perspective-x: 0;
-  --perspective-y: 0;
   text-align: center;
   color: var(--color-accent);
   margin: 0;
@@ -419,6 +417,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   font-weight: 600;
   position: relative;
   width: 100%;
+  pointer-events: none;
 }
 
 .huge-hero {
@@ -562,5 +561,3 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   padding: 0;
   color: #e6eef8;
 }
-
-    
