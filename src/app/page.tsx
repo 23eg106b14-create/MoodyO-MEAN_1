@@ -17,6 +17,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
 
 
@@ -142,6 +143,13 @@ export default function Home() {
     document.body.className = '';
     document.body.style.background = '';
     document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+    
+    // Reset background image on all pages
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => {
+      const pageEl = p as HTMLElement;
+      pageEl.style.setProperty('--bg-image', 'none');
+    });
 
     if (activePage === 'home') {
         document.body.classList.add('home-active');
@@ -149,6 +157,13 @@ export default function Home() {
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
         
+        const activePageElement = document.getElementById(activePage);
+        const activePlaylist = tracks[activePage as keyof typeof tracks];
+        if (activePageElement && activePlaylist && activePlaylist.length > 0) {
+            const currentTrack = nowPlaying && nowPlaying.mood === activePage ? tracks[nowPlaying.mood][nowPlaying.index] : activePlaylist[0];
+            activePageElement.style.setProperty('--bg-image', `url(${currentTrack.cover})`);
+        }
+
         let classes = `${activePage}-active `;
         classes += moodDef.themeClass || 'custom-theme-active ';
         if (['happy', 'joyful', 'sad'].includes(activePage) || (customMoods[activePage] && !moodDef.themeClass.includes('depression'))) {
@@ -156,7 +171,8 @@ export default function Home() {
         }
         document.body.className = classes.trim();
     }
-  }, [activePage, customMoods, isMounted]);
+  }, [activePage, customMoods, isMounted, tracks, nowPlaying]);
+
 
   // Hero Animations
   useEffect(() => {
@@ -572,37 +588,69 @@ export default function Home() {
 
             </section>
 
-            {Object.entries(allMoods).map(([mood, def]) => (
+            {Object.entries(allMoods).map(([mood, def]) => {
+              const playlist = tracks[mood];
+              const trackPlaying = nowPlaying?.mood === mood ? currentTrack : null;
+              const displayTrack = trackPlaying || playlist?.[0];
+
+              return (
               <section key={mood} id={mood} className={cn('page', { active: activePage === mood })}>
                 <div className="glass">
-                  <div className="page-header">
-                    <div>
-                      <h2>{def.title} <span className="badge">{def.emoji}</span></h2>
-                      <small>{def.subtitle}</small>
-                    </div>
-                  </div>
-                  <div className="song-grid-container">
-                    <div className="song-grid">
-                      {tracks[mood] && [...tracks[mood], ...tracks[mood]].map((track, index) => (
-                        <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
-                          <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
-                          <div className="song-card-content">
-                            <div className="song-title-wrapper">
-                                <button onClick={(e) => handleLike(e, { ...track, mood: mood, index: index % tracks[mood].length })} className={cn('like-btn', { 'liked': isLiked(track) })}>
-                                  <Heart size={18} />
-                                </button>
-                                <div className="song-title">{track.title}</div>
-                            </div>
-                            <div className="song-artist">{track.artist}</div>
-                            <button className="play-small">▶</button>
+                  <div className="mood-page-layout">
+                    <div className="mood-hero">
+                      {displayTrack ? (
+                        <div className="now-playing-card">
+                          <Image className="player-cover" src={displayTrack.cover} alt={displayTrack.title} width={400} height={400} data-ai-hint="song cover" />
+                          <div className="player-info">
+                              <h3>{displayTrack.title}</h3>
+                              <p>{displayTrack.artist}</p>
+                          </div>
+                          <div className="player-controls">
+                              <button onClick={handlePrev}><SkipBack /></button>
+                              <button onClick={handlePlayPause} className="play-main-btn">
+                                  {(isPlaying && trackPlaying) ? <Pause size={32} /> : <Play size={32} />}
+                              </button>
+                              <button onClick={handleNext}><SkipForward /></button>
+                          </div>
+                          <div className="player-actions">
+                              <button onClick={(e) => handleLike(e, { ...displayTrack, mood: mood, index: nowPlaying?.index ?? 0 })} className={cn('like-btn', { 'liked': isLiked(displayTrack) })}>
+                                  <Heart size={24} />
+                              </button>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        <>
+                          <div className="emoji">{def.emoji}</div>
+                          <h2>{def.title}</h2>
+                          <p>{def.subtitle}</p>
+                        </>
+                      )}
+                    </div>
+                    <div className="playlist-view">
+                      <div className="playlist-header">
+                        <h3>Playlist</h3>
+                      </div>
+                      <ScrollArea className="playlist-scroll-area">
+                        <div className="playlist-list">
+                          {playlist && playlist.map((track, index) => (
+                            <div key={index} className={cn('playlist-list-item', { active: trackPlaying?.src === track.src })} onClick={() => openPlayer(mood, index)}>
+                               <Image className="playlist-list-item-cover" src={track.cover} alt={`${track.title} cover`} width={48} height={48} data-ai-hint="song cover" />
+                              <div className="playlist-list-item-info">
+                                <div className="title">{track.title}</div>
+                                <div className="artist">{track.artist}</div>
+                              </div>
+                              <button onClick={(e) => handleLike(e, { ...track, mood: mood, index: index })} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                                <Heart size={18} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     </div>
                   </div>
                 </div>
               </section>
-            ))}
+            )})}
           </main>
           
           <footer>
@@ -610,7 +658,7 @@ export default function Home() {
           </footer>
 
           {nowPlaying && currentTrack && (
-            <div className="player-dialog-overlay">
+            <div className="player-dialog-overlay" style={{display:'none'}}>
                 <div className="player-dialog glass">
                     <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
                     <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
@@ -630,10 +678,10 @@ export default function Home() {
                             <Heart size={24} />
                         </button>
                     </div>
-                    <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
                 </div>
             </div>
           )}
+          <audio ref={audioRef} src={currentTrack?.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
 
           <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
             <DialogContent className="sheet-content glass">
@@ -690,3 +738,5 @@ export default function Home() {
     </>
   );
 }
+
+    
