@@ -139,45 +139,7 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
-  const cursorRef = useRef<HTMLDivElement>(null);
 
-
-  // Custom Cursor Logic
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    if (!cursor) return;
-    
-    const onMouseMove = (e: MouseEvent) => {
-      gsap.to(cursor, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.3,
-        ease: 'power3.out'
-      });
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-
-    const addHover = (e: MouseEvent) => {
-      gsap.to(cursor, { scale: 3, duration: 0.3 });
-    };
-    const removeHover = (e: MouseEvent) => {
-      gsap.to(cursor, { scale: 1, duration: 0.3 });
-    };
-
-    document.querySelectorAll('button, a, .emotion-card-new, .song-card, .emoji-option, .player-close-btn').forEach(el => {
-      el.addEventListener('mouseenter', addHover);
-      el.addEventListener('mouseleave', removeHover);
-    });
-
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-       document.querySelectorAll('button, a, .emotion-card-new, .song-card, .emoji-option, .player-close-btn').forEach(el => {
-        el.removeEventListener('mouseenter', addHover);
-        el.removeEventListener('mouseleave', removeHover);
-      });
-    };
-  }, [appVisible]);
   
   // Hero Animations
   useEffect(() => {
@@ -384,7 +346,6 @@ export default function Home() {
 
   return (
     <>
-      <div id="cursor" ref={cursorRef}></div>
       {!appVisible && (
         <section className="creative-hero" ref={heroRef} onClick={enterApp}>
             <div className="hero-content" ref={heroContentRef}>
