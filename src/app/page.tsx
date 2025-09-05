@@ -114,6 +114,8 @@ export default function Home() {
   const [customMoods, setCustomMoods] = useState<Record<string, MoodDefinition>>({});
   const [tracks, setTracks] = useState<Record<string, Track[]>>(STATIC_TRACKS);
   const [customMoodFormData, setCustomMoodFormData] = useState({ name: '', emoji: '', description: '' });
+  const [bodyStyles, setBodyStyles] = useState({ background: 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)' });
+  const [bodyClasses, setBodyClasses] = useState('home-active');
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -126,17 +128,15 @@ export default function Home() {
   
   useEffect(() => {
     setIsMounted(true);
-    document.body.className = 'home-active';
-    document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
   }, []);
 
   // Hero Animations
   useEffect(() => {
     // This animation is for the interactive hero on the main app page, not the intro
-    const heroSection = homePageRef.current?.querySelector('.home-section');
-    const heroContent = homePagef.current?.querySelector('.hero-content');
-    if (!heroSection || !heroContent || !appVisible ) return;
+    const heroSection = homePageRef.current;
+    if (!heroSection) return;
+    const heroContent = heroSection.querySelector('.hero-content');
+    if (!heroContent || !appVisible) return;
 
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -151,6 +151,7 @@ export default function Home() {
     };
     
     heroSection.addEventListener('mousemove', onMouseMove);
+
     return () => {
       heroSection.removeEventListener('mousemove', onMouseMove)
     };
@@ -180,7 +181,7 @@ export default function Home() {
       );
     });
 
-  }, [activePage]);
+  }, [activePage, appVisible]);
 
   // Mood Page Animation
   useEffect(() => {
@@ -300,17 +301,19 @@ export default function Home() {
       onStart: () => {
         setActivePage(id);
         if (id === 'home') {
-            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+            setBodyStyles({ background: 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)' });
             document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-            document.body.className = 'home-active';
+            setBodyClasses('home-active');
         } else if (moodDef) {
-            document.body.style.background = moodDef.bg;
+            setBodyStyles({ background: moodDef.bg });
             document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-            document.body.className = id ? `${id}-active` : '';
-            document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
+            
+            let classes = `${id}-active `;
+            classes += moodDef.themeClass || 'custom-theme-active ';
             if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
-              document.body.classList.add('theme-active');
+              classes += 'theme-active ';
             }
+            setBodyClasses(classes);
         }
       }
     });
@@ -433,6 +436,7 @@ export default function Home() {
     <>
       <div id="cursor-dot" ref={cursorDotRef} />
       <div id="cursor-ring" ref={cursorRingRef} />
+      
       {!appVisible && (
         <section className="creative-hero" ref={introHeroRef} onClick={enterApp}>
             <div className="hero-content" ref={introHeroContentRef}>
@@ -443,7 +447,7 @@ export default function Home() {
       )}
 
       {appVisible && (
-        <div className="app" ref={mainAppRef}>
+        <div className={cn('app', bodyClasses)} ref={mainAppRef} style={bodyStyles}>
           <header>
             <div className="header-inner">
                 <div className="logo">
@@ -479,7 +483,7 @@ export default function Home() {
           </header>
 
           <main>
-            <section id="home" className={cn('page', { active: activePage === 'home' })} ref={homePageRef}>
+            <section id="home" className={cn('page active')} ref={homePageRef} style={{display: activePage === 'home' ? 'block' : 'none'}}>
                 <div className="home-section">
                   <div className="hero-content">
                     <h1 className="sr-only">MoodyO</h1>
