@@ -133,12 +133,48 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [customMoods, setCustomMoods] = useState<Record<string, MoodDefinition>>({});
   const [tracks, setTracks] = useState<Record<string, Track[]>>(STATIC_TRACKS);
+  const [customMoodFormData, setCustomMoodFormData] = useState({ name: '', emoji: '', description: '' });
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
+
+  // Custom Cursor Logic
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+    
+    const onMouseMove = (e: MouseEvent) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.2,
+        ease: 'power3.out'
+      });
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+
+    const addHover = () => cursor.classList.add('hover');
+    const removeHover = () => cursor.classList.remove('hover');
+
+    document.querySelectorAll('button, a, .emotion-card-new, .song-card, .emoji-option, .player-close-btn').forEach(el => {
+      el.addEventListener('mouseenter', addHover);
+      el.addEventListener('mouseleave', removeHover);
+    });
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+       document.querySelectorAll('button, a, .emotion-card-new, .song-card, .emoji-option, .player-close-btn').forEach(el => {
+        el.removeEventListener('mouseenter', addHover);
+        el.removeEventListener('mouseleave', removeHover);
+      });
+    };
+  }, [appVisible]);
+  
   // Hero Animations
   useEffect(() => {
     if (appVisible) return;
@@ -185,7 +221,24 @@ export default function Home() {
       .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
     }
   }, [appVisible, activePage]);
-
+  
+  // Mood page entrance animation
+  useEffect(() => {
+    if (activePage !== 'home' && activePage !== '') {
+      const songCards = document.querySelectorAll(`#${activePage} .song-card`);
+      gsap.fromTo(songCards, 
+        { opacity: 0, y: 30, scale: 0.95 }, 
+        { 
+          opacity: 1, 
+          y: 0, 
+          scale: 1, 
+          duration: 0.5, 
+          stagger: 0.08, 
+          ease: 'back.out(1.4)' 
+        }
+      );
+    }
+  }, [activePage]);
 
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
@@ -228,11 +281,13 @@ export default function Home() {
 
   const handleLike = (e: React.MouseEvent, track: Track) => {
     e.stopPropagation();
+    const target = e.currentTarget;
+    gsap.fromTo(target, { scale: 1 }, { scale: 1.3, duration: 0.2, ease: 'back.out(1.7)', yoyo: true, repeat: 1 });
+
     setLikedSongs(prev => {
       if (isLiked(track)) {
         return prev.filter(likedTrack => likedTrack.src !== track.src);
       } else {
-        // Add mood and index to the track when liking it
         const trackWithContext = { ...track, mood: track.mood || nowPlaying?.mood, index: track.index ?? nowPlaying?.index };
         return [...prev, trackWithContext];
       }
@@ -262,43 +317,47 @@ export default function Home() {
   };
 
   const openPage = (id: string) => {
-    setActivePage(id);
-    document.body.className = id ? `${id}-active` : '';
-    
-    const allMoods = {...MOOD_DEFS, ...customMoods};
-    const moodDef = allMoods[id as keyof typeof allMoods];
+    gsap.to('.page.active', {
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power2.in',
+      onComplete: () => {
+        setActivePage(id);
+        document.body.className = id ? `${id}-active` : '';
+        
+        const allMoods = {...MOOD_DEFS, ...customMoods};
+        const moodDef = allMoods[id as keyof typeof allMoods];
 
-    if (moodDef) {
-        document.body.style.background = moodDef.bg;
-        document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-        document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
-        if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
-          document.body.classList.add('theme-active');
+        if (moodDef) {
+            document.body.style.background = moodDef.bg;
+            document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+            document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
+            if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
+              document.body.classList.add('theme-active');
+            }
+        } else { // Home page
+            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+            document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+            document.body.className = 'home-active';
         }
-        gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
-    } else { // Home page
-        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-        document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-        document.body.className = 'home-active';
-    }
-    setIsMenuSheetOpen(false);
+        setIsMenuSheetOpen(false);
+      }
+    });
   };
   
   const goHome = () => {
     setIsMenuSheetOpen(false);
-    setActivePage('');
     
-    // Animate the app away
     gsap.to('.app', {
       opacity: 0,
       duration: 0.4,
       ease: 'power3.in',
       onComplete: () => {
+        setActivePage('');
         setAppVisible(false);
         document.body.className = '';
         document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
 
-        // Animate the hero back in
         gsap.set(heroRef.current, { opacity: 1 });
         gsap.fromTo(heroContentRef.current, 
           { opacity: 0, scale: 0.8 }, 
@@ -316,13 +375,10 @@ export default function Home() {
 
   const handleGenerateMood = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!customMoodFormData.name || !customMoodFormData.emoji || !customMoodFormData.description) return;
+    
     setIsGenerating(true);
-    const formData = new FormData(e.currentTarget);
-    const input: GenerateMoodInput = {
-      name: formData.get('name') as string,
-      emoji: formData.get('emoji') as string,
-      description: formData.get('description') as string,
-    };
+    const input: GenerateMoodInput = customMoodFormData;
 
     try {
       const result = await generateMood(input);
@@ -352,6 +408,7 @@ export default function Home() {
       }));
       
       setIsCustomMoodDialogOpen(false);
+      setCustomMoodFormData({ name: '', emoji: '', description: '' });
       openPage(moodId);
 
     } catch (error) {
@@ -365,6 +422,7 @@ export default function Home() {
 
   const currentTrack = nowPlaying ? tracks[nowPlaying.mood as keyof typeof tracks][nowPlaying.index] : null;
   const allMoods = { ...MOOD_DEFS, ...customMoods };
+  const isFormValid = customMoodFormData.name && customMoodFormData.emoji && customMoodFormData.description;
 
   const NavMenu = () => (
     <Accordion type="single" collapsible className="w-full">
@@ -392,6 +450,7 @@ export default function Home() {
 
   return (
     <>
+      <div id="cursor" ref={cursorRef}></div>
       {!appVisible && (
         <section className="creative-hero" ref={heroRef} onClick={enterApp}>
             <div className="hero-content" ref={heroContentRef}>
@@ -518,7 +577,7 @@ export default function Home() {
                     <button onClick={handleNext}><SkipForward /></button>
                 </div>
                  <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <button onClick={(e) => handleLike(e, { ...track, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
                         <Heart size={24} />
                     </button>
                 </div>
@@ -536,10 +595,42 @@ export default function Home() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
-            <Input name="name" placeholder="Mood Name (e.g., Cosmic Jazz)" required />
-            <Input name="emoji" placeholder="Emoji (e.g., 🎷)" required maxLength={2} />
-            <Input name="description" placeholder="Description (e.g., Late night jazz in a space lounge)" required />
-            <Button type="submit" disabled={isGenerating}>
+            <Input 
+              name="name" 
+              placeholder="Mood Name (e.g., Cosmic Jazz)" 
+              required 
+              value={customMoodFormData.name}
+              onChange={(e) => setCustomMoodFormData({...customMoodFormData, name: e.target.value })}
+            />
+             <div>
+              <div className="emoji-picker">
+                {['🎷', '📚', '🌧️', '🌲', '🚀', '👾'].map(emoji => (
+                  <span 
+                    key={emoji}
+                    className={cn('emoji-option', { selected: customMoodFormData.emoji === emoji })}
+                    onClick={() => setCustomMoodFormData({...customMoodFormData, emoji })}
+                  >
+                    {emoji}
+                  </span>
+                ))}
+              </div>
+              <Input 
+                name="emoji" 
+                placeholder="Select an emoji from above or type one" 
+                required 
+                maxLength={2} 
+                value={customMoodFormData.emoji}
+                onChange={(e) => setCustomMoodFormData({...customMoodFormData, emoji: e.target.value })}
+              />
+            </div>
+            <Input 
+              name="description" 
+              placeholder="Description (e.g., Late night jazz in a space lounge)" 
+              required
+              value={customMoodFormData.description}
+              onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
+            />
+            <Button type="submit" disabled={isGenerating || !isFormValid}>
               {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
             </Button>
           </form>
