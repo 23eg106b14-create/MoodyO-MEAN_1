@@ -151,7 +151,7 @@ export default function Home() {
       gsap.to(cursor, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.1,
+        duration: 0.3,
         ease: 'power3.out'
       });
     };
