@@ -599,6 +599,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   mix-blend-mode: difference;
   z-index: 1000;
   pointer-events: none;
+  transition: transform 0.3s ease;
 }
 
 #cursor.hover {

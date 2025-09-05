@@ -263,78 +263,28 @@ export default function Home() {
     });
   }
 
-  const animateHomePageIn = () => {
-    const homeTitleChars = document.querySelectorAll('.home-title-char');
-    const homeSubtitle = document.querySelector('#home .home-subtitle');
-    const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
-    
-    const tl = gsap.timeline();
-    tl.set([homeTitleChars, homeSubtitle, cards], { autoAlpha: 0, y: 30 })
-      .to(homeTitleChars, 
-        { autoAlpha: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
-      )
-      .to(homeSubtitle, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
-      .to(cards, { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
-  };
-
-  const animateMoodPageIn = (pageId: string) => {
-      const songCards = document.querySelectorAll(`#${pageId} .song-card`);
-      if (songCards.length > 0) {
-        gsap.fromTo(songCards, 
-          { opacity: 0, y: 30, scale: 0.95 }, 
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1, 
-            duration: 0.5, 
-            stagger: 0.08, 
-            ease: 'back.out(1.4)' 
-          }
-        );
-      }
-  };
-
  const openPage = (id: string) => {
     if (activePage === id) return;
 
-    const currentPage = document.querySelector('.page.active');
-    const pageContent = currentPage ? currentPage.querySelectorAll('.home-intro, .emotion-card-new, .create-mood-card, .glass') : [];
+    setActivePage(id);
+    
+    const allMoods = {...MOOD_DEFS, ...customMoods};
+    const moodDef = allMoods[id as keyof typeof allMoods];
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActivePage(id);
-        
-        const allMoods = {...MOOD_DEFS, ...customMoods};
-        const moodDef = allMoods[id as keyof typeof allMoods];
-
-        if (id === 'home') {
-            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-            document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-            document.body.className = 'home-active';
-            animateHomePageIn();
-        } else if (moodDef) {
-            document.body.style.background = moodDef.bg;
-            document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-            document.body.className = id ? `${id}-active` : '';
-            document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
-            if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
-              document.body.classList.add('theme-active');
-            }
-            animateMoodPageIn(id);
+    if (id === 'home') {
+        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+        document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+        document.body.className = 'home-active';
+    } else if (moodDef) {
+        document.body.style.background = moodDef.bg;
+        document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+        document.body.className = id ? `${id}-active` : '';
+        document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
+        if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
+          document.body.classList.add('theme-active');
         }
-        setIsMenuSheetOpen(false);
-      }
-    });
-
-    if (pageContent.length > 0) {
-      tl.to(pageContent, {
-        opacity: 0,
-        y: -20,
-        duration: 0.3,
-        stagger: 0.05,
-        ease: 'power2.in',
-      });
     }
+    setIsMenuSheetOpen(false);
   };
 
   const enterApp = () => {
@@ -342,7 +292,6 @@ export default function Home() {
         onComplete: () => {
             setAppVisible(true);
             setActivePage('home');
-            animateHomePageIn();
         }
       });
 
@@ -395,12 +344,10 @@ export default function Home() {
       
       setIsCustomMoodDialogOpen(false);
       setCustomMoodFormData({ name: '', emoji: '', description: '' });
-      // Use setTimeout to allow the state to update and the new page section to render
       setTimeout(() => openPage(moodId), 0);
 
     } catch (error) {
       console.error("Failed to generate mood:", error);
-      // You could show a toast notification here
     } finally {
       setIsGenerating(false);
     }
