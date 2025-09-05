@@ -77,7 +77,20 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 
 /* Home page - New layout */
 .home-intro { text-align: center; margin-bottom: 40px; }
-.home-title { font-size: 2.5rem; font-weight: 700; }
+.home-title { 
+  font-size: 2.5rem; 
+  font-weight: 700;
+  line-height: 1.2;
+}
+.home-title-word-wrapper {
+  display: inline-block;
+  overflow: hidden;
+  margin: 0 0.1em;
+}
+.home-title-word {
+  display: inline-block;
+}
+
 .home-subtitle { font-size: 1.1rem; max-width: 500px; margin: 8px auto 0; opacity: 0.8; }
 
 .home-mood-selector {
