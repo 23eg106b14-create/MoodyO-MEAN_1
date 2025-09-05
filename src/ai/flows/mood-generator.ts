@@ -41,6 +41,7 @@ const moodPrompt = ai.definePrompt({
   name: 'moodPrompt',
   input: { schema: GenerateMoodInputSchema },
   output: { schema: GenerateMoodOutputSchema },
+  model: 'googleai/gemini-1.5-flash-preview',
   prompt: `
     You are a creative AI assistant for a mood-based music app called "MoodyO".
     Your task is to generate a complete theme and a playlist for a new, custom mood based on the user's input.
