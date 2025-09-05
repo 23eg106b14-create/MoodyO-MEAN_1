@@ -76,7 +76,7 @@ body.custom-theme-active {
   transition: background .5s ease-in-out, color .5s ease-in-out;
 }
 
-.app.home-active {
+body.home-active .app {
   background: linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%);
   color: #e6eef8;
 }

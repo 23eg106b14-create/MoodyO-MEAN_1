@@ -138,12 +138,11 @@ export default function Home() {
     // Reset classes
     document.body.className = '';
     document.body.style.background = '';
-    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+    document.documentElement.style.setProperty('--page-accent', '#60a5fa'); // default accent
 
 
     if (activePage === 'home') {
         document.body.classList.add('home-active');
-        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
     } else if (moodDef) {
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
@@ -160,7 +159,7 @@ export default function Home() {
   // Hero Animations
   useEffect(() => {
     if (!isMounted || !appVisible) return;
-    const heroSection = homePageRef.current;
+    const heroSection = homePageRef.current?.querySelector('.creative-hero');
     if (!heroSection) return;
 
     const heroContent = heroSection.querySelector('.hero-content');
@@ -474,7 +473,7 @@ export default function Home() {
 
           <main>
             <section id="home" className={cn('page', {active: activePage === 'home'})} ref={homePageRef}>
-                <div className="home-section">
+                <div className="home-section creative-hero">
                   <div className="hero-content">
                     <h1 className="sr-only">MoodyO</h1>
                     <AnimatedText text="MoodyO" className="word" as="div" />
