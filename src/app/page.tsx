@@ -4,7 +4,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -101,28 +100,6 @@ const AnimatedText = ({ text, className, as: Component = 'div' }: { text: string
   );
 };
 
-const AnimatedHomeTitle = ({ text }: { text: string }) => {
-  const words = text.split(" ");
-  return (
-    <h2 className="home-title">
-      {words.map((word, wordIndex) => (
-        <span key={wordIndex} className="home-title-word">
-          {word.split("").map((char, charIndex) => (
-            <span
-              key={charIndex}
-              className="home-title-char"
-              style={{ transitionDelay: `${(wordIndex * 5 + charIndex) * 20}ms` }}
-            >
-              {char}
-            </span>
-          ))}
-        </span>
-      ))}
-    </h2>
-  );
-};
-
-
 export default function Home() {
   const [appVisible, setAppVisible] = useState(false);
   const [activePage, setActivePage] = useState('');
@@ -144,13 +121,6 @@ export default function Home() {
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
 
-  // Register GSAP plugins
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-    }
-  }, []);
-  
   // Hero Animations
   useEffect(() => {
     if (appVisible) return;
@@ -174,52 +144,45 @@ export default function Home() {
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
   }, [appVisible]);
 
-  // Home Page Scroll Animations
+  // Home Page Animations
   useEffect(() => {
     if (activePage !== 'home' || !homePageRef.current) return;
     
-    const ctx = gsap.context(() => {
-      // Big Title Animation
-      gsap.from(".home-hero-title .char", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: ".home-hero-title",
-          start: "top 80%",
-        }
-      });
-      
-      // "How are you feeling" Animation
-      gsap.from(".home-intro-wrapper", {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: ".home-intro-wrapper",
-          start: "top 80%",
-        }
-      });
-      
-      // Mood Cards Animation
-      gsap.from(".emotion-card-new, .create-mood-card", {
-        y: 50,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: ".home-mood-selector",
-          start: "top 80%",
-        }
-      });
+    const elementsToAnimate = [
+      homePageRef.current.querySelector('.home-intro'),
+      ...Array.from(homePageRef.current.querySelectorAll('.emotion-card-new, .create-mood-card'))
+    ];
 
-    }, homePageRef);
-    
-    return () => ctx.revert();
+    gsap.fromTo(elementsToAnimate, 
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power3.out',
+        delay: 0.2 // A small delay to ensure elements are ready
+      }
+    );
+  }, [activePage]);
+
+  // Mood Page Animation
+  useEffect(() => {
+    if (activePage && activePage !== 'home') {
+      const page = document.getElementById(activePage);
+      if (page) {
+        gsap.fromTo(page.querySelector('.glass'),
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power3.out',
+            delay: 0.2
+          }
+        );
+      }
+    }
   }, [activePage]);
 
   // Custom Cursor Animation
@@ -477,30 +440,24 @@ export default function Home() {
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })} ref={homePageRef}>
-                <div className="home-section">
-                   <AnimatedText text="Feel the Music" className="home-hero-title" as="h1" />
+                <div className="home-intro">
+                    <h2 className="home-title">How are you feeling today?</h2>
+                    <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
-                <div className="home-section home-intro-wrapper">
-                  <div className="home-intro">
-                      <h2 className="home-title">How are you feeling today?</h2>
-                      <p className="home-subtitle" style={{ opacity: .85 }}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
-                  </div>
-                </div>
-                <div className="home-section">
-                  <div className="home-mood-selector">
-                    {Object.entries(allMoods).map(([key, { emoji, title }]) => (
-                      <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
-                        <div className="card-content">
-                          <div className="emoji">{emoji}</div>
-                          <div className="title">{title.split('—')[0]}</div>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="emotion-card-new create-mood-card" onClick={() => setIsCustomMoodDialogOpen(true)}>
+
+                <div className="home-mood-selector">
+                  {Object.entries(allMoods).map(([key, { emoji, title }]) => (
+                    <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
                       <div className="card-content">
-                        <div className="emoji"><Wand2 size={72} /></div>
-                        <div className="title">Create Your Own</div>
+                        <div className="emoji">{emoji}</div>
+                        <div className="title">{title.split('—')[0]}</div>
                       </div>
+                    </div>
+                  ))}
+                  <div className="emotion-card-new create-mood-card" onClick={() => setIsCustomMoodDialogOpen(true)}>
+                    <div className="card-content">
+                      <div className="emoji"><Wand2 size={72} /></div>
+                      <div className="title">Create Your Own</div>
                     </div>
                   </div>
                 </div>
@@ -624,5 +581,3 @@ export default function Home() {
     </>
   );
 }
-
-    
