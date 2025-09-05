@@ -122,36 +122,38 @@ export default function Home() {
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
   const mainAppRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     setIsMounted(true);
     gsap.registerPlugin(ScrollTrigger);
   }, []);
-  
+
   // Theme Management
   useEffect(() => {
     if (!isMounted) return;
-  
+
     const allMoods = { ...MOOD_DEFS, ...customMoods };
     const moodDef = allMoods[activePage as keyof typeof allMoods];
-  
+
     // Reset classes
     document.body.className = '';
-  
+    document.body.style.background = '';
+    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+
+
     if (activePage === 'home') {
-      document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-      document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-      document.body.classList.add('home-active');
+        document.body.classList.add('home-active');
+        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
     } else if (moodDef) {
-      document.body.style.background = moodDef.bg;
-      document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-      
-      let classes = `${activePage}-active `;
-      classes += moodDef.themeClass || 'custom-theme-active ';
-      if (['happy', 'joyful', 'sad'].includes(activePage) || (customMoods[activePage] && !moodDef.themeClass.includes('depression'))) {
-        classes += 'theme-active ';
-      }
-      document.body.className = classes.trim();
+        document.body.style.background = moodDef.bg;
+        document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+        
+        let classes = `${activePage}-active `;
+        classes += moodDef.themeClass || 'custom-theme-active ';
+        if (['happy', 'joyful', 'sad'].includes(activePage) || (customMoods[activePage] && !moodDef.themeClass.includes('depression'))) {
+            classes += 'theme-active ';
+        }
+        document.body.className = classes.trim();
     }
   }, [activePage, customMoods, isMounted]);
 
@@ -419,7 +421,7 @@ export default function Home() {
   if (!isMounted) {
     return null;
   }
-
+  
   return (
     <>
       <div id="cursor-dot" ref={cursorDotRef} />
@@ -435,7 +437,7 @@ export default function Home() {
       )}
 
       {appVisible && (
-        <div className={'app'} ref={mainAppRef}>
+        <div className="app" ref={mainAppRef}>
           <header>
             <div className="header-inner">
                 <div className="logo">
@@ -480,7 +482,7 @@ export default function Home() {
                 </div>
 
                 <div className="home-section home-section-animate">
-                    <AnimatedText text="How are you feeling today?" className="home-title interactive-title" as="h2" />
+                    <AnimatedText text="How are you feeling today?" className="interactive-title" as="h2" />
                     <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
 
