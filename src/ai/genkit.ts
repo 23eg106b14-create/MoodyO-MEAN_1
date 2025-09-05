@@ -10,6 +10,6 @@ import * as z from 'zod';
 
 export const ai = genkit({
   plugins: [
-    googleAI(),
+    googleAI({ apiVersion: 'v1' }),
   ],
 });
