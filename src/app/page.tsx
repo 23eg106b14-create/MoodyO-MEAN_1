@@ -116,8 +116,8 @@ export default function Home() {
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const heroContentRef = useRef<HTMLDivElement>(null);
+  const introHeroRef = useRef<HTMLDivElement>(null);
+  const introHeroContentRef = useRef<HTMLDivElement>(null);
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
@@ -125,28 +125,17 @@ export default function Home() {
 
   // Hero Animations
   useEffect(() => {
-    if (appVisible) return;
-    const heroSection = heroRef.current;
-    if (!heroSection) return;
-
-    gsap.to(heroContentRef.current, {
-      scrollTrigger: {
-        trigger: heroSection,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-      },
-      y: 50,
-      opacity: 0,
-      ease: 'power1.out',
-    });
+    // This animation is for the interactive hero on the main app page, not the intro
+    const heroSection = homePageRef.current?.querySelector('.home-section');
+    const heroContent = homePageRef.current?.querySelector('.hero-content');
+    if (!heroSection || !heroContent ) return;
 
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const x = (clientX / window.innerWidth - 0.5) * 2;
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
-      gsap.to(heroContentRef.current, {
+      gsap.to(heroContent, {
         rotateY: x * 15,
         rotateX: y * -15,
         ease: 'power1.out',
@@ -154,7 +143,9 @@ export default function Home() {
     };
     
     heroSection.addEventListener('mousemove', onMouseMove);
-    return () => heroSection.removeEventListener('mousemove', onMouseMove);
+    return () => {
+      heroSection.removeEventListener('mousemove', onMouseMove)
+    };
   }, [appVisible]);
 
   // Home Page Scroll Animations
@@ -335,13 +326,13 @@ export default function Home() {
         }
       });
 
-      tl.to(heroContentRef.current, {
+      tl.to(introHeroContentRef.current, {
         duration: 0.8,
         opacity: 0,
         scale: 0.8,
         ease: 'power3.in',
       })
-      .to(heroRef.current, {
+      .to(introHeroRef.current, {
         duration: 0.6,
         opacity: 0,
         ease: 'power3.in'
@@ -427,8 +418,8 @@ export default function Home() {
       <div id="cursor-dot" ref={cursorDotRef} />
       <div id="cursor-ring" ref={cursorRingRef} />
       {!appVisible && (
-        <section className="creative-hero" ref={heroRef} onClick={enterApp}>
-            <div className="hero-content" ref={heroContentRef}>
+        <section className="creative-hero" ref={introHeroRef} onClick={enterApp}>
+            <div className="hero-content" ref={introHeroContentRef}>
               <h1 className="sr-only">MoodyO</h1>
               <AnimatedText text="MoodyO" className="word" as="div" />
             </div>
@@ -538,10 +529,6 @@ export default function Home() {
               </section>
             ))}
           </main>
-
-          <footer>
-            <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
-          </footer>
           
           {nowPlaying && currentTrack && (
             <div className="player-dialog-overlay">
@@ -619,6 +606,9 @@ export default function Home() {
               </form>
             </DialogContent>
           </Dialog>
+           <footer>
+            <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
+          </footer>
         </div>
       )}
     </>
