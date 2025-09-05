@@ -81,14 +81,24 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   font-size: 2.5rem; 
   font-weight: 700;
   line-height: 1.2;
-}
-.home-title-word-wrapper {
-  display: inline-block;
-  overflow: hidden;
-  margin: 0 0.1em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.1em;
+  cursor: pointer;
 }
 .home-title-word {
+  display: flex;
+}
+.home-title-char {
   display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+.home-title:hover .home-title-char {
+  transform: translateY(-5px) rotate(5deg);
+}
+.home-title:hover .home-title-char:nth-child(2n) {
+  transform: translateY(5px) rotate(-5deg);
 }
 
 .home-subtitle { font-size: 1.1rem; max-width: 500px; margin: 8px auto 0; opacity: 0.8; }
@@ -583,5 +593,3 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .custom-theme-active .main-menu-sheet.sheet-content {
   color: var(--text) !important;
 }
-
-    

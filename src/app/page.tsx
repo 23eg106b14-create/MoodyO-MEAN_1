@@ -100,6 +100,27 @@ const AnimatedText = ({ text, className }: { text: string, className?: string })
   );
 };
 
+const AnimatedHomeTitle = ({ text }: { text: string }) => {
+  const words = text.split(" ");
+  return (
+    <h2 className="home-title">
+      {words.map((word, wordIndex) => (
+        <span key={wordIndex} className="home-title-word">
+          {word.split("").map((char, charIndex) => (
+            <span
+              key={charIndex}
+              className="home-title-char"
+              style={{ transitionDelay: `${(wordIndex * 5 + charIndex) * 20}ms` }}
+            >
+              {char}
+            </span>
+          ))}
+        </span>
+      ))}
+    </h2>
+  );
+};
+
 
 export default function Home() {
   const [appVisible, setAppVisible] = useState(false);
@@ -151,16 +172,16 @@ export default function Home() {
   // Home page entrance animation
   useEffect(() => {
     if (appVisible && activePage === 'home') {
-      const homeTitleWords = document.querySelectorAll('.home-title-word');
+      const homeTitleChars = document.querySelectorAll('.home-title-char');
       const homeSubtitle = document.querySelector('#home .home-subtitle');
       const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
       
       const tl = gsap.timeline();
-      tl.fromTo(homeTitleWords, 
-        { opacity: 0, y: 25 }, 
-        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' }
+      tl.fromTo(homeTitleChars, 
+        { opacity: 0, y: 30, rotateX: -90 }, 
+        { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
       )
-      .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.4")
+      .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
       .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
     }
   }, [appVisible, activePage]);
@@ -420,23 +441,7 @@ export default function Home() {
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })}>
                 <div className="home-intro">
-                    <h2 className="home-title">
-                      <span className="home-title-word-wrapper">
-                        <span className="home-title-word">How</span>
-                      </span>
-                      <span className="home-title-word-wrapper">
-                        <span className="home-title-word">are</span>
-                      </span>
-                      <span className="home-title-word-wrapper">
-                        <span className="home-title-word">you</span>
-                      </span>
-                      <span className="home-title-word-wrapper">
-                        <span className="home-title-word">feeling</span>
-                      </span>
-                      <span className="home-title-word-wrapper">
-                        <span className="home-title-word">today?</span>
-                      </span>
-                    </h2>
+                    <AnimatedHomeTitle text="How are you feeling today?" />
                     <p className="home-subtitle" style={{ opacity: .85 }}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
                 <div className="home-mood-selector">
@@ -543,5 +548,3 @@ export default function Home() {
     </>
   );
 }
-
-    
