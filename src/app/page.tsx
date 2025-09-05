@@ -217,31 +217,32 @@ export default function Home() {
       const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
       
       const tl = gsap.timeline();
-      tl.set([homeTitleChars, homeSubtitle, cards], { clearProps: 'all' })
-        .fromTo(homeTitleChars, 
-          { opacity: 0, y: 30, rotateX: -90 }, 
-          { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
+      tl.set([homeTitleChars, homeSubtitle, cards], { autoAlpha: 0, y: 30 })
+        .to(homeTitleChars, 
+          { autoAlpha: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
         )
-        .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
-        .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
+        .to(homeSubtitle, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
+        .to(cards, { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
     }
   }, [appVisible, activePage]);
   
   // Mood page entrance animation
   useEffect(() => {
-    if (activePage !== 'home' && activePage !== '') {
+    if (activePage && activePage !== 'home') {
       const songCards = document.querySelectorAll(`#${activePage} .song-card`);
-      gsap.fromTo(songCards, 
-        { opacity: 0, y: 30, scale: 0.95 }, 
-        { 
-          opacity: 1, 
-          y: 0, 
-          scale: 1, 
-          duration: 0.5, 
-          stagger: 0.08, 
-          ease: 'back.out(1.4)' 
-        }
-      );
+      if (songCards.length > 0) {
+        gsap.fromTo(songCards, 
+          { opacity: 0, y: 30, scale: 0.95 }, 
+          { 
+            opacity: 1, 
+            y: 0, 
+            scale: 1, 
+            duration: 0.5, 
+            stagger: 0.08, 
+            ease: 'back.out(1.4)' 
+          }
+        );
+      }
     }
   }, [activePage]);
 
@@ -300,28 +301,31 @@ export default function Home() {
   }
 
  const openPage = (id: string) => {
-    gsap.to('.page.active', {
+    if (activePage === id) return;
+
+    const currentPage = document.querySelector('.page.active');
+    gsap.to(currentPage, {
       opacity: 0,
       duration: 0.3,
       ease: 'power2.in',
       onComplete: () => {
         setActivePage(id);
-        document.body.className = id ? `${id}-active` : '';
         
         const allMoods = {...MOOD_DEFS, ...customMoods};
         const moodDef = allMoods[id as keyof typeof allMoods];
 
-        if (moodDef) {
+        if (id === 'home') {
+            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+            document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+            document.body.className = 'home-active';
+        } else if (moodDef) {
             document.body.style.background = moodDef.bg;
             document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+            document.body.className = id ? `${id}-active` : '';
             document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
             if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
               document.body.classList.add('theme-active');
             }
-        } else { // Home page
-            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-            document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-            document.body.className = 'home-active';
         }
         setIsMenuSheetOpen(false);
       }
@@ -332,7 +336,7 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
             setAppVisible(true);
-            openPage('home');
+            setActivePage('home');
         }
       });
 
