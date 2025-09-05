@@ -495,7 +495,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 .interactive-title {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: 700;
   display: flex;
   flex-wrap: wrap;
@@ -674,3 +674,5 @@ body.custom-theme-active .main-menu-sheet.sheet-content {
   opacity: 1;
   transform: scale(1.3);
 }
+
+    
