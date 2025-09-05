@@ -27,6 +27,7 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
+  transition: background .5s ease-in-out;
 }
 
 #cursor-dot {
@@ -57,10 +58,10 @@ body{
 }
 
 
-.app.happy-active,
-.app.joyful-active,
-.app.sad-active,
-.app.custom-theme-active {
+body.happy-active,
+body.joyful-active,
+body.sad-active,
+body.custom-theme-active {
   --text: #2b2b2b;
 }
 
@@ -72,10 +73,9 @@ body{
   margin:0 auto;
   padding:48px;
   color: var(--text);
-  transition: background .5s ease-in-out;
 }
 
-.app.home-active {
+body.home-active .app {
   color: #e6eef8;
 }
 
@@ -223,8 +223,8 @@ section.page.active{
 }
 
 
-.app.home-active .logo,
-.app.home-active .nav-btn {
+body.home-active .logo,
+body.home-active .nav-btn {
   color: #e6eef8;
 }
 
@@ -232,7 +232,7 @@ section.page.active{
 
 /* theme badges */
 .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);font-size:12px}
-.app.theme-active .badge {
+body.theme-active .badge {
   background: rgba(0,0,0,0.05);
   border-color: rgba(0,0,0,0.1);
 }
@@ -497,8 +497,8 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   color: #e6eef8;
 }
 
-.app.theme-active .sheet-content,
-.app.custom-theme-active .sheet-content {
+body.theme-active .sheet-content,
+body.custom-theme-active .sheet-content {
   color: var(--text);
 }
 
@@ -600,20 +600,20 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 
-.app.theme-active .main-menu-sheet.sheet-content,
-.app.custom-theme-active .main-menu-sheet.sheet-content {
+body.theme-active .main-menu-sheet.sheet-content,
+body.custom-theme-active .main-menu-sheet.sheet-content {
   color: #e6eef8;
 }
 
-.app.depression-active .main-menu-sheet.sheet-content {
+body.depression-active .main-menu-sheet.sheet-content {
   color: #F3E5F5;
 }
 
-.app.custom-theme-active body {
+body.custom-theme-active body {
   color: var(--text);
 }
 
-.app.custom-theme-active .main-menu-sheet.sheet-content {
+body.custom-theme-active .main-menu-sheet.sheet-content {
   color: var(--text) !important;
 }
 
