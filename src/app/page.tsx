@@ -102,8 +102,9 @@ const AnimatedText = ({ text, className, as: Component = 'div' }: { text: string
 };
 
 export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
   const [appVisible, setAppVisible] = useState(false);
-  const [activePage, setActivePage] = useState('');
+  const [activePage, setActivePage] = useState('home');
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
@@ -122,13 +123,20 @@ export default function Home() {
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
   const mainAppRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    setIsMounted(true);
+    document.body.className = 'home-active';
+    document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+  }, []);
 
   // Hero Animations
   useEffect(() => {
     // This animation is for the interactive hero on the main app page, not the intro
     const heroSection = homePageRef.current?.querySelector('.home-section');
-    const heroContent = homePageRef.current?.querySelector('.hero-content');
-    if (!heroSection || !heroContent ) return;
+    const heroContent = homePagef.current?.querySelector('.hero-content');
+    if (!heroSection || !heroContent || !appVisible ) return;
 
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -289,7 +297,7 @@ export default function Home() {
     const moodDef = allMoods[id as keyof typeof allMoods];
 
     const tl = gsap.timeline({
-      onComplete: () => {
+      onStart: () => {
         setActivePage(id);
         if (id === 'home') {
             document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
@@ -312,6 +320,7 @@ export default function Home() {
     }
     
     if (targetPage) {
+        tl.set(targetPage, { display: 'block' });
         tl.to(targetPage, { opacity: 1, duration: 0.4, ease: 'power3.inOut' }, currentPage ? '-=0.2' : 0);
     }
     
@@ -322,7 +331,7 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
             setAppVisible(true);
-            setActivePage('home');
+            openPage('home');
         }
       });
 
@@ -335,7 +344,10 @@ export default function Home() {
       .to(introHeroRef.current, {
         duration: 0.6,
         opacity: 0,
-        ease: 'power3.in'
+        ease: 'power3.in',
+        onComplete: () => {
+          gsap.set(introHeroRef.current, { display: 'none' });
+        }
       }, "-=0.6");
   };
 
@@ -412,6 +424,10 @@ export default function Home() {
       </AccordionItem>
     </Accordion>
   );
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
