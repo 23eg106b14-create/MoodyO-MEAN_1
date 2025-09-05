@@ -158,8 +158,12 @@ export default function Home() {
 
     window.addEventListener('mousemove', onMouseMove);
 
-    const addHover = () => cursor.classList.add('hover');
-    const removeHover = () => cursor.classList.remove('hover');
+    const addHover = (e: MouseEvent) => {
+      gsap.to(cursor, { scale: 3, duration: 0.3 });
+    };
+    const removeHover = (e: MouseEvent) => {
+      gsap.to(cursor, { scale: 1, duration: 0.3 });
+    };
 
     document.querySelectorAll('button, a, .emotion-card-new, .song-card, .emoji-option, .player-close-btn').forEach(el => {
       el.addEventListener('mouseenter', addHover);
@@ -213,7 +217,7 @@ export default function Home() {
       const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
       
       const tl = gsap.timeline();
-      tl.set([homeTitleChars, homeSubtitle, cards], { clearProps: 'all' }) // Reset properties
+      tl.set([homeTitleChars, homeSubtitle, cards], { clearProps: 'all' })
         .fromTo(homeTitleChars, 
           { opacity: 0, y: 30, rotateX: -90 }, 
           { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
