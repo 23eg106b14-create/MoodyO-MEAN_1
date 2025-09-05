@@ -124,7 +124,7 @@ const AnimatedHomeTitle = ({ text }: { text: string }) => {
 
 export default function Home() {
   const [appVisible, setAppVisible] = useState(false);
-  const [activePage, setActivePage] = useState('home');
+  const [activePage, setActivePage] = useState('');
   const [nowPlaying, setNowPlaying] = useState<{ mood: string; index: number } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
@@ -294,29 +294,7 @@ export default function Home() {
     });
   }
 
-
-  const enterApp = () => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-            setAppVisible(true);
-            openPage('home');
-        }
-      });
-
-      tl.to(heroContentRef.current, {
-        duration: 0.8,
-        opacity: 0,
-        scale: 0.8,
-        ease: 'power3.in',
-      })
-      .to(heroRef.current, {
-        duration: 0.6,
-        opacity: 0,
-        ease: 'power3.in'
-      }, "-=0.6");
-  };
-
-  const openPage = (id: string) => {
+ const openPage = (id: string) => {
     gsap.to('.page.active', {
       opacity: 0,
       duration: 0.3,
@@ -344,10 +322,26 @@ export default function Home() {
       }
     });
   };
-  
-  const goHome = () => {
-    setIsMenuSheetOpen(false);
-    openPage('home');
+
+  const enterApp = () => {
+      const tl = gsap.timeline({
+        onComplete: () => {
+            setAppVisible(true);
+            openPage('home');
+        }
+      });
+
+      tl.to(heroContentRef.current, {
+        duration: 0.8,
+        opacity: 0,
+        scale: 0.8,
+        ease: 'power3.in',
+      })
+      .to(heroRef.current, {
+        duration: 0.6,
+        opacity: 0,
+        ease: 'power3.in'
+      }, "-=0.6");
   };
 
   const handleGenerateMood = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -455,7 +449,7 @@ export default function Home() {
                         <SheetContent side="left" className="main-menu-sheet sheet-content">
                           <SheetHeader>
                              <SheetTitle className="sr-only">Main Menu</SheetTitle>
-                            <a href="#" onClick={(e) => { e.preventDefault(); goHome(); }} className="logo">MoodyO</a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }} className="logo">MoodyO</a>
                           </SheetHeader>
                           <div className="flex flex-col py-4">
                              <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }}>Home</a>
@@ -616,5 +610,3 @@ export default function Home() {
     </>
   );
 }
-
-    
