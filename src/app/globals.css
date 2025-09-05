@@ -35,9 +35,11 @@ body.theme-active {
 
 .happy-active,
 .joyful-active,
-.sad-active {
+.sad-active,
+.custom-theme-active {
   --text: #2b2b2b;
 }
+
 
 /* app shell */
 .app{max-width:1200px;margin:0 auto;padding:48px}
@@ -137,6 +139,21 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .joyful{background: linear-gradient(135deg, #FFF0F6 0%, #FF80AB 100%);color:#2b2b2b}
 .sad{background: linear-gradient(135deg, #E3F2FD 0%, #90CAF9 100%);color:#2b2b2b}
 .depression{background:#000000;color:#F3E5F5}
+.create-mood-card{
+  background: var(--glass-bg);
+  color: var(--text);
+  border-style: dashed;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.create-mood-card .card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.create-mood-card .title { font-size: 1.5rem; }
 
 
 .emotion-card-new::after{content:'';position:absolute;inset:0;mix-blend-mode:soft-light;opacity:.06; background: var(--bg-image)}
@@ -453,7 +470,8 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   color: #e6eef8;
 }
 
-.theme-active .sheet-content {
+.theme-active .sheet-content,
+.custom-theme-active .sheet-content {
   color: var(--text);
 }
 
@@ -555,10 +573,19 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 }
 
 
-.theme-active .main-menu-sheet.sheet-content {
+.theme-active .main-menu-sheet.sheet-content,
+.custom-theme-active .main-menu-sheet.sheet-content {
   color: #e6eef8;
 }
 
 .depression-active .main-menu-sheet.sheet-content {
   color: #F3E5F5;
+}
+
+.custom-theme-active body {
+  color: var(--text);
+}
+
+.custom-theme-active .main-menu-sheet.sheet-content {
+  color: var(--text) !important;
 }

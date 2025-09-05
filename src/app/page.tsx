@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -13,7 +13,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
 
 
 // GSAP Plugin registration
@@ -22,7 +26,16 @@ if (typeof window !== 'undefined') {
 }
 
 // --- Data Definitions ---
-const MOOD_DEFS = {
+type MoodDefinition = {
+  title: string;
+  subtitle: string;
+  accent: string;
+  bg: string;
+  emoji: string;
+  themeClass: string;
+};
+
+const MOOD_DEFS: { [key: string]: MoodDefinition } = {
   happy: {
     title: 'Happy — Vibrant Beats',
     subtitle: 'Feel-good tracks with a deep groove',
@@ -74,7 +87,7 @@ const SAMPLE_TRACKS = (baseIdx = 1): Track[] => Array.from({ length: 10 }, (_, i
   cover: `https://picsum.photos/seed/h${baseIdx + i}/600/600`
 }));
 
-const TRACKS = {
+const STATIC_TRACKS = {
   happy: SAMPLE_TRACKS(0),
   joyful: SAMPLE_TRACKS(4),
   sad: SAMPLE_TRACKS(8),
@@ -82,13 +95,13 @@ const TRACKS = {
 };
 
 const MOON_ICONS = [
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '5%', left: '5%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '15%', left: '90%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '90%', left: '10%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '85%', left: '85%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '50%', left: '95%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '50%' } },
-  { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '5%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '5%', left: '5%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '5%', left: '95%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '95%', left: '5%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '95%', left: '95%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '50%', left: '95%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '50%' } },
+    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '5%' } },
 ];
 
 
@@ -99,6 +112,10 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Track[]>([]);
+  const [isCustomMoodDialogOpen, setIsCustomMoodDialogOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [customMoods, setCustomMoods] = useState<Record<string, MoodDefinition>>({});
+  const [tracks, setTracks] = useState<Record<string, Track[]>>(STATIC_TRACKS);
 
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -127,16 +144,18 @@ export default function Home() {
     
     // Icon drift animation
     moonRefs.current.forEach((moon) => {
-      if (!moon) return;
+        if (!moon) return;
+        const startX = gsap.getProperty(moon, "x");
+        const startY = gsap.getProperty(moon, "y");
+        
         gsap.to(moon, {
-        x: (Math.random() * 80 - 40),
-        y: (Math.random() * 80 - 40),
-        rotation: Math.random() * 180 - 90,
-        duration: 15 + Math.random() * 10,
-        ease: 'power2.inOut',
-        repeat: -1,
-        yoyo: true,
-      });
+            x: Number(startX) + (Math.random() * 60 - 30),
+            y: Number(startY) + (Math.random() * 60 - 30),
+            duration: 8 + Math.random() * 7,
+            ease: 'power1.inOut',
+            repeat: -1,
+            yoyo: true,
+        });
     });
     
     heroSection.addEventListener('mousemove', onMouseMove);
@@ -155,7 +174,7 @@ export default function Home() {
     if (appVisible && activePage === 'home') {
       const homeTitle = document.querySelector('#home .home-title');
       const homeSubtitle = document.querySelector('#home .home-subtitle');
-      const cards = document.querySelectorAll('.emotion-card-new');
+      const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
       
       const tl = gsap.timeline();
       tl.fromTo(homeTitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
@@ -174,7 +193,7 @@ export default function Home() {
   const handleNext = () => {
     if (!nowPlaying) return;
     const { mood, index } = nowPlaying;
-    const playlist = TRACKS[mood as keyof typeof TRACKS];
+    const playlist = tracks[mood as keyof typeof tracks];
     const nextIndex = (index + 1) % playlist.length;
     setNowPlaying({ mood, index: nextIndex });
     setIsPlaying(true);
@@ -183,14 +202,14 @@ export default function Home() {
   const handlePrev = () => {
     if (!nowPlaying) return;
     const { mood, index } = nowPlaying;
-    const playlist = TRACKS[mood as keyof typeof TRACKS];
+    const playlist = tracks[mood as keyof typeof tracks];
     const prevIndex = (index - 1 + playlist.length) % playlist.length;
     setNowPlaying({ mood, index: prevIndex });
     setIsPlaying(true);
   };
   
   const openPlayer = (mood: string, index: number) => {
-    const playlist = TRACKS[mood as keyof typeof TRACKS];
+    const playlist = tracks[mood as keyof typeof tracks];
     setNowPlaying({ mood, index: index % playlist.length });
     setIsPlaying(true);
   };
@@ -251,12 +270,14 @@ export default function Home() {
     setActivePage(id);
     document.body.className = id ? `${id}-active` : '';
     
-    const moodDef = MOOD_DEFS[id as keyof typeof MOOD_DEFS];
+    const allMoods = {...MOOD_DEFS, ...customMoods};
+    const moodDef = allMoods[id as keyof typeof allMoods];
+
     if (moodDef) {
         document.body.style.background = moodDef.bg;
         document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-        document.body.classList.add(moodDef.themeClass);
-        if (['happy', 'joyful', 'sad'].includes(id)) {
+        document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
+        if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
           document.body.classList.add('theme-active');
         }
         gsap.fromTo('body',{backgroundPosition:'60% 60%'},{duration:.8,backgroundPosition:'40% 40%',ease:'power2.out'});
@@ -312,7 +333,57 @@ export default function Home() {
     });
   };
 
-  const currentTrack = nowPlaying ? TRACKS[nowPlaying.mood as keyof typeof TRACKS][nowPlaying.index] : null;
+  const handleGenerateMood = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsGenerating(true);
+    const formData = new FormData(e.currentTarget);
+    const input: GenerateMoodInput = {
+      name: formData.get('name') as string,
+      emoji: formData.get('emoji') as string,
+      description: formData.get('description') as string,
+    };
+
+    try {
+      const result = await generateMood(input);
+      const moodId = input.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+      setCustomMoods(prev => ({
+        ...prev,
+        [moodId]: {
+          title: `${result.title} — AI Generated`,
+          subtitle: result.subtitle,
+          accent: result.theme.accent,
+          bg: `linear-gradient(135deg, ${result.theme.start} 0%, ${result.theme.end} 100%)`,
+          emoji: input.emoji,
+          themeClass: 'custom-theme-active'
+        }
+      }));
+
+      const newTracks = result.playlist.map((song, index) => ({
+        ...song,
+        src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(1 + index) % 16 + 1}.mp3`,
+        cover: `https://picsum.photos/seed/${moodId}${index}/600/600`,
+      }));
+
+      setTracks(prev => ({
+        ...prev,
+        [moodId]: newTracks,
+      }));
+      
+      setIsCustomMoodDialogOpen(false);
+      openPage(moodId);
+
+    } catch (error) {
+      console.error("Failed to generate mood:", error);
+      // You could show a toast notification here
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+
+  const currentTrack = nowPlaying ? tracks[nowPlaying.mood as keyof typeof tracks][nowPlaying.index] : null;
+  const allMoods = { ...MOOD_DEFS, ...customMoods };
 
   const NavMenu = () => (
     <Accordion type="single" collapsible className="w-full">
@@ -410,9 +481,9 @@ export default function Home() {
                           </SheetHeader>
                           <div className="flex flex-col py-4">
                              <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }}>Home</a>
-                            {Object.keys(MOOD_DEFS).map(mood => (
+                            {Object.keys(allMoods).map(mood => (
                               <a key={mood} href="#" onClick={(e) => { e.preventDefault(); openPage(mood); }}>
-                                {mood.charAt(0).toUpperCase() + mood.slice(1)}
+                                {allMoods[mood].title.split('—')[0]}
                               </a>
                             ))}
                           </div>
@@ -432,7 +503,7 @@ export default function Home() {
                     <p className="home-subtitle" style={{ opacity: .85 }}>Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
                 <div className="home-mood-selector">
-                  {Object.entries(MOOD_DEFS).map(([key, { emoji, title }]) => (
+                  {Object.entries(allMoods).map(([key, { emoji, title }]) => (
                     <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
                       <div className="card-content">
                         <div className="emoji">{emoji}</div>
@@ -440,10 +511,16 @@ export default function Home() {
                       </div>
                     </div>
                   ))}
+                  <div className="emotion-card-new create-mood-card" onClick={() => setIsCustomMoodDialogOpen(true)}>
+                    <div className="card-content">
+                      <div className="emoji"><Wand2 size={72} /></div>
+                      <div className="title">Create Your Own</div>
+                    </div>
+                  </div>
                 </div>
             </section>
 
-            {Object.entries(MOOD_DEFS).map(([mood, def]) => (
+            {Object.entries(allMoods).map(([mood, def]) => (
               <section key={mood} id={mood} className={cn('page', { active: activePage === mood })}>
                 <div className="glass">
                   <div className="page-header">
@@ -454,12 +531,12 @@ export default function Home() {
                   </div>
                   <div className="song-grid-container">
                     <div className="song-grid">
-                      {[...TRACKS[mood as keyof typeof TRACKS], ...TRACKS[mood as keyof typeof TRACKS]].map((track, index) => (
+                      {tracks[mood] && [...tracks[mood], ...tracks[mood]].map((track, index) => (
                         <div key={index} className="song-card" onClick={() => openPlayer(mood, index)}>
                           <Image className="cover" src={track.cover} alt={`${track.title} cover`} width={200} height={200} data-ai-hint="song cover" />
                           <div className="song-card-content">
                             <div className="song-title-wrapper">
-                                <button onClick={(e) => handleLike(e, { ...track, mood: mood, index: index % TRACKS[mood as keyof typeof TRACKS].length })} className={cn('like-btn', { 'liked': isLiked(track) })}>
+                                <button onClick={(e) => handleLike(e, { ...track, mood: mood, index: index % tracks[mood].length })} className={cn('like-btn', { 'liked': isLiked(track) })}>
                                   <Heart size={18} />
                                 </button>
                                 <div className="song-title">{track.title}</div>
@@ -507,10 +584,25 @@ export default function Home() {
             </div>
         </div>
       )}
+
+      <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
+        <DialogContent className="sheet-content glass">
+          <DialogHeader>
+            <DialogTitle>Create a Custom Mood</DialogTitle>
+            <DialogDescription>
+              Describe the vibe, and AI will generate a unique mood page for you.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
+            <Input name="name" placeholder="Mood Name (e.g., Cosmic Jazz)" required />
+            <Input name="emoji" placeholder="Emoji (e.g., 🎷)" required maxLength={2} />
+            <Input name="description" placeholder="Description (e.g., Late night jazz in a space lounge)" required />
+            <Button type="submit" disabled={isGenerating}>
+              {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
-
-    
-
-    
