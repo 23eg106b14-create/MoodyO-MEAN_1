@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader } from 'lucide-react';
+import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader, Smile, Music } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -503,6 +503,29 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+
+                <div className="home-section home-section-animate">
+                    <AnimatedText text="How It Works" className="interactive-title" as="h2" />
+                    <p className="home-subtitle">Three easy steps to your perfect vibe.</p>
+                    <div className="how-it-works-grid">
+                      <div className="how-it-works-step">
+                        <Smile className="icon" />
+                        <h3>1. Choose Your Mood</h3>
+                        <p>Select from our curated moods or get creative and generate your own with AI.</p>
+                      </div>
+                      <div className="how-it-works-step">
+                        <Wand2 className="icon" />
+                        <h3>2. Get Your Vibe</h3>
+                        <p>Instantly receive a unique playlist, color theme, and atmosphere tailored to you.</p>
+                      </div>
+                      <div className="how-it-works-step">
+                        <Music className="icon" />
+                        <h3>3. Listen & Enjoy</h3>
+                        <p>Immerse yourself in the music and discover new tracks that perfectly match your feeling.</p>
+                      </div>
+                    </div>
+                </div>
+
             </section>
 
             {Object.entries(allMoods).map(([mood, def]) => (
