@@ -18,6 +18,7 @@
 *{box-sizing:border-box}
 html,body{
   height:100%;
+  cursor: none;
 }
 body{
   margin:0;
@@ -28,12 +29,25 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
-  transition: background .6s ease, color .6s ease;
 }
 
 body.theme-active {
   color: var(--text);
 }
+
+#cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.5);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
 
 .happy-active,
 .joyful-active,
@@ -187,7 +201,10 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 
 /* page sections */
 section.page{display:none}
-section.page.active{display:block; animation: page-fade-in .6s var(--ease-out-quad);}
+section.page.active{
+  display:block; 
+  animation: page-fade-in .6s var(--ease-out-quad) forwards;
+}
 
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(20px); }

@@ -139,6 +139,7 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   
   // Hero Animations
@@ -163,6 +164,25 @@ export default function Home() {
     heroSection.addEventListener('mousemove', onMouseMove);
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
   }, [appVisible]);
+
+  // Custom Cursor Animation
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.3,
+        ease: 'power3.out',
+      });
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+    };
+  }, []);
 
   // Audio Player Logic
   useEffect(() => {
@@ -346,6 +366,7 @@ export default function Home() {
 
   return (
     <>
+      <div id="cursor" ref={cursorRef} />
       {!appVisible && (
         <section className="creative-hero" ref={heroRef} onClick={enterApp}>
             <div className="hero-content" ref={heroContentRef}>
