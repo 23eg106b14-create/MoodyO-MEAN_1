@@ -438,39 +438,39 @@ export default function Home() {
 
       {appVisible && (
         <div className="app" ref={mainAppRef}>
-              <header>
-                <div className="header-inner">
-                    <div className="logo">
-                      MoodyO
-                    </div>
-                    <nav>
-                      <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
-                        <SheetTrigger asChild>
-                           <button className="nav-btn">
-                            <Menu size={20} />
-                          </button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="main-menu-sheet sheet-content">
-                          <SheetHeader>
-                             <SheetTitle className="sr-only">Main Menu</SheetTitle>
-                            <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }} className="logo">MoodyO</a>
-                          </SheetHeader>
-                          <div className="flex flex-col py-4">
-                             <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }}>Home</a>
-                            {Object.keys(allMoods).map(mood => (
-                              <a key={mood} href="#" onClick={(e) => { e.preventDefault(); openPage(mood); }}>
-                                {allMoods[mood].title.split('—')[0]}
-                              </a>
-                            ))}
-                          </div>
-                           <div className="p-4 border-t border-glass-border">
-                             <NavMenu />
-                           </div>
-                        </SheetContent>
-                      </Sheet>
-                    </nav>
+          <header>
+            <div className="header-inner">
+                <div className="logo">
+                  MoodyO
                 </div>
-              </header>
+                <nav>
+                  <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
+                    <SheetTrigger asChild>
+                       <button className="nav-btn">
+                        <Menu size={20} />
+                      </button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="main-menu-sheet sheet-content">
+                      <SheetHeader>
+                         <SheetTitle className="sr-only">Main Menu</SheetTitle>
+                        <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }} className="logo">MoodyO</a>
+                      </SheetHeader>
+                      <div className="flex flex-col py-4">
+                         <a href="#" onClick={(e) => { e.preventDefault(); openPage('home'); }}>Home</a>
+                        {Object.keys(allMoods).map(mood => (
+                          <a key={mood} href="#" onClick={(e) => { e.preventDefault(); openPage(mood); }}>
+                            {allMoods[mood].title.split('—')[0]}
+                          </a>
+                        ))}
+                      </div>
+                       <div className="p-4 border-t border-glass-border">
+                         <NavMenu />
+                       </div>
+                    </SheetContent>
+                  </Sheet>
+                </nav>
+            </div>
+          </header>
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })} ref={homePageRef}>
@@ -543,85 +543,85 @@ export default function Home() {
           <footer>
             <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
           </footer>
+          
+          {nowPlaying && currentTrack && (
+            <div className="player-dialog-overlay">
+                <div className="player-dialog glass">
+                    <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
+                    <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
+                    <div className="player-info">
+                        <h3>{currentTrack.title}</h3>
+                        <p>{currentTrack.artist}</p>
+                    </div>
+                     <div className="player-controls">
+                        <button onClick={handlePrev}><SkipBack /></button>
+                        <button onClick={handlePlayPause} className="play-main-btn">
+                            {isPlaying ? <Pause size={32} /> : <Play size={32} />}
+                        </button>
+                        <button onClick={handleNext}><SkipForward /></button>
+                    </div>
+                     <div className="player-actions">
+                        <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                            <Heart size={24} />
+                        </button>
+                    </div>
+                    <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
+                </div>
+            </div>
+          )}
+
+          <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
+            <DialogContent className="sheet-content glass">
+              <DialogHeader>
+                <DialogTitle>Create a Custom Mood</DialogTitle>
+                <DialogDescription>
+                  Describe the vibe, and AI will generate a unique mood page for you.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
+                <Input 
+                  name="name" 
+                  placeholder="Mood Name (e.g., Cosmic Jazz)" 
+                  required 
+                  value={customMoodFormData.name}
+                  onChange={(e) => setCustomMoodFormData({...customMoodFormData, name: e.target.value })}
+                />
+                 <div>
+                  <div className="emoji-picker">
+                    {['🎷', '📚', '🌧️', '🌲', '🚀', '👾'].map(emoji => (
+                      <span 
+                        key={emoji}
+                        className={cn('emoji-option', { selected: customMoodFormData.emoji === emoji })}
+                        onClick={() => setCustomMoodFormData({...customMoodFormData, emoji })}
+                      >
+                        {emoji}
+                      </span>
+                    ))}
+                  </div>
+                  <Input 
+                    name="emoji" 
+                    placeholder="Select an emoji from above or type one" 
+                    required 
+                    maxLength={2} 
+                    value={customMoodFormData.emoji}
+                    onChange={(e) => setCustomMoodFormData({...customMoodFormData, emoji: e.target.value })}
+                  />
+                </div>
+                <Input 
+                  name="description" 
+                  placeholder="Description (e.g., Late night jazz in a space lounge)" _
+                  required
+                  value={customMoodFormData.description}
+                  onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
+                />
+                <Button type="submit" disabled={isGenerating || !isFormValid}>
+                  {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
-
-      {nowPlaying && currentTrack && (
-        <div className="player-dialog-overlay">
-            <div className="player-dialog glass">
-                <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
-                <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
-                <div className="player-info">
-                    <h3>{currentTrack.title}</h3>
-                    <p>{currentTrack.artist}</p>
-                </div>
-                 <div className="player-controls">
-                    <button onClick={handlePrev}><SkipBack /></button>
-                    <button onClick={handlePlayPause} className="play-main-btn">
-                        {isPlaying ? <Pause size={32} /> : <Play size={32} />}
-                    </button>
-                    <button onClick={handleNext}><SkipForward /></button>
-                </div>
-                 <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
-                        <Heart size={24} />
-                    </button>
-                </div>
-                <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
-            </div>
-        </div>
-      )}
-
-      <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
-        <DialogContent className="sheet-content glass">
-          <DialogHeader>
-            <DialogTitle>Create a Custom Mood</DialogTitle>
-            <DialogDescription>
-              Describe the vibe, and AI will generate a unique mood page for you.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
-            <Input 
-              name="name" 
-              placeholder="Mood Name (e.g., Cosmic Jazz)" 
-              required 
-              value={customMoodFormData.name}
-              onChange={(e) => setCustomMoodFormData({...customMoodFormData, name: e.target.value })}
-            />
-             <div>
-              <div className="emoji-picker">
-                {['🎷', '📚', '🌧️', '🌲', '🚀', '👾'].map(emoji => (
-                  <span 
-                    key={emoji}
-                    className={cn('emoji-option', { selected: customMoodFormData.emoji === emoji })}
-                    onClick={() => setCustomMoodFormData({...customMoodFormData, emoji })}
-                  >
-                    {emoji}
-                  </span>
-                ))}
-              </div>
-              <Input 
-                name="emoji" 
-                placeholder="Select an emoji from above or type one" 
-                required 
-                maxLength={2} 
-                value={customMoodFormData.emoji}
-                onChange={(e) => setCustomMoodFormData({...customMoodFormData, emoji: e.target.value })}
-              />
-            </div>
-            <Input 
-              name="description" 
-              placeholder="Description (e.g., Late night jazz in a space lounge)" 
-              required
-              value={customMoodFormData.description}
-              onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
-            />
-            <Button type="submit" disabled={isGenerating || !isFormValid}>
-              {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
