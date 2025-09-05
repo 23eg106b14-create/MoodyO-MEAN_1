@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
+import { ThemeProvider } from '@/components/theme-provider';
 
 
 // --- Data Definitions ---
@@ -131,48 +132,6 @@ export default function Home() {
     setIsMounted(true);
     gsap.registerPlugin(ScrollTrigger);
   }, []);
-
-  // Theme Management
-  useEffect(() => {
-    if (!isMounted) return;
-
-    const allMoods = { ...MOOD_DEFS, ...customMoods };
-    const moodDef = allMoods[activePage as keyof typeof allMoods];
-
-    // Reset classes and styles on body
-    document.body.className = '';
-    document.body.style.background = '';
-    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-    
-    // Reset background image on all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => {
-      const pageEl = p as HTMLElement;
-      pageEl.style.setProperty('--bg-image', 'none');
-    });
-
-    if (activePage === 'home') {
-        document.body.classList.add('home-active');
-    } else if (moodDef) {
-        document.body.style.background = moodDef.bg;
-        document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-        
-        const activePageElement = document.getElementById(activePage);
-        const activePlaylist = tracks[activePage as keyof typeof tracks];
-        if (activePageElement && activePlaylist && activePlaylist.length > 0) {
-            const currentTrack = nowPlaying && nowPlaying.mood === activePage ? tracks[nowPlaying.mood][nowPlaying.index] : activePlaylist[0];
-            activePageElement.style.setProperty('--bg-image', `url(${currentTrack.cover})`);
-        }
-
-        let classes = `${activePage}-active `;
-        classes += moodDef.themeClass || 'custom-theme-active ';
-        if (['happy', 'joyful', 'sad'].includes(activePage) || (customMoods[activePage] && !moodDef.themeClass.includes('depression'))) {
-            classes += 'theme-active ';
-        }
-        document.body.className = classes.trim();
-    }
-  }, [activePage, customMoods, isMounted, tracks, nowPlaying]);
-
 
   // Hero Animations
   useEffect(() => {
@@ -483,6 +442,13 @@ export default function Home() {
   
   return (
     <>
+      <ThemeProvider 
+        activePage={activePage} 
+        customMoods={customMoods}
+        tracks={tracks}
+        nowPlaying={nowPlaying}
+        allMoods={allMoods}
+      />
       <div id="cursor-dot" ref={cursorDotRef} />
       <div id="cursor-ring" ref={cursorRingRef} />
       
@@ -738,5 +704,3 @@ export default function Home() {
     </>
   );
 }
-
-    
