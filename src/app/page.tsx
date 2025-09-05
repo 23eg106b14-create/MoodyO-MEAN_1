@@ -90,8 +90,10 @@ const STATIC_TRACKS = {
 };
 
 const AnimatedText = ({ text, className, as: Component = 'div' }: { text: string, className?: string, as?: React.ElementType }) => {
+  const textRef = useRef<HTMLDivElement>(null);
+  
   return (
-    <Component className={cn(className)}>
+    <Component className={cn(className)} ref={textRef}>
       {text.split("").map((char, index) => (
         <span key={index} className="char" style={{ '--char-index': index } as React.CSSProperties}>
           {char === ' ' ? '\u00A0' : char}
@@ -122,6 +124,7 @@ export default function Home() {
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
   const mainAppRef = useRef<HTMLDivElement>(null);
+  const interactiveTitleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -135,11 +138,10 @@ export default function Home() {
     const allMoods = { ...MOOD_DEFS, ...customMoods };
     const moodDef = allMoods[activePage as keyof typeof allMoods];
 
-    // Reset classes
+    // Reset classes and styles on body
     document.body.className = '';
     document.body.style.background = '';
-    document.documentElement.style.setProperty('--page-accent', '#60a5fa'); // default accent
-
+    document.documentElement.style.setProperty('--page-accent', '#60a5fa');
 
     if (activePage === 'home') {
         document.body.classList.add('home-active');
@@ -205,6 +207,35 @@ export default function Home() {
         }
       );
     });
+    
+    // Scramble Animation for interactive title
+    const titleEl = interactiveTitleRef.current;
+    if (titleEl) {
+        const chars = titleEl.querySelectorAll('.char');
+        gsap.set(chars, {
+          x: () => gsap.utils.random(-250, 250),
+          y: () => gsap.utils.random(-250, 250),
+          rotation: () => gsap.utils.random(-360, 360),
+          opacity: 0,
+        });
+
+        gsap.to(chars, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          stagger: 0.03,
+          scrollTrigger: {
+            trigger: titleEl,
+            start: 'top 90%',
+            end: 'bottom 50%',
+            scrub: 1.5,
+          }
+        });
+    }
+
 
   }, [activePage, appVisible, isMounted]);
 
@@ -417,6 +448,19 @@ export default function Home() {
     </Accordion>
   );
 
+  const InteractiveTitle = ({ text, className, as: Component = 'h2' }: { text: string, className?: string, as?: React.ElementType }) => {
+    return (
+      <Component className={cn(className)} ref={interactiveTitleRef}>
+        {text.split("").map((char, index) => (
+          <span key={index} className="char" style={{ '--char-index': index } as React.CSSProperties}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
+      </Component>
+    );
+  };
+
+
   if (!isMounted) {
     return null;
   }
@@ -481,7 +525,7 @@ export default function Home() {
                 </div>
 
                 <div className="home-section home-section-animate">
-                    <AnimatedText text="How are you feeling today?" className="interactive-title" as="h2" />
+                    <InteractiveTitle text="How are you feeling today?" className="interactive-title" />
                     <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
 

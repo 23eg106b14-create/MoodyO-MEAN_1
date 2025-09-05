@@ -500,21 +500,11 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  will-change: transform; /* Optimization for animation */
 }
 
 .interactive-title .char {
-  transition: transform 0.4s var(--ease-in-out-quart), color 0.4s var(--ease-in-out-quart);
-  transition-delay: calc(0.02s * var(--char-index));
-}
-
-.interactive-title:hover .char {
-  transform: translateY(-10px) rotate(-8deg) scale(1.1);
-  color: var(--page-accent);
-}
-
-.interactive-title .char:hover {
-  transform: translateY(-15px) rotate(10deg) scale(1.25);
-  color: var(--page-accent);
+  display: inline-block; /* Required for transforms */
 }
 
 /* HOW IT WORKS SECTION */
@@ -702,5 +692,3 @@ body.custom-theme-active .main-menu-sheet.sheet-content {
   opacity: 1;
   transform: scale(1.3);
 }
-
-    
