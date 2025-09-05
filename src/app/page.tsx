@@ -210,6 +210,21 @@ export default function Home() {
           }
         });
     }
+    
+    const cards = document.querySelectorAll('.how-it-works-step');
+    cards.forEach(card => {
+        const htmlCard = card as HTMLElement;
+        const onMouseMove = (e: MouseEvent) => {
+            const rect = htmlCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            htmlCard.style.setProperty('--x', `${x}px`);
+            htmlCard.style.setProperty('--y', `${y}px`);
+        };
+        htmlCard.addEventListener('mousemove', onMouseMove);
+
+        return () => htmlCard.removeEventListener('mousemove', onMouseMove);
+    });
 
 
   }, [activePage, appVisible, isMounted]);

@@ -668,21 +668,40 @@ footer{margin-top:28px;text-align:center;opacity:.8}
 .how-it-works-grid {
   margin-top: 36px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
 }
 
 .how-it-works-step {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
+  position: relative;
   padding: 24px;
+  background: #192333;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .how-it-works-step:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 30px rgba(2,8,20,.3);
+}
+
+.how-it-works-step::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: radial-gradient(400px at var(--x) var(--y), rgba(128, 130, 248, 0.2), transparent 80%);
+  mask-image: linear-gradient(black, black);
+  -webkit-mask-image: linear-gradient(black, black);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.how-it-works-step:hover::before {
+  opacity: 1;
 }
 
 .how-it-works-step .icon {
@@ -703,6 +722,7 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   opacity: 0.8;
   line-height: 1.6;
 }
+
 
 /* NEW FEATURE STYLES */
 .sheet-content {
@@ -849,5 +869,3 @@ body.custom-theme-active .main-menu-sheet.sheet-content {
   opacity: 1;
   transform: scale(1.3);
 }
-
-    
