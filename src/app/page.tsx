@@ -213,12 +213,13 @@ export default function Home() {
       const cards = document.querySelectorAll('.emotion-card-new, .create-mood-card');
       
       const tl = gsap.timeline();
-      tl.fromTo(homeTitleChars, 
-        { opacity: 0, y: 30, rotateX: -90 }, 
-        { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
-      )
-      .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
-      .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
+      tl.set([homeTitleChars, homeSubtitle, cards], { clearProps: 'all' }) // Reset properties
+        .fromTo(homeTitleChars, 
+          { opacity: 0, y: 30, rotateX: -90 }, 
+          { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.03, ease: 'back.out(1.7)' }
+        )
+        .fromTo(homeSubtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, "-=0.6")
+        .fromTo(cards, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.4)' }, "-=0.4");
     }
   }, [appVisible, activePage]);
   
