@@ -347,30 +347,7 @@ export default function Home() {
   
   const goHome = () => {
     setIsMenuSheetOpen(false);
-    
-    gsap.to('.app', {
-      opacity: 0,
-      duration: 0.4,
-      ease: 'power3.in',
-      onComplete: () => {
-        setActivePage('');
-        setAppVisible(false);
-        document.body.className = '';
-        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-
-        gsap.set(heroRef.current, { opacity: 1 });
-        gsap.fromTo(heroContentRef.current, 
-          { opacity: 0, scale: 0.8 }, 
-          { 
-            duration: 0.8, 
-            opacity: 1, 
-            scale: 1, 
-            delay: 0.2,
-            ease: 'power3.out' 
-          }
-        );
-      }
-    });
+    openPage('home');
   };
 
   const handleGenerateMood = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -577,7 +554,7 @@ export default function Home() {
                     <button onClick={handleNext}><SkipForward /></button>
                 </div>
                  <div className="player-actions">
-                    <button onClick={(e) => handleLike(e, { ...track, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
                         <Heart size={24} />
                     </button>
                 </div>
@@ -639,3 +616,5 @@ export default function Home() {
     </>
   );
 }
+
+    
