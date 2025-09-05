@@ -430,8 +430,7 @@ export default function Home() {
         <section className="creative-hero" ref={heroRef} onClick={enterApp}>
             <div className="hero-content" ref={heroContentRef}>
               <h1 className="sr-only">MoodyO</h1>
-              <AnimatedText text="Moody" className="word" as="div" />
-              <AnimatedText text="O" className="word" as="div" />
+              <AnimatedText text="MoodyO" className="word" as="div" />
             </div>
         </section>
       )}
@@ -609,7 +608,7 @@ export default function Home() {
                 </div>
                 <Input 
                   name="description" 
-                  placeholder="Description (e.g., Late night jazz in a space lounge)" _
+                  placeholder="Description (e.g., Late night jazz in a space lounge)" 
                   required
                   value={customMoodFormData.description}
                   onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
