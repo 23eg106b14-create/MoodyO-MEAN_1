@@ -259,6 +259,13 @@ export default function Home() {
     };
   }, [isMounted]);
 
+  // Stop music when navigating away from a mood page
+  useEffect(() => {
+    if (nowPlaying && activePage !== nowPlaying.mood) {
+      setIsPlaying(false);
+    }
+  }, [activePage, nowPlaying]);
+
 
   // Audio Player Logic
   useEffect(() => {
