@@ -125,8 +125,9 @@ export default function Home() {
   
   useEffect(() => {
     setIsMounted(true);
+    gsap.registerPlugin(ScrollTrigger);
   }, []);
-
+  
   // Theme Management
   useEffect(() => {
     if (!isMounted) return;
@@ -156,8 +157,9 @@ export default function Home() {
 
   // Hero Animations
   useEffect(() => {
+    if (!isMounted || !appVisible) return;
     const heroSection = homePageRef.current;
-    if (!heroSection || !appVisible) return;
+    if (!heroSection) return;
 
     const heroContent = heroSection.querySelector('.hero-content');
     if (!heroContent) return;
@@ -179,14 +181,12 @@ export default function Home() {
     return () => {
       heroSection.removeEventListener('mousemove', onMouseMove)
     };
-  }, [appVisible]);
+  }, [appVisible, isMounted]);
 
   // Home Page Scroll Animations
   useEffect(() => {
-    if (activePage !== 'home' || !homePageRef.current) return;
-    
-    gsap.registerPlugin(ScrollTrigger);
-    
+    if (!isMounted || activePage !== 'home' || !homePageRef.current) return;
+        
     const sections = homePageRef.current.querySelectorAll('.home-section-animate');
     sections.forEach((section) => {
       gsap.fromTo(section, 
@@ -205,10 +205,11 @@ export default function Home() {
       );
     });
 
-  }, [activePage, appVisible]);
+  }, [activePage, appVisible, isMounted]);
 
   // Mood Page Animation
   useEffect(() => {
+    if (!isMounted) return;
     let animation: gsap.core.Tween;
     if (activePage && activePage !== 'home') {
       const page = document.getElementById(activePage);
@@ -226,10 +227,11 @@ export default function Home() {
       }
     }
     return () => animation?.kill();
-  }, [activePage]);
+  }, [activePage, isMounted]);
 
   // Custom Cursor Animation
   useEffect(() => {
+    if (!isMounted) return;
     const onMouseMove = (e: MouseEvent) => {
       gsap.to(cursorDotRef.current, {
         x: e.clientX,
@@ -248,7 +250,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
     };
-  }, []);
+  }, [isMounted]);
 
 
   // Audio Player Logic
@@ -321,7 +323,6 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
             setAppVisible(true);
-            openPage('home');
         }
       });
 
@@ -474,13 +475,12 @@ export default function Home() {
                 <div className="home-section">
                   <div className="hero-content">
                     <h1 className="sr-only">MoodyO</h1>
-                    <AnimatedText text="Moody" className="word" as="div" />
-                    <AnimatedText text="O" className="word" as="div" />
+                    <AnimatedText text="MoodyO" className="word" as="div" />
                   </div>
                 </div>
 
                 <div className="home-section home-section-animate">
-                    <h2 className="home-title">How are you feeling today?</h2>
+                    <AnimatedText text="How are you feeling today?" className="home-title" as="h2" />
                     <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
 
@@ -537,87 +537,88 @@ export default function Home() {
             ))}
           </main>
           
-          {nowPlaying && currentTrack && (
-            <div className="player-dialog-overlay">
-                <div className="player-dialog glass">
-                    <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
-                    <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
-                    <div className="player-info">
-                        <h3>{currentTrack.title}</h3>
-                        <p>{currentTrack.artist}</p>
-                    </div>
-                     <div className="player-controls">
-                        <button onClick={handlePrev}><SkipBack /></button>
-                        <button onClick={handlePlayPause} className="play-main-btn">
-                            {isPlaying ? <Pause size={32} /> : <Play size={32} />}
-                        </button>
-                        <button onClick={handleNext}><SkipForward /></button>
-                    </div>
-                     <div className="player-actions">
-                        <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
-                            <Heart size={24} />
-                        </button>
-                    </div>
-                    <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
-                </div>
-            </div>
-          )}
-
-          <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
-            <DialogContent className="sheet-content glass">
-              <DialogHeader>
-                <DialogTitle>Create a Custom Mood</DialogTitle>
-                <DialogDescription>
-                  Describe the vibe, and AI will generate a unique mood page for you.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
-                <Input 
-                  name="name" 
-                  placeholder="Mood Name (e.g., Cosmic Jazz)" 
-                  required 
-                  value={customMoodFormData.name}
-                  onChange={(e) => setCustomMoodFormData({...customMoodFormData, name: e.target.value })}
-                />
-                 <div>
-                  <div className="emoji-picker">
-                    {['🎷', '📚', '🌧️', '🌲', '🚀', '👾'].map(emoji => (
-                      <span 
-                        key={emoji}
-                        className={cn('emoji-option', { selected: customMoodFormData.emoji === emoji })}
-                        onClick={() => setCustomMoodFormData({...customMoodFormData, emoji })}
-                      >
-                        {emoji}
-                      </span>
-                    ))}
-                  </div>
-                  <Input 
-                    name="emoji" 
-                    placeholder="Select an emoji from above or type one" 
-                    required 
-                    maxLength={2} 
-                    value={customMoodFormData.emoji}
-                    onChange={(e) => setCustomMoodFormData({...customMoodFormData, emoji: e.target.value })}
-                  />
-                </div>
-                <Input 
-                  name="description" 
-                  placeholder="Description (e.g., Late night jazz in a space lounge)" 
-                  required
-                  value={customMoodFormData.description}
-                  onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
-                />
-                <Button type="submit" disabled={isGenerating || !isFormValid}>
-                  {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-           <footer>
+          <footer>
             <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
           </footer>
         </div>
       )}
+
+      {nowPlaying && currentTrack && (
+        <div className="player-dialog-overlay">
+            <div className="player-dialog glass">
+                <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
+                <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
+                <div className="player-info">
+                    <h3>{currentTrack.title}</h3>
+                    <p>{currentTrack.artist}</p>
+                </div>
+                  <div className="player-controls">
+                    <button onClick={handlePrev}><SkipBack /></button>
+                    <button onClick={handlePlayPause} className="play-main-btn">
+                        {isPlaying ? <Pause size={32} /> : <Play size={32} />}
+                    </button>
+                    <button onClick={handleNext}><SkipForward /></button>
+                </div>
+                  <div className="player-actions">
+                    <button onClick={(e) => handleLike(e, { ...currentTrack, mood: nowPlaying.mood, index: nowPlaying.index })} className={cn('like-btn', { 'liked': isLiked(currentTrack) })}>
+                        <Heart size={24} />
+                    </button>
+                </div>
+                <audio ref={audioRef} src={currentTrack.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
+            </div>
+        </div>
+      )}
+
+      <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
+        <DialogContent className="sheet-content glass">
+          <DialogHeader>
+            <DialogTitle>Create a Custom Mood</DialogTitle>
+            <DialogDescription>
+              Describe the vibe, and AI will generate a unique mood page for you.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleGenerateMood} className="flex flex-col gap-4">
+            <Input 
+              name="name" 
+              placeholder="Mood Name (e.g., Cosmic Jazz)" 
+              required 
+              value={customMoodFormData.name}
+              onChange={(e) => setCustomMoodFormData({...customMoodFormData, name: e.target.value })}
+            />
+              <div>
+              <div className="emoji-picker">
+                {['🎷', '📚', '🌧️', '🌲', '🚀', '👾'].map(emoji => (
+                  <span 
+                    key={emoji}
+                    className={cn('emoji-option', { selected: customMoodFormData.emoji === emoji })}
+                    onClick={() => setCustomMoodFormData({...customMoodFormData, emoji })}
+                  >
+                    {emoji}
+                  </span>
+                ))}
+              </div>
+              <Input 
+                name="emoji" 
+                placeholder="Select an emoji from above or type one" 
+                required 
+                maxLength={2} 
+                value={customMoodFormData.emoji}
+                onChange={(e) => setCustomMoodFormData({...customMoodFormData, emoji: e.target.value })}
+              />
+            </div>
+            <Input 
+              name="description" 
+              placeholder="Description (e.g., Late night jazz in a space lounge)" 
+              required
+              value={customMoodFormData.description}
+              onChange={(e) => setCustomMoodFormData({...customMoodFormData, description: e.target.value })}
+            />
+            <Button type="submit" disabled={isGenerating || !isFormValid}>
+              {isGenerating ? <><Loader className="animate-spin mr-2" size={16}/> Generating...</> : "Generate Mood"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
