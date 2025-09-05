@@ -138,7 +138,6 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   gap: 24px;
   justify-content: center;
   flex-wrap: wrap;
-  perspective: 1200px;
 }
 
 .emotion-card-new {
@@ -148,43 +147,37 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   position: relative;
   overflow: hidden;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
   transition: transform 0.4s var(--ease-in-out-quart), box-shadow 0.4s var(--ease-in-out-quart);
   border: 1px solid var(--glass-border);
-  transform-style: preserve-3d;
+  text-align: center;
 }
-
 .emotion-card-new:hover {
+  transform: translateY(-10px);
   box-shadow: 0 24px 50px rgba(2,8,20,0.7);
 }
-
 
 .emotion-card-new .card-content {
   position: relative;
   z-index: 2;
   transition: transform 0.4s var(--ease-in-out-quart);
-  transform: translateZ(40px);
-  width: 100%;
 }
 
 .emotion-card-new .emoji {
   font-size: 5rem;
   line-height: 1;
   transition: transform 0.4s var(--ease-in-out-quart);
-  display: inline-block;
 }
-
+.emotion-card-new:hover .emoji {
+  transform: scale(1.1);
+}
 
 .emotion-card-new .title {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 800;
   margin-top: 12px;
-  line-height: 1.1;
-}
-
-.emotion-card-new .title .char {
-  display: inline-block;
 }
 
 /* specific emotion color tiles */
@@ -196,55 +189,24 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   background: var(--glass-bg);
   color: var(--text);
   border-style: dashed;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-.create-mood-card .card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
 }
 .create-mood-card .title { font-size: 1.5rem; }
-
-
-@keyframes blob-morph {
-  0%, 100% { border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%; }
-  34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
-  67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
-}
-
-.emotion-card-new::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--card-bg, linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%));
-  z-index: 0;
-}
 
 .emotion-card-new::after {
   content: '';
   position: absolute;
-  width: 150%;
-  height: 150%;
-  top: -25%;
-  left: -25%;
-  background: var(--card-bg, linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%));
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
   z-index: 1;
-  animation: blob-morph 15s ease-in-out infinite alternate;
-  transition: transform 0.6s ease;
-  opacity: 0.2;
-  filter: blur(20px);
 }
 
-.emotion-card-new.happy::before, .emotion-card-new.happy::after { --card-bg: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%); }
-.emotion-card-new.joyful::before, .emotion-card-new.joyful::after { --card-bg: linear-gradient(135deg, #FFF0F6 0%, #FF80AB 100%); }
-.emotion-card-new.sad::before, .emotion-card-new.sad::after { --card-bg: linear-gradient(135deg, #E3F2FD 0%, #90CAF9 100%); }
-.emotion-card-new.depression::before, .emotion-card-new.depression::after { --card-bg: linear-gradient(135deg, #1a1a1a 0%, #000000 100%); }
-
 .emotion-card-new:hover::after {
-  transform: scale(1.2);
+  opacity: 1;
 }
 
 

@@ -125,7 +125,6 @@ export default function Home() {
   const homePageRef = useRef<HTMLElement>(null);
   const mainAppRef = useRef<HTMLDivElement>(null);
   const interactiveTitleRef = useRef<HTMLDivElement>(null);
-  const moodSelectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -287,65 +286,6 @@ export default function Home() {
       isPlaying ? audioRef.current.play() : audioRef.current.pause();
     }
   }, [isPlaying, nowPlaying]);
-  
-    // 3D Tilt and Title Reveal Animations for Emotion Cards
-  useEffect(() => {
-    if (!isMounted || !appVisible || activePage !== 'home' || !moodSelectorRef.current) return;
-
-    const cards = gsap.utils.toArray<HTMLElement>('.emotion-card-new');
-    
-    // Staggered Title Reveal
-    const cardTitles = cards.map(card => card.querySelectorAll('.title .char'));
-    gsap.from(cardTitles, {
-      y: '100%',
-      opacity: 0,
-      rotationX: -90,
-      stagger: 0.02,
-      duration: 1.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: moodSelectorRef.current,
-        start: 'top 70%',
-        toggleActions: 'play none none reverse',
-      }
-    });
-
-    // 3D Tilt Effect
-    cards.forEach(card => {
-      const onMouseMove = (e: MouseEvent) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const rotateX = gsap.utils.mapRange(0, rect.height, -15, 15, y);
-        const rotateY = gsap.utils.mapRange(0, rect.width, 15, -15, x);
-        
-        gsap.to(card, {
-          rotateX,
-          rotateY,
-          duration: 0.7,
-          ease: 'power2.out'
-        });
-      };
-
-      const onMouseLeave = () => {
-        gsap.to(card, {
-          rotateX: 0,
-          rotateY: 0,
-          duration: 1,
-          ease: 'elastic.out(1, 0.5)'
-        });
-      };
-
-      card.addEventListener('mousemove', onMouseMove);
-      card.addEventListener('mouseleave', onMouseLeave);
-
-      return () => {
-        card.removeEventListener('mousemove', onMouseMove);
-        card.removeEventListener('mouseleave', onMouseLeave);
-      };
-    });
-
-  }, [isMounted, appVisible, activePage]);
 
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
@@ -592,14 +532,12 @@ export default function Home() {
                 </div>
 
                 <div className="home-section home-section-animate">
-                  <div className="home-mood-selector" ref={moodSelectorRef}>
+                  <div className="home-mood-selector">
                     {Object.entries(allMoods).map(([key, { emoji, title }]) => (
                       <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
                         <div className="card-content">
                           <div className="emoji">{emoji}</div>
-                          <div className="title">
-                             {title.split('—')[0].split('').map((char, i) => <span key={i} className="char">{char}</span>)}
-                          </div>
+                          <div className="title">{title.split('—')[0]}</div>
                         </div>
                       </div>
                     ))}
