@@ -105,9 +105,23 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .glass{background:var(--glass-bg);border-radius:var(--radius);padding:24px;border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);backdrop-filter: blur(10px) saturate(150%)}
 
 /* home */
-.home-intro { text-align: center; }
-.home-title { font-size: 2.5rem; font-weight: 700; }
-.home-subtitle { font-size: 1.1rem; max-width: 500px; margin: 8px auto 0; opacity: 0.8; }
+.home-section {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.home-section .home-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+.home-section .home-subtitle {
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 8px auto 0;
+  opacity: 0.8;
+}
 
 .home-mood-selector {
   margin-top: 36px;
@@ -191,9 +205,7 @@ nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 /* page sections */
 section.page{
   display:none;
-  opacity: 0;
 }
-
 section.page.active{
   display:block;
   animation: page-fade-in .6s var(--ease-out-quad) forwards;
@@ -203,6 +215,7 @@ section.page.active{
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 
 body.home-active .logo,
 body.home-active .nav-btn {

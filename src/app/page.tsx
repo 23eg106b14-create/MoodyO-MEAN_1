@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -120,13 +121,25 @@ export default function Home() {
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const homePageRef = useRef<HTMLElement>(null);
+  const mainAppRef = useRef<HTMLDivElement>(null);
 
   // Hero Animations
   useEffect(() => {
     if (appVisible) return;
-
     const heroSection = heroRef.current;
     if (!heroSection) return;
+
+    gsap.to(heroContentRef.current, {
+      scrollTrigger: {
+        trigger: heroSection,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+      y: 50,
+      opacity: 0,
+      ease: 'power1.out',
+    });
 
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -144,34 +157,39 @@ export default function Home() {
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
   }, [appVisible]);
 
-  // Home Page Animations
+  // Home Page Scroll Animations
   useEffect(() => {
     if (activePage !== 'home' || !homePageRef.current) return;
     
-    const elementsToAnimate = [
-      homePageRef.current.querySelector('.home-intro'),
-      ...Array.from(homePageRef.current.querySelectorAll('.emotion-card-new, .create-mood-card'))
-    ];
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const sections = homePageRef.current.querySelectorAll('.home-section-animate');
+    sections.forEach((section) => {
+      gsap.fromTo(section, 
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          }
+        }
+      );
+    });
 
-    gsap.fromTo(elementsToAnimate, 
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out',
-        delay: 0.2 // A small delay to ensure elements are ready
-      }
-    );
   }, [activePage]);
 
   // Mood Page Animation
   useEffect(() => {
+    let animation: gsap.core.Tween;
     if (activePage && activePage !== 'home') {
       const page = document.getElementById(activePage);
       if (page) {
-        gsap.fromTo(page.querySelector('.glass'),
+        animation = gsap.fromTo(page.querySelector('.glass'),
           { opacity: 0, y: 30 },
           {
             opacity: 1,
@@ -183,6 +201,7 @@ export default function Home() {
         );
       }
     }
+    return () => animation?.kill();
   }, [activePage]);
 
   // Custom Cursor Animation
@@ -270,26 +289,41 @@ export default function Home() {
   }
 
  const openPage = (id: string) => {
-    if (activePage === id) return;
-    
-    setActivePage(id);
-    
+    const targetPage = document.getElementById(id);
+    const currentPage = activePage ? document.getElementById(activePage) : null;
+
+    if (activePage === id && id !== 'home') return;
+
     const allMoods = {...MOOD_DEFS, ...customMoods};
     const moodDef = allMoods[id as keyof typeof allMoods];
 
-    if (id === 'home') {
-        document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
-        document.documentElement.style.setProperty('--page-accent', '#60a5fa');
-        document.body.className = 'home-active';
-    } else if (moodDef) {
-        document.body.style.background = moodDef.bg;
-        document.documentElement.style.setProperty('--page-accent', moodDef.accent);
-        document.body.className = id ? `${id}-active` : '';
-        document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
-        if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
-          document.body.classList.add('theme-active');
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setActivePage(id);
+        if (id === 'home') {
+            document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
+            document.documentElement.style.setProperty('--page-accent', '#60a5fa');
+            document.body.className = 'home-active';
+        } else if (moodDef) {
+            document.body.style.background = moodDef.bg;
+            document.documentElement.style.setProperty('--page-accent', moodDef.accent);
+            document.body.className = id ? `${id}-active` : '';
+            document.body.classList.add(moodDef.themeClass || `custom-theme-active`);
+            if (['happy', 'joyful', 'sad'].includes(id) || customMoods[id]) {
+              document.body.classList.add('theme-active');
+            }
         }
+      }
+    });
+
+    if (currentPage) {
+        tl.to(currentPage, { opacity: 0, duration: 0.4, ease: 'power3.inOut' });
     }
+    
+    if (targetPage) {
+        tl.to(targetPage, { opacity: 1, duration: 0.4, ease: 'power3.inOut' }, currentPage ? '-=0.2' : 0);
+    }
+    
     setIsMenuSheetOpen(false);
   };
 
@@ -403,7 +437,7 @@ export default function Home() {
       )}
 
       {appVisible && (
-        <div className="app">
+        <div className="app" ref={mainAppRef}>
               <header>
                 <div className="header-inner">
                     <div className="logo">
@@ -440,24 +474,34 @@ export default function Home() {
 
           <main>
             <section id="home" className={cn('page', { active: activePage === 'home' })} ref={homePageRef}>
-                <div className="home-intro">
+                <div className="home-section">
+                  <div className="hero-content">
+                    <h1 className="sr-only">MoodyO</h1>
+                    <AnimatedText text="Moody" className="word" as="div" />
+                    <AnimatedText text="O" className="word" as="div" />
+                  </div>
+                </div>
+
+                <div className="home-section home-section-animate">
                     <h2 className="home-title">How are you feeling today?</h2>
                     <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
 
-                <div className="home-mood-selector">
-                  {Object.entries(allMoods).map(([key, { emoji, title }]) => (
-                    <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
-                      <div className="card-content">
-                        <div className="emoji">{emoji}</div>
-                        <div className="title">{title.split('—')[0]}</div>
+                <div className="home-section home-section-animate">
+                  <div className="home-mood-selector">
+                    {Object.entries(allMoods).map(([key, { emoji, title }]) => (
+                      <div key={key} className={cn('emotion-card-new', key)} onClick={() => openPage(key)}>
+                        <div className="card-content">
+                          <div className="emoji">{emoji}</div>
+                          <div className="title">{title.split('—')[0]}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  <div className="emotion-card-new create-mood-card" onClick={() => setIsCustomMoodDialogOpen(true)}>
-                    <div className="card-content">
-                      <div className="emoji"><Wand2 size={72} /></div>
-                      <div className="title">Create Your Own</div>
+                    ))}
+                    <div className="emotion-card-new create-mood-card" onClick={() => setIsCustomMoodDialogOpen(true)}>
+                      <div className="card-content">
+                        <div className="emoji"><Wand2 size={72} /></div>
+                        <div className="title">Create Your Own</div>
+                      </div>
                     </div>
                   </div>
                 </div>
