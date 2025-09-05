@@ -4,7 +4,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SkipBack, SkipForward, Play, Pause, X, Heart, Menu, Wand2, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -19,11 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
 
-
-// GSAP Plugin registration
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(MotionPathPlugin);
-}
 
 // --- Data Definitions ---
 type MoodDefinition = {
@@ -94,15 +88,17 @@ const STATIC_TRACKS = {
   depression: SAMPLE_TRACKS(12)
 };
 
-const MOON_ICONS = [
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/cursor.svg', alt: 'cursor', style: { top: '5%', left: '5%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/eyes.svg', alt: 'eyes', style: { top: '5%', left: '95%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/light.svg', alt: 'light', style: { top: '95%', left: '5%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/planet.svg', alt: 'planet', style: { top: '95%', left: '95%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/pointer.svg', alt: 'pointer', style: { top: '50%', left: '95%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/03/award.svg', alt: 'award', style: { top: '95%', left: '50%' } },
-    { src: 'https://cydstumpel.nl/wp-content/uploads/2025/01/plant.svg', alt: 'plant', style: { top: '50%', left: '5%' } },
-];
+const AnimatedText = ({ text, className }: { text: string, className?: string }) => {
+  return (
+    <div className={cn("word", className)}>
+      {text.split("").map((char, index) => (
+        <span key={index} className="char" style={{ transitionDelay: `${index * 0.05}s` }}>
+          {char}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 
 export default function Home() {
@@ -120,9 +116,7 @@ export default function Home() {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
-  const titleTopRef = useRef<HTMLHeadingElement>(null);
-  const titleBottomRef = useRef<HTMLHeadingElement>(null);
-  const moonRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const heroContentRef = useRef<HTMLDivElement>(null);
 
   // Hero Animations
   useEffect(() => {
@@ -136,29 +130,12 @@ export default function Home() {
       const x = (clientX / window.innerWidth - 0.5) * 2;
       const y = (clientY / window.innerHeight - 0.5) * 2;
 
-      gsap.set([titleTopRef.current, titleBottomRef.current], {
-        '--perspective-x': x * 35,
-        '--perspective-y': y * -35,
+      gsap.to(heroContentRef.current, {
+        rotateY: x * 15,
+        rotateX: y * -15,
+        ease: 'power1.out',
       });
     };
-    
-    // Icon drift animation
-    moonRefs.current.forEach((moon) => {
-        if (!moon) return;
-        const startX = gsap.getProperty(moon, "x");
-        const startY = gsap.getProperty(moon, "y");
-        const xOffset = Number(startX);
-        const yOffset = Number(startY);
-        
-        gsap.to(moon, {
-            x: xOffset + (Math.random() * 40 - 20),
-            y: yOffset + (Math.random() * 40 - 20),
-            duration: 10 + Math.random() * 10,
-            ease: 'power1.inOut',
-            repeat: -1,
-            yoyo: true,
-        });
-    });
     
     heroSection.addEventListener('mousemove', onMouseMove);
     return () => heroSection.removeEventListener('mousemove', onMouseMove);
@@ -250,25 +227,17 @@ export default function Home() {
         }
       });
 
-      tl.to([titleTopRef.current, titleBottomRef.current], {
+      tl.to(heroContentRef.current, {
         duration: 0.8,
         opacity: 0,
-        y: -100,
-        scale: 0.9,
+        scale: 0.8,
         ease: 'power3.in',
       })
-      .to(moonRefs.current, {
+      .to(heroRef.current, {
         duration: 0.6,
         opacity: 0,
-        scale: 0.5,
-        stagger: 0.05,
         ease: 'power3.in'
-      }, "-=0.7")
-      .to(heroRef.current, {
-        duration: 0.8,
-        opacity: 0,
-        ease: 'power3.in'
-      }, "-=0.8");
+      }, "-=0.6");
   };
 
   const openPage = (id: string) => {
@@ -309,31 +278,17 @@ export default function Home() {
         document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
 
         // Animate the hero back in
-        gsap.set(heroRef.current, { opacity: 0 });
-        gsap.to(heroRef.current, { 
-          duration: 0.6, 
-          opacity: 1, 
-          delay: 0.2,
-          ease: 'power3.out' 
-        });
-        gsap.set([titleTopRef.current, titleBottomRef.current], { opacity: 0, y: -50, scale: 0.95 });
-        gsap.to([titleTopRef.current, titleBottomRef.current], {
-            duration: 0.8,
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            ease: 'power3.out',
-            delay: 0.3
-        });
-        gsap.set(moonRefs.current, { opacity: 0, scale: 0.8 });
-        gsap.to(moonRefs.current, {
-            duration: 0.8,
-            opacity: 1,
-            scale: 1,
-            stagger: 0.08,
-            ease: 'power3.out',
-            delay: 0.4
-        });
+        gsap.set(heroRef.current, { opacity: 1 });
+        gsap.fromTo(heroContentRef.current, 
+          { opacity: 0, scale: 0.8 }, 
+          { 
+            duration: 0.8, 
+            opacity: 1, 
+            scale: 1, 
+            delay: 0.2,
+            ease: 'power3.out' 
+          }
+        );
       }
     });
   };
@@ -417,50 +372,11 @@ export default function Home() {
   return (
     <>
       {!appVisible && (
-        <section className="homepage-header" ref={heroRef} onClick={enterApp}>
-            <div className="homepage-header__titles">
+        <section className="creative-hero" ref={heroRef} onClick={enterApp}>
+            <div className="hero-content" ref={heroContentRef}>
               <h1 className="sr-only">MoodyO</h1>
-              <h1
-                className="homepage-header__title huge-hero"
-                aria-hidden="true"
-                ref={titleTopRef}
-              >
-                Moody
-              </h1>
-              <div className="moons">
-                {MOON_ICONS.map((moon, i) => (
-                  <div
-                    className="item"
-                    aria-hidden="true"
-                    key={moon.alt}
-                    ref={(el) => (moonRefs.current[i] = el)}
-                    style={moon.style}
-                  >
-                    <Image loading="lazy" src={moon.src} alt={moon.alt} width={80} height={80} data-ai-hint="icon decoration" />
-                  </div>
-                ))}
-              </div>
-    
-              <svg
-                aria-hidden="true"
-                className="motionpath"
-                viewBox="0 0 1474 782"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  id="motionpath-path"
-                  d="M723.5 35.0001C1144.17 -39.9999 1836.8 -41.2999 1242 553.5C498.5 1297 -832.5 -25.9997 723.5 35.0001Z"
-                ></path>
-              </svg>
-    
-              <h1
-                className="homepage-header__title huge-hero"
-                aria-hidden="true"
-                ref={titleBottomRef}
-              >
-                O
-              </h1>
+              <AnimatedText text="Moody" />
+              <AnimatedText text="O" />
             </div>
         </section>
       )}
@@ -627,3 +543,5 @@ export default function Home() {
     </>
   );
 }
+
+    
