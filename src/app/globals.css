@@ -72,7 +72,6 @@ body.custom-theme-active {
   max-width:1200px;
   margin:0 auto;
   padding:48px;
-  color: var(--text);
 }
 
 body.home-active .app {
@@ -224,9 +223,15 @@ section.page.active{
 
 
 body.home-active .logo,
-body.home-active .nav-btn {
+body.home-active .nav-btn,
+body.home-active .app {
   color: #e6eef8;
 }
+
+body:not(.home-active) .app {
+  color: var(--text);
+}
+
 
 .page-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
 
@@ -491,6 +496,13 @@ footer{margin-top:28px;text-align:center;opacity:.8}
   transform: rotate(-5deg) skewX(-15deg) translateY(-5%);
 }
 
+.interactive-title:hover .char {
+  transform: rotate(calc(var(--char-index) * 5deg - 10deg)) translateY(calc(var(--char-index) * -2px + 4px));
+}
+.interactive-title .char:hover {
+  transform: translateY(-10px) scale(1.1);
+  color: var(--page-accent);
+}
 
 /* NEW FEATURE STYLES */
 .sheet-content {

@@ -93,7 +93,7 @@ const AnimatedText = ({ text, className, as: Component = 'div' }: { text: string
   return (
     <Component className={cn(className)}>
       {text.split("").map((char, index) => (
-        <span key={index} className="char" style={{ transitionDelay: `${index * 0.05}s` }}>
+        <span key={index} className="char" style={{ '--char-index': index } as React.CSSProperties}>
           {char === ' ' ? '\u00A0' : char}
         </span>
       ))}
@@ -131,13 +131,13 @@ export default function Home() {
   // Theme Management
   useEffect(() => {
     if (!isMounted) return;
-
+  
     const allMoods = { ...MOOD_DEFS, ...customMoods };
     const moodDef = allMoods[activePage as keyof typeof allMoods];
-
+  
     // Reset classes
     document.body.className = '';
-
+  
     if (activePage === 'home') {
       document.body.style.background = 'linear-gradient(135deg, #1d2b3c 0%, #0f1724 100%)';
       document.documentElement.style.setProperty('--page-accent', '#60a5fa');
@@ -148,7 +148,7 @@ export default function Home() {
       
       let classes = `${activePage}-active `;
       classes += moodDef.themeClass || 'custom-theme-active ';
-      if (['happy', 'joyful', 'sad'].includes(activePage) || customMoods[activePage]) {
+      if (['happy', 'joyful', 'sad'].includes(activePage) || (customMoods[activePage] && !moodDef.themeClass.includes('depression'))) {
         classes += 'theme-active ';
       }
       document.body.className = classes.trim();
@@ -177,7 +177,7 @@ export default function Home() {
     };
     
     heroSection.addEventListener('mousemove', onMouseMove);
-
+    
     return () => {
       heroSection.removeEventListener('mousemove', onMouseMove)
     };
@@ -480,7 +480,7 @@ export default function Home() {
                 </div>
 
                 <div className="home-section home-section-animate">
-                    <AnimatedText text="How are you feeling today?" className="home-title" as="h2" />
+                    <AnimatedText text="How are you feeling today?" className="home-title interactive-title" as="h2" />
                     <p className="home-subtitle">Tap a mood to explore curated songs and vibes. Each page has its own theme ✨</p>
                 </div>
 
