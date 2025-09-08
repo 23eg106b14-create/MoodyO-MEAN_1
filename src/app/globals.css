@@ -582,7 +582,23 @@ audio { display: none; }
 
 
 /* footer */
-footer{margin-top:28px;text-align:center;opacity:.8}
+footer {
+  margin-top: 28px;
+  text-align: center;
+  opacity: .8;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+footer a {
+  text-decoration: underline;
+  transition: opacity .2s ease;
+}
+
+footer a:hover {
+  opacity: 0.8;
+}
 
 @media (max-width:800px){
   .app{padding: 24px;}
@@ -868,3 +884,5 @@ body.custom-theme-active .main-menu-sheet.sheet-content {
   opacity: 1;
   transform: scale(1.3);
 }
+
+    

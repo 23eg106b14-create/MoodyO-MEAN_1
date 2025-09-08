@@ -673,7 +673,9 @@ export default function Home() {
           </main>
           
           <footer>
-            <small>Made with ❤️ MoodyO — mood based audio UI demo</small>
+            <small>Made with ❤️ by Bouroju Akshay</small>
+            <small><a href="mailto:23eg106b12@anurag.edu.in">23eg106b12@anurag.edu.in</a></small>
+            <small>MoodyO — mood based audio UI demo</small>
           </footer>
 
           {nowPlaying && currentTrack && (
@@ -757,3 +759,5 @@ export default function Home() {
     </>
   );
 }
+
+    
