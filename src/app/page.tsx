@@ -420,14 +420,13 @@ export default function Home() {
       openPage(moodId);
       setCustomMoodFormData({ name: '', emoji: '', description: '' });
 
-      const imagePromises = result.playlist.map((song, index) =>
-        generateImage({ prompt: `${song.title} by ${song.artist}, ${input.description}` })
-          .then(imageResult => ({ index, cover: imageResult.imageUrl }))
-          .catch(imageError => {
-            console.error(`Failed to generate image for track ${index}. Falling back to placeholder.`, imageError);
-            return { index, cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
-          })
-      );
+      const imagePromises = result.playlist.map(async (song, index) => {
+        const imageResult = await generateImage({ prompt: `${song.title} by ${song.artist}, ${input.description}` });
+        return { 
+          index, 
+          cover: imageResult.imageUrl || `https://picsum.photos/seed/${moodId}${index}/600/600` 
+        };
+      });
 
       const settledImages = await Promise.all(imagePromises);
 

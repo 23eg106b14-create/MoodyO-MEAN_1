@@ -16,7 +16,7 @@ const GenerateImageInputSchema = z.object({
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
 const GenerateImageOutputSchema = z.object({
-  imageUrl: z.string().describe('The data URI of the generated image.'),
+  imageUrl: z.string().nullable().describe('The data URI of the generated image, or null if generation failed.'),
 });
 export type GenerateImageOutput = z.infer<typeof GenerateImageOutputSchema>;
 
@@ -31,16 +31,23 @@ const generateImageFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
-    const { media } = await ai.generate({
-        model: 'googleai/imagen-4.0-fast-generate-001',
-        prompt: `Album cover art for a song. Cinematic, high-quality, photographic. Style hint: ${input.prompt}`,
-    });
+    try {
+      const { media } = await ai.generate({
+          model: 'googleai/imagen-4.0-fast-generate-001',
+          prompt: `Album cover art for a song. Cinematic, high-quality, photographic. Style hint: ${input.prompt}`,
+      });
 
-    const imageUrl = media.url;
-    if (!imageUrl) {
-        throw new Error('Failed to generate image.');
+      const imageUrl = media.url;
+      if (!imageUrl) {
+          console.error('Image generation succeeded but returned no URL.');
+          return { imageUrl: null };
+      }
+      
+      return { imageUrl };
+    } catch (error) {
+      console.error('Image generation failed:', error);
+      // Instead of throwing, return null to allow for graceful fallback on the client.
+      return { imageUrl: null };
     }
-    
-    return { imageUrl };
   }
 );
