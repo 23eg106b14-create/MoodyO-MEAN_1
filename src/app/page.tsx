@@ -289,16 +289,15 @@ export default function Home() {
     
     if (isPlaying) {
       audio.play().catch(error => {
-        // Autoplay was prevented. This is a common browser policy.
         if (error.name === 'NotAllowedError') {
           console.warn('Playback prevented by browser policy. User interaction is required to start audio.');
-          setIsPlaying(false); // Reset state if play fails
+          setIsPlaying(false);
         }
       });
     } else {
       audio.pause();
     }
-  }, [isPlaying, nowPlaying?.src]);
+  }, [isPlaying, nowPlaying]);
 
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
@@ -421,28 +420,25 @@ export default function Home() {
       openPage(moodId);
       setCustomMoodFormData({ name: '', emoji: '', description: '' });
 
-      // Now, generate images for each track
-      result.playlist.forEach(async (song, index) => {
-        try {
-          const imageResult = await generateImage({ prompt: `${song.title} by ${song.artist}, ${input.description}` });
-          setTracks(prev => {
-            const newTracks = [...(prev[moodId] || [])];
-            if (newTracks[index]) {
-              newTracks[index] = { ...newTracks[index], cover: imageResult.imageUrl };
-            }
-            return { ...prev, [moodId]: newTracks };
-          });
-        } catch (imageError) {
-          console.error(`Failed to generate image for track ${index}. Falling back to placeholder.`, imageError);
-          // Fallback to placeholder if generation fails
-          setTracks(prev => {
-              const newTracks = [...(prev[moodId] || [])];
-              if (newTracks[index]) {
-                newTracks[index] = { ...newTracks[index], cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
-              }
-              return { ...prev, [moodId]: newTracks };
-            });
-        }
+      const imagePromises = result.playlist.map((song, index) =>
+        generateImage({ prompt: `${song.title} by ${song.artist}, ${input.description}` })
+          .then(imageResult => ({ index, cover: imageResult.imageUrl }))
+          .catch(imageError => {
+            console.error(`Failed to generate image for track ${index}. Falling back to placeholder.`, imageError);
+            return { index, cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
+          })
+      );
+
+      const settledImages = await Promise.all(imagePromises);
+
+      setTracks(prev => {
+        const newTracks = [...(prev[moodId] || [])];
+        settledImages.forEach(({ index, cover }) => {
+          if (newTracks[index]) {
+            newTracks[index] = { ...newTracks[index], cover };
+          }
+        });
+        return { ...prev, [moodId]: newTracks };
       });
 
     } catch (error) {
