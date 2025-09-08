@@ -283,8 +283,23 @@ export default function Home() {
 
   // Audio Player Logic
   useEffect(() => {
-    if (audioRef.current) {
-      isPlaying ? audioRef.current.play() : audioRef.current.pause();
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Automatic play was prevented. This can happen for many reasons,
+          // like the user hasn't interacted with the page yet.
+          // We'll reset the state to reflect that it's not playing.
+          if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
+            console.warn('Playback was prevented or interrupted.');
+            setIsPlaying(false);
+          }
+        });
+      }
+    } else {
+      audioRef.current.pause();
     }
   }, [isPlaying, nowPlaying]);
 
@@ -668,7 +683,7 @@ export default function Home() {
                 </div>
             </div>
           )}
-          <audio ref={audioRef} src={currentTrack?.src} onEnded={handleSongEnd} onPlay={()=>setIsPlaying(true)} onPause={()=>setIsPlaying(false)} />
+          <audio ref={audioRef} src={currentTrack?.src} onEnded={handleSongEnd} />
 
           <Dialog open={isCustomMoodDialogOpen} onOpenChange={setIsCustomMoodDialogOpen}>
             <DialogContent className="sheet-content glass">
