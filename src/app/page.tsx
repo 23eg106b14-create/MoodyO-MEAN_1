@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
+import { generateImage } from '@/ai/flows/image-generator';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const dynamic = 'force-dynamic';
@@ -289,9 +290,6 @@ export default function Home() {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          // Automatic play was prevented. This can happen for many reasons,
-          // like the user hasn't interacted with the page yet.
-          // We'll reset the state to reflect that it's not playing.
           if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
             console.warn('Playback was prevented or interrupted.');
             setIsPlaying(false);
@@ -390,6 +388,8 @@ export default function Home() {
     if (!customMoodFormData.name || !customMoodFormData.emoji || !customMoodFormData.description) return;
     
     setIsGenerating(true);
+    setIsCustomMoodDialogOpen(false);
+
     const input: GenerateMoodInput = customMoodFormData;
 
     try {
@@ -408,28 +408,51 @@ export default function Home() {
         }
       }));
 
-      const newTracks = result.playlist.map((song, index) => ({
+      const initialTracks = result.playlist.map((song, index) => ({
         ...song,
         src: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(1 + index) % 16 + 1}.mp3`,
-        cover: `https://picsum.photos/seed/${moodId}${index}/600/600`,
+        cover: '/placeholder-cover.png',
       }));
 
       setTracks(prev => ({
         ...prev,
-        [moodId]: newTracks,
+        [moodId]: initialTracks,
       }));
       
-      setIsCustomMoodDialogOpen(false);
+      openPage(moodId);
       setCustomMoodFormData({ name: '', emoji: '', description: '' });
-      setTimeout(() => openPage(moodId), 100);
+
+      // Now, generate images for each track
+      result.playlist.forEach(async (song, index) => {
+        try {
+          const imageResult = await generateImage({ prompt: `${song.title} by ${song.artist}, ${input.description}` });
+          setTracks(prev => {
+            const newTracks = [...(prev[moodId] || [])];
+            if (newTracks[index]) {
+              newTracks[index] = { ...newTracks[index], cover: imageResult.imageUrl };
+            }
+            return { ...prev, [moodId]: newTracks };
+          });
+        } catch (imageError) {
+            console.error(`Failed to generate image for track ${index}:`, imageError);
+            // Keep placeholder if generation fails
+            setTracks(prev => {
+                const newTracks = [...(prev[moodId] || [])];
+                if (newTracks[index]) {
+                  newTracks[index] = { ...newTracks[index], cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
+                }
+                return { ...prev, [moodId]: newTracks };
+              });
+        }
+      });
 
     } catch (error) {
       console.error("Failed to generate mood:", error);
+      // Optionally, show a toast or notification to the user
     } finally {
       setIsGenerating(false);
     }
   };
-
 
   const currentTrack = nowPlaying ? tracks[nowPlaying.mood as keyof typeof tracks][nowPlaying.index] : null;
   const allMoods = { ...MOOD_DEFS, ...customMoods };
@@ -602,7 +625,7 @@ export default function Home() {
                     <div className="mood-hero">
                       {displayTrack ? (
                         <div className="now-playing-card">
-                          <Image className="player-cover" src={displayTrack.cover} alt={displayTrack.title} width={400} height={400} data-ai-hint="song cover" />
+                          <Image className="player-cover" src={displayTrack.cover} alt={displayTrack.title} width={400} height={400} data-ai-hint="song cover" unoptimized={displayTrack.cover.startsWith('data:')} />
                           <div className="player-info">
                               <h3>{displayTrack.title}</h3>
                               <p>{displayTrack.artist}</p>
@@ -636,7 +659,7 @@ export default function Home() {
                         <div className="playlist-list">
                           {playlist && playlist.map((track, index) => (
                             <div key={index} className={cn('playlist-list-item', { active: trackPlaying?.src === track.src })} onClick={() => openPlayer(mood, index)}>
-                               <Image className="playlist-list-item-cover" src={track.cover} alt={`${track.title} cover`} width={48} height={48} data-ai-hint="song cover" />
+                               <Image className="playlist-list-item-cover" src={track.cover} alt={`${track.title} cover`} width={48} height={48} data-ai-hint="song cover" unoptimized={track.cover.startsWith('data:')} />
                               <div className="playlist-list-item-info">
                                 <div className="title">{track.title}</div>
                                 <div className="artist">{track.artist}</div>
@@ -663,7 +686,7 @@ export default function Home() {
             <div className="player-dialog-overlay" style={{display:'none'}}>
                 <div className="player-dialog glass">
                     <button onClick={closePlayer} className="player-close-btn"><X size={24} /></button>
-                    <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" />
+                    <Image className="player-cover" src={currentTrack.cover} alt={currentTrack.title} width={400} height={400} data-ai-hint="song cover" unoptimized={currentTrack.cover.startsWith('data:')} />
                     <div className="player-info">
                         <h3>{currentTrack.title}</h3>
                         <p>{currentTrack.artist}</p>
