@@ -434,15 +434,15 @@ export default function Home() {
             return { ...prev, [moodId]: newTracks };
           });
         } catch (imageError) {
-            console.error(`Failed to generate image for track ${index}:`, imageError);
-            // Keep placeholder if generation fails
-            setTracks(prev => {
-                const newTracks = [...(prev[moodId] || [])];
-                if (newTracks[index]) {
-                  newTracks[index] = { ...newTracks[index], cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
-                }
-                return { ...prev, [moodId]: newTracks };
-              });
+          console.error(`Failed to generate image for track ${index}. Falling back to placeholder.`, imageError);
+          // Fallback to placeholder if generation fails
+          setTracks(prev => {
+              const newTracks = [...(prev[moodId] || [])];
+              if (newTracks[index]) {
+                newTracks[index] = { ...newTracks[index], cover: `https://picsum.photos/seed/${moodId}${index}/600/600` };
+              }
+              return { ...prev, [moodId]: newTracks };
+            });
         }
       });
 
