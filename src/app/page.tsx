@@ -284,22 +284,21 @@ export default function Home() {
 
   // Audio Player Logic
   useEffect(() => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
     
     if (isPlaying) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
-            console.warn('Playback was prevented or interrupted.');
-            setIsPlaying(false);
-          }
-        });
-      }
+      audio.play().catch(error => {
+        // Autoplay was prevented. This is a common browser policy.
+        if (error.name === 'NotAllowedError') {
+          console.warn('Playback prevented by browser policy. User interaction is required to start audio.');
+          setIsPlaying(false); // Reset state if play fails
+        }
+      });
     } else {
-      audioRef.current.pause();
+      audio.pause();
     }
-  }, [isPlaying, nowPlaying]);
+  }, [isPlaying, nowPlaying?.src]);
 
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
