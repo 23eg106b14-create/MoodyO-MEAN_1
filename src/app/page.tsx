@@ -21,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateMood, GenerateMoodInput, GenerateMoodOutput } from '@/ai/flows/mood-generator';
 import { ThemeProvider } from '@/components/theme-provider';
 
+export const dynamic = 'force-dynamic';
 
 // --- Data Definitions ---
 type MoodDefinition = {
