@@ -1,0 +1,153 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Mood Themes - Spotify-inspired Dark Theme */
+.mood-happy {
+  background-color: #121212;
+  color: white;
+}
+
+.mood-happy .navbar {
+  background-color: rgba(29, 185, 84, 0.1);
+  border-bottom: 1px solid rgba(29, 185, 84, 0.3);
+}
+
+.mood-happy .play-btn, .mood-happy .play-overlay {
+  background-color: #1db954;
+}
+
+.mood-happy .play-btn:hover, .mood-happy .play-overlay:hover {
+  background-color: #1ed760;
+}
+
+.mood-joyful {
+  background-color: #121212;
+  color: white;
+}
+
+.mood-joyful .navbar {
+  background-color: rgba(255, 105, 180, 0.1);
+  border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.mood-joyful .play-btn, .mood-joyful .play-overlay {
+  background-color: #ff69b4;
+}
+
+.mood-joyful .play-btn:hover, .mood-joyful .play-overlay:hover {
+  background-color: #ff7cc3;
+}
+
+.mood-sad {
+  background-color: #121212;
+  color: white;
+}
+
+.mood-sad .navbar {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.mood-sad .play-btn, .mood-sad .play-overlay {
+  background-color: #3b82f6;
+}
+
+.mood-sad .play-btn:hover, .mood-sad .play-overlay:hover {
+  background-color: #60a5fa;
+}
+
+.mood-depression {
+  background-color: #121212;
+  color: white;
+}
+
+.mood-depression .navbar {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.mood-depression .play-btn, .mood-depression .play-overlay {
+  background-color: #8b5cf6;
+}
+
+.mood-depression .play-btn:hover, .mood-depression .play-overlay:hover {
+  background-color: #a78bfa;
+}
+
+/* Global Spotify-inspired Base */
+body {
+  background-color: #121212;
+  color: white;
+  font-family: 'Nunito', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.navbar {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.song-card {
+  background-color: #181818;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.song-card:hover {
+  background-color: #282828;
+  cursor: pointer;
+}
+
+.player-info h4, .song-info h3 {
+  color: white;
+  margin: 0;
+  font-weight: 500;
+}
+
+.song-info p {
+  color: #b3b3b3;
+  margin: 8px 0;
+}
+
+.album-art img {
+  border-radius: 4px;
+}
+
+.play-overlay, .play-btn {
+  background-color: #1db954;
+  border: none;
+}
+
+.footer {
+  background-color: #121212;
+  color: #b3b3b3;
+  border-top: 1px solid #282828;
+}
+
+/* Global styles */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
