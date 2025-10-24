@@ -92,25 +92,10 @@
             "scripts": []
           }
         }
-,
-"cli": {
-  "analytics": "a0a09983-6939-4191-b6c2-e8f1b8129003"
-},
-"cli": {
-  "analytics": "e19360f9-64c7-41a1-933d-2d0429be10ad"
-},
-"cli": {
-  "analytics": "4d9462b1-b91f-4a87-a674-34d3d9d200c6"
-},
-"cli": {
-  "analytics": "59d169cf-3d60-43fd-860d-8c79ec84cdcc"
-},
-"cli": {
-  "analytics": false
-},
-"cli": {
-  "analytics": "8882d3be-373b-4e8e-92bc-ebbf338e8cfb"
-},
-"cli": {
-  "analytics": "479ad8b3-62d0-4465-a539-d0fad0eb5442"
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
 }
