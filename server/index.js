@@ -16,8 +16,58 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // MongoDB connection
 const mongoURI = process.env.MONGODB_URI || process.env.DATABASE_URL || 'mongodb+srv://EeshanRohith:Rohith%40123@cluster0.mh1d1hz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
+// Seed songs function
+const seedSongs = async () => {
+  try {
+    const existingSongs = await Song.countDocuments();
+    if (existingSongs > 0) {
+      console.log('Songs already exist, skipping seed');
+      return;
+    }
+
+    const sampleSongs = [
+      {
+        title: "Chuttamalle (Sample)",
+        artist: "Various Artists",
+        src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_.mp3",
+        cover: "https://via.placeholder.com/300x200/ffd700/000000?text=Music",
+        emotion: "happy"
+      },
+      {
+        title: "Happy Vibes",
+        artist: "Sample Artist",
+        src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_.mp3",
+        cover: "https://via.placeholder.com/300x200/ff69b4/000000?text=Vibes",
+        emotion: "joyful"
+      },
+      {
+        title: "Calm Moments",
+        artist: "Sample Artist",
+        src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_.mp3",
+        cover: "https://via.placeholder.com/300x200/1e3a8a/000000?text=Sad",
+        emotion: "sad"
+      },
+      {
+        title: "Melancholic",
+        artist: "Sample Artist",
+        src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_.mp3",
+        cover: "https://via.placeholder.com/300x200/2d1b69/000000?text=Deep",
+        emotion: "depression"
+      }
+    ];
+
+    await Song.insertMany(sampleSongs);
+    console.log('Sample songs seeded successfully');
+  } catch (error) {
+    console.error('Error seeding songs:', error);
+  }
+};
+
 mongoose.connect(mongoURI)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => {
+    console.log('Connected to MongoDB');
+    return seedSongs(); // Seed after connection
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // API Routes

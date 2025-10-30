@@ -22,15 +22,15 @@ body {
   cursor: pointer;
 }
 
-/* Mood Themes - Spotify-inspired Dark Theme */
+/* Mood Themes - Emotion-themed Backgrounds */
 .mood-happy {
-  background-color: #121212;
-  color: white;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #333;
 }
 
 .mood-happy .navbar {
-  background-color: rgba(29, 185, 84, 0.1);
-  border-bottom: 1px solid rgba(29, 185, 84, 0.3);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .mood-happy .play-btn, .mood-happy .play-overlay {
@@ -41,14 +41,31 @@ body {
   background-color: #1ed760;
 }
 
+.mood-happy .song-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.mood-happy .song-card:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.mood-happy .song-info h3, .mood-happy .player-info h4 {
+  color: #333;
+}
+
+.mood-happy .song-info p, .mood-happy .player-info p {
+  color: #666;
+}
+
 .mood-joyful {
-  background-color: #121212;
+  background: linear-gradient(135deg, #FF69B4 0%, #00CED1 100%);
   color: white;
 }
 
 .mood-joyful .navbar {
-  background-color: rgba(255, 105, 180, 0.1);
-  border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 105, 180, 0.5);
 }
 
 .mood-joyful .play-btn, .mood-joyful .play-overlay {
@@ -59,14 +76,23 @@ body {
   background-color: #ff7cc3;
 }
 
+.mood-joyful .song-card {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 105, 180, 0.5);
+}
+
+.mood-joyful .song-card:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 .mood-sad {
-  background-color: #121212;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
   color: white;
 }
 
 .mood-sad .navbar {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.5);
 }
 
 .mood-sad .play-btn, .mood-sad .play-overlay {
@@ -77,14 +103,23 @@ body {
   background-color: #60a5fa;
 }
 
+.mood-sad .song-card {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.mood-sad .song-card:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 .mood-depression {
-  background-color: #121212;
+  background: linear-gradient(135deg, #2d1b69 0%, #6b7280 50%, #9ca3af 100%);
   color: white;
 }
 
 .mood-depression .navbar {
-  background-color: rgba(139, 92, 246, 0.1);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.5);
 }
 
 .mood-depression .play-btn, .mood-depression .play-overlay {
@@ -93,6 +128,15 @@ body {
 
 .mood-depression .play-btn:hover, .mood-depression .play-overlay:hover {
   background-color: #a78bfa;
+}
+
+.mood-depression .song-card {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+.mood-depression .song-card:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Global Spotify-inspired Base */

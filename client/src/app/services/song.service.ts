@@ -16,7 +16,7 @@ export interface Song {
   providedIn: 'root'
 })
 export class SongService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = '/api';
 
   constructor(private http: HttpClient) { }
 

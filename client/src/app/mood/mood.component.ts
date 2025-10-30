@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService, Song } from '../services/song.service';
 import { ThemeService, Mood } from '../services/theme.service';
+import { AudioService } from '../services/audio.service';
 import { HeaderComponent } from '../header/header.component';
 
 @Component({
@@ -38,31 +39,6 @@ import { HeaderComponent } from '../header/header.component';
       </div>
       <p *ngIf="songs.length === 0">No songs found for this mood. Add some in the admin panel!</p>
     </section>
-
-    <div class="audio-player" *ngIf="currentSong">
-      <div class="player-left">
-        <img [src]="currentSong.cover" [alt]="currentSong.title" class="player-album">
-        <div class="player-info">
-          <h4>{{ currentSong.title }}</h4>
-          <p>{{ currentSong.artist }}</p>
-        </div>
-      </div>
-      <div class="player-center">
-        <div class="player-controls">
-          <button (click)="previousSong()" class="control-btn">⏮️</button>
-          <button (click)="togglePlay()" class="play-btn-large">{{ isPlaying ? '⏸' : '▶' }}</button>
-          <button (click)="nextSong()" class="control-btn">⏭️</button>
-        </div>
-        <div class="progress-bar-container">
-          <span class="time">{{ formatTime(currentTime) }}</span>
-          <input type="range" class="progress-bar" min="0" [max]="duration || 100" [value]="currentTime" (input)="seek($event)">
-          <span class="time">{{ formatTime(duration) }}</span>
-        </div>
-      </div>
-      <div class="player-right">
-        <button (click)="toggleMute()" class="volume-btn">{{ isMuted ? '🔇' : '🔊' }}</button>
-      </div>
-    </div>
   </div>
 </main>
 
@@ -81,6 +57,14 @@ import { HeaderComponent } from '../header/header.component';
 .mood-main {
   margin-top: 80px;
   flex: 1;
+}
+
+:host-context(.mood-happy) .mood-hero {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mood-hero {
@@ -140,7 +124,6 @@ import { HeaderComponent } from '../header/header.component';
 
 .song-card {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   overflow: hidden;
@@ -462,18 +445,13 @@ export class MoodComponent implements OnInit {
   emotion: Mood = 'happy';
   songs: Song[] = [];
   currentSongIndex: number = 0;
-  currentSong: Song | null = null;
-  audio: HTMLAudioElement | null = null;
-  isPlaying: boolean = false;
-  isMuted: boolean = false;
-  currentTime: number = 0;
-  duration: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private songService: SongService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private audioService: AudioService
   ) { }
 
   ngOnInit(): void {
@@ -494,56 +472,9 @@ export class MoodComponent implements OnInit {
   }
 
   playSong(song: Song): void {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.currentTime = 0;
-    }
-    this.audio = new Audio(song.src);
-    this.audio.addEventListener('loadedmetadata', () => {
-      this.duration = this.audio?.duration || 0;
-    });
-    this.audio.addEventListener('timeupdate', () => {
-      this.currentTime = this.audio?.currentTime || 0;
-    });
-    this.audio.addEventListener('ended', () => {
-      this.nextSong();
-    });
-    this.audio.play();
-    this.isPlaying = true;
-    this.currentSong = song;
-  }
-
-  togglePlay(): void {
-    if (this.audio) {
-      if (this.isPlaying) {
-        this.audio.pause();
-        this.isPlaying = false;
-      } else {
-        this.audio.play();
-        this.isPlaying = true;
-      }
-    }
-  }
-
-  toggleMute(): void {
-    if (this.audio) {
-      this.audio.muted = !this.audio.muted;
-      this.isMuted = this.audio.muted;
-    }
-  }
-
-  seek(event: any): void {
-    if (this.audio) {
-      const seekTime = Number(event.target.value);
-      this.audio.currentTime = seekTime;
-      this.currentTime = seekTime;
-    }
-  }
-
-  formatTime(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    this.currentSongIndex = this.songs.indexOf(song);
+    this.audioService.setCurrentSong(song);
+    this.audioService.play();
   }
 
   nextSong(): void {
